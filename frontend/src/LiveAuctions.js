@@ -24,6 +24,9 @@ function LiveAuctions() {
     auctionWithoutReserve: false,
   });
   const [showFilters, setShowFilters] = useState(false);
+  const [page, setPage] = useState(1); // Sette opp paginering
+  const [hasMore, setHasMore] = useState(true); // Sjekke om det er flere auksjoner å laste
+  const [loading, setLoading] = useState(false); // Sporing av lastestatus
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
@@ -35,7 +38,7 @@ function LiveAuctions() {
     }, 300); // 300ms debounce-tid
 
     return () => clearTimeout(debounceTimeout);
-  }, [filters]);
+  }, [filters, page]); // Oppdater når side eller filtre endres
 
   // Fetch filter counts only once during initial render
   useEffect(() => {
@@ -43,8 +46,9 @@ function LiveAuctions() {
   }, []);
 
   const fetchLiveAuctions = async () => {
+    setLoading(true); // Start lasting
     try {
-      const queryParams = {};
+      const queryParams = { page, limit: 10 }; // Juster limit til antall auksjoner du vil laste per side
 
       for (const key in filters) {
         if (Array.isArray(filters[key])) {
@@ -66,12 +70,16 @@ function LiveAuctions() {
         params: queryParams,
         headers: headers
       });
-      setLiveAuctions(response.data);
+
+      // Kombinere gamle og nye auksjoner
+      setLiveAuctions(prevAuctions => [...prevAuctions, ...response.data]);
+      setHasMore(response.data.length > 0); // Oppdater hasMore hvis det er flere data
       setError(null);
     } catch (error) {
       console.error('Error fetching live auctions:', error);
       setError('Kunne ikke hente live auksjoner. Prøv igjen senere.');
     }
+    setLoading(false); // Stopp lasting
   };
 
   const fetchFilterCounts = async () => {
@@ -102,6 +110,8 @@ function LiveAuctions() {
         : prevFilters[name].filter(v => v !== newValue);
       return { ...prevFilters, [name]: newValues };
     });
+    setPage(1); // Tilbakestill siden når filtre endres
+    setLiveAuctions([]); // Tøm eksisterende auksjoner
   };
 
   const handleFilterChange = (e) => {
@@ -111,6 +121,14 @@ function LiveAuctions() {
       ...filters,
       [name]: type === 'checkbox' ? checked : newValue
     });
+    setPage(1); // Tilbakestill siden når filtre endres
+    setLiveAuctions([]); // Tøm eksisterende auksjoner
+  };
+
+  const loadMore = () => {
+    if (hasMore && !loading) {
+      setPage(prevPage => prevPage + 1);
+    }
   };
 
   const calculateTimeLeft = (endDate) => {
@@ -362,6 +380,10 @@ function LiveAuctions() {
                   </div>
                 );
               })
+            )}
+            {loading && <p>Laster flere auksjoner...</p>}
+            {hasMore && !loading && (
+              <button onClick={loadMore} className="load-more-button">Last flere auksjoner</button>
             )}
           </section>
         </div>
