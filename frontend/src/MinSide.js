@@ -16,39 +16,42 @@ function MinSide() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem('token'); // Get the token from localStorage
+        const token = localStorage.getItem('token');
         if (!token) {
-          navigate('/'); // Redirect to login if token is not found
+          console.log('No token found, redirecting to login');
+          navigate('/');
           return;
         }
-
+  
         const auctionResponse = await axios.get('https://rimelig-auksjon-backend.vercel.app/api/myauctions', {
           headers: {
-            'Authorization': `Bearer ${token}` // Include the token in the headers
+            'Authorization': `Bearer ${token}`
           }
         });
         setAuctions(auctionResponse.data);
-
+  
         const messageResponse = await axios.get('https://rimelig-auksjon-backend.vercel.app/api/mymessages', {
           headers: {
-            'Authorization': `Bearer ${token}` // Include the token in the headers
+            'Authorization': `Bearer ${token}`
           }
         });
         setMessages(messageResponse.data);
-
+  
         const userResponse = await axios.get('https://rimelig-auksjon-backend.vercel.app/api/userdetails', {
           headers: {
-            'Authorization': `Bearer ${token}` // Include the token in the headers
+            'Authorization': `Bearer ${token}`
           }
         });
         setUserDetails(userResponse.data);
+  
       } catch (error) {
-        console.error('Error fetching data', error);
+        console.error('Error fetching data:', error.response ? error.response.data : error.message);
       }
     };
-
+  
     fetchData();
   }, [navigate]);
+  
 
   const handleUpdateDetails = () => {
     navigate('/account');

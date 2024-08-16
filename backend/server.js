@@ -96,16 +96,25 @@ async function connectDB() {
     
     
     const authenticateToken = (req, res, next) => {
-      const token = req.headers['authorization']?.split(' ')[1];
-      if (!token) return res.sendStatus(401);
-
+      const authHeader = req.headers['authorization'];
+      const token = authHeader && authHeader.split(' ')[1];
+      
+      if (!token) {
+        console.log('No token found');
+        return res.status(401).json({ message: 'No token provided' });
+      }
+    
       jwt.verify(token, 'your_jwt_secret', (err, user) => {
-        if (err) return res.sendStatus(403);
+        if (err) {
+          console.log('Token verification failed:', err.message);
+          return res.status(403).json({ message: 'Token is not valid' });
+        }
+        console.log('Token verified successfully for user:', user);
         req.user = user;
         next();
       });
     };
-
+    
     cron.schedule('* * * * *', async () => { // Kjører hvert minutt
       try {
         const now = new Date();

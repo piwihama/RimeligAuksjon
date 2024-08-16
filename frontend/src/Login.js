@@ -72,27 +72,31 @@ function Login() {
     const validationErrors = validation(values);
     setErrors(validationErrors);
     setSuccessMessage('');
+  
     if (Object.keys(validationErrors).length === 0) {
       axios.post('https://rimelig-auksjon-backend.vercel.app/login', values)
         .then(res => {
           if (res.data.accessToken) {
+            console.log('Login successful, token received:', res.data.accessToken);
             localStorage.setItem('token', res.data.accessToken);
-            localStorage.setItem('userId', res.data.userId); // Store the user ID
-            localStorage.setItem('role', res.data.role); // Store the user role
+            localStorage.setItem('userId', res.data.userId);
+            localStorage.setItem('role', res.data.role);
             setSuccessMessage('Innlogging vellykket! Du blir sendt til hjemmesiden.');
             setTimeout(() => {
               setSuccessMessage('');
               navigate('/home');
-            }, 3000); // Clear success message and navigate after 3 seconds
+            }, 3000);
           } else if (res.data.message === 'User not verified') {
             setUserEmail(res.data.email);
             setOtpRequired(true);
             setSuccessMessage('Du har ikke fullført en tidligere registrering. Vennligst skriv inn engangskoden vi har sendt deg på e-post for å fullføre.');
           } else {
+            console.log('Login failed, unexpected response:', res.data);
             setErrors({ general: "Ugyldig innloggingsforsøk" });
           }
         })
         .catch(err => {
+          console.error('Login error:', err.response ? err.response.data : err.message);
           if (err.response && err.response.status === 400) {
             setErrors({ general: 'Feil e-post eller passord' });
           } else {
@@ -101,6 +105,7 @@ function Login() {
         });
     }
   };
+  
 
   const handleOtpSubmit = (event) => {
     event.preventDefault();
