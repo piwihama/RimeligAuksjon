@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "git": "^0.1.5",
+    "react-helmet": "^6.1.0"
+  }
+}

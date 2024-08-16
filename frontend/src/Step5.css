@@ -1,0 +1,165 @@
+/* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+.step5-container {
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 80px;
+}
+
+.step5-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.step5-group {
+    margin-bottom: 15px;
+    width: 100%;
+    position: relative; /* Added to position tooltip relative to group */
+}
+
+.step5-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.step5-control {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    transition: border-color 0.3s;
+}
+
+.step5-control:focus {
+    border-color: #005050; /* Teal color */
+    outline: none;
+}
+
+.step5-btn-primary {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: #005050 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    font-size: 0.9em !important;
+    transition: background-color 0.3s !important;
+}
+
+.step5-btn-primary:hover {
+    background-color: #003838 !important;
+}
+
+h2 {
+    color: #005050;
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+}
+
+.step5-error {
+    color: red;
+    font-size: 0.8em;
+}
+
+.step5-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+textarea {
+    resize: vertical;
+}
+
+input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.info-icon {
+    cursor: pointer;
+    font-size: 12px; /* Slightly reduced font size for better centering */
+    color: #fff; /* White text color */
+    background-color: #005050; /* Teal background color */
+    border-radius: 50%; /* Makes the background a circle */
+    width: 20px; /* Set fixed width */
+    height: 20px; /* Set fixed height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    vertical-align: middle; /* Align icon with text */
+    line-height: 20px; /* Match line-height to height for perfect centering */
+}
+
+.tooltip1 {
+    position: relative;
+    display: inline-block;
+    margin-left: 3px; /* Adjusted margin to separate icon from text */
+}
+
+.tooltip1 .tooltiptext {
+    visibility: hidden;
+    width: 220px; /* Slightly wider for readability */
+    background-color: #333; /* Dark background */
+    color: #fff; /* White text */
+    text-align: center;
+    border-radius: 8px; /* Softer rounded corners */
+    padding: 8px; /* Increased padding for comfort */
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Positioned slightly above the icon */
+    left: 50%;
+    margin-left: -110px;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s; /* Smooth transition */
+    font-size: 12px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    transform: translateY(10px); /* Initial slight offset for a smoother effect */
+}
+
+.tooltip1 .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%; /* Arrow pointing down */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent; /* Match tooltip background */
+}
+
+.tooltip1:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0); /* Smoothly rise into place */
+}

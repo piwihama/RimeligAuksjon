@@ -1,0 +1,209 @@
+/* src/MinSide.css */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+.myside-container {
+    padding: 20px;
+    background-color: #f4f4f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.myside-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.myside-section {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.myside-card {
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+}
+
+.myside-card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.myside-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    cursor: pointer;
+    background-color: #e6e6e6;
+    border-bottom: 1px solid #dddddd;
+    transition: background-color 0.3s ease;
+}
+
+.myside-card-header:hover {
+    background-color: #d9d9d9;
+}
+
+.myside-card-body {
+    padding: 15px 20px;
+    display: none; /* Initially hidden */
+}
+
+.myside-card-body.active {
+    display: block; /* Display when active */
+}
+
+.myside-card-title {
+    font-size: 1.2em;
+    color: #005050; /* Teal color */
+    font-weight: bold;
+}
+
+.myside-toggle-icon {
+    font-size: 1.2em;
+    transition: transform 0.3s ease;
+}
+
+.myside-toggle-icon.active {
+    transform: rotate(180deg); /* Rotate icon when active */
+}
+
+.myside-auctions-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.myside-auction-card {
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    padding: 15px;
+    max-width: 200px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out, box-shadow 0.3s ease;
+    background-color: #ffffff;
+}
+
+.myside-auction-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.myside-auction-image {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.myside-messages-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.myside-message-card {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #005050; /* Teal color */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.myside-message-card:hover {
+    background-color: #e6e6e6;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.myside-btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    text-align: center;
+    margin-top: 10px;
+    display: inline-block;
+}
+
+.myside-btn-primary {
+    background-color: #005050; /* Teal color */
+    border: none;
+    color: white;
+}
+
+.myside-btn-primary:hover {
+    background-color: #003838; /* Darker teal */
+}
+
+.myside-btn-secondary {
+    background-color: #f9f9f9;
+    border: 1px solid #005050; /* Teal border */
+    color: #005050; /* Teal text */
+}
+
+.myside-btn-secondary:hover {
+    background-color: #e6e6e6;
+    border-color: #003838; /* Darker teal border */
+    color: #003838; /* Darker teal text */
+}
+
+.myside-btn-danger {
+    background-color: #d9534f;
+    border: none;
+    color: white;
+}
+
+.myside-btn-danger:hover {
+    background-color: #c9302c;
+}
+
+.myside-logout-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.myside-back-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: #005050; /* Teal color */
+    border: none;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    display: inline-block;
+}
+
+.myside-back-button:hover {
+    background-color: #003838; /* Darker teal */
+    transform: scale(1.05);
+}
+
+.myside-back-button:active {
+    background-color: #002828; /* Even darker teal */
+    transform: scale(0.95);
+}
+
+.myside-back-button:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 80, 80, 0.5); /* Teal shadow */
+}
