@@ -73,7 +73,7 @@ function Login() {
     setErrors(validationErrors);
     setSuccessMessage('');
     if (Object.keys(validationErrors).length === 0) {
-      axios.post('http://localhost:8082/login', values)
+      axios.post('https://rimelig-auksjon-backend.vercel.app/login', values)
         .then(res => {
           if (res.data.accessToken) {
             localStorage.setItem('token', res.data.accessToken);
