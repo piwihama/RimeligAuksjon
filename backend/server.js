@@ -53,6 +53,13 @@ async function connectDB() {
     const messageCollection = db.collection("messages");
     const liveAuctionCollection = db.collection('liveauctions');
 
+    await loginCollection.createIndex({ email: 1 }, { unique: true });
+    await auctionCollection.createIndex({ userId: 1 });
+    await auctionCollection.createIndex({ status: 1 });
+    await liveAuctionCollection.createIndex({ status: 1 });
+    await liveAuctionCollection.createIndex({ userId: 1 });
+    await liveAuctionCollection.createIndex({ endDate: 1 });
+
     async function uploadImageToS3(imageBase64, userEmail, carBrand, carModel, carYear) {
       console.log('imageBase64:', imageBase64 ? 'Exists' : 'Missing');
       console.log('userEmail:', userEmail);
