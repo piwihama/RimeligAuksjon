@@ -21,8 +21,6 @@ redisClient.on('error', (err) => {
   console.error('Redis error:', err);
 });
 
-await redisClient.connect();
-console.log('Connected to Redis');
 
 const app = express();
 // CORS mellomvare skal komme først
@@ -50,6 +48,8 @@ const client = new MongoClient(uri, {
   tlsAllowInvalidCertificates: false, // Adjust based on your certificate setup
   tlsAllowInvalidHostnames: false // Adjust based on your certificate setup
 });
+await client.connect();
+console.log('Connected to the MongoDB database');
 
 async function connectDB() {
   try {
@@ -890,6 +890,7 @@ app.get('/api/myauctions', authenticateToken, getCachedAuctions, async (req, res
         res.status(500).send('Feil under sending av e-post.');
       }
     });
+    
     process.on('SIGINT', async () => {
       await redisClient.quit();
       process.exit(0);
