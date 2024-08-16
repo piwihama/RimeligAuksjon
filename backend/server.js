@@ -7,6 +7,10 @@ const speakeasy = require('speakeasy');
 const cron = require('node-cron');
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require('uuid');
+const NodeCache = require('node-cache');
+
+
+const myCache = new NodeCache({ stdTTL: 600 }); // 600 sekunder (10 minutter)
 
 const s3 = new S3Client({
   region: 'eu-north-1',
@@ -302,13 +306,18 @@ async function connectDB() {
 
     app.get('/api/auctions', async (req, res) => {
       try {
-        const auctions = await auctionCollection.find().toArray();
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+    
+        const auctions = await auctionCollection.find().skip(skip).limit(limit).toArray();
         res.json(auctions);
       } catch (err) {
         console.error('Error retrieving auctions:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
 
     app.post('/api/auctions', authenticateToken, async (req, res) => {
       try {
@@ -475,14 +484,21 @@ app.put('/api/liveauctions/:id', authenticateToken, async (req, res) => {
     // Live Auctions routes
     app.get('/api/liveauctions', async (req, res) => {
       try {
-        const liveAuctions = await liveAuctionCollection.find().toArray();
+        // Først, sjekk om data finnes i cachen
+        let liveAuctions = myCache.get("allLiveAuctions");
+        if (!liveAuctions) {
+          // Hvis ikke, hent data fra databasen
+          liveAuctions = await liveAuctionCollection.find().toArray();
+          // Lagre resultatet i cachen
+          myCache.set("allLiveAuctions", liveAuctions);
+        }
+        // Send resultatet tilbake til klienten
         res.json(liveAuctions);
       } catch (err) {
-        console.error('Error fetching live auctions:', err);
+        console.error('Error retrieving live auctions:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
-
 
     app.post('/api/liveauctions', authenticateToken, async (req, res) => {
       try {
