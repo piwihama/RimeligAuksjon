@@ -413,49 +413,62 @@ app.put('/api/liveauctions/:id', authenticateToken, async (req, res) => {
   }
 });
 
-    app.get('/api/liveauctions/filter', async (req, res) => {
-      try {
-        const {
-          brand, model, year, location, minPrice, maxPrice, karosseri, fuelType, transmission, drivetrain,
-          auctionDuration, reservePrice, auctionWithoutReserve, taxClass, fuel, gearType, mainColor,
-          power, seats, owners, doors, equipment, city
-        } = req.query;
-        const query = {};
+app.get('/api/liveauctions/filter', async (req, res) => {
+  try {
+    const {
+      brand, model, year, location, minPrice, maxPrice, karosseri, fuelType, transmission, drivetrain,
+      auctionDuration, reservePrice, auctionWithoutReserve, taxClass, fuel, gearType, mainColor,
+      power, seats, owners, doors, equipment, city
+    } = req.query;
+    const query = {};
 
-        if (brand) query.brand = { $in: brand.split(',') };
-        if (model) query.model = model;
-        if (year) query.year = parseInt(year);
-        if (location) query.location = location;
-        if (minPrice) query.highestBid = { $gte: parseFloat(minPrice) };
-        if (maxPrice) {
-          query.highestBid = query.highestBid || {};
-          query.highestBid.$lte = parseFloat(maxPrice);
-        }
-        if (karosseri) query.karosseri = { $in: karosseri.split(',') };
-        if (fuelType) query.fuelType = fuelType;
-        if (transmission) query.transmission = transmission;
-        if (drivetrain) query.drivetrain = drivetrain;
-        if (auctionDuration) query.auctionDuration = parseInt(auctionDuration);
-        if (reservePrice) query.reservePrice = parseFloat(reservePrice);
-        if (auctionWithoutReserve) query.auctionWithoutReserve = auctionWithoutReserve === 'true';
-        if (taxClass) query.taxClass = taxClass;
-        if (fuel) query.fuel = fuel;
-        if (gearType) query.gearType = gearType;
-        if (mainColor) query.mainColor = mainColor;
-        if (power) query.power = parseInt(power);
-        if (seats) query.seats = parseInt(seats);
-        if (owners) query.owners = parseInt(owners);
-        if (doors) query.doors = parseInt(doors);
-        if (equipment) query.equipment = { $regex: new RegExp(equipment, 'i') };
-        if (city) query.city = city;
+    if (brand) query.brand = { $in: brand.split(',') };
+    if (model) query.model = model;
+    if (year) query.year = parseInt(year);
+    if (location) query.location = location;
+    if (minPrice) query.highestBid = { $gte: parseFloat(minPrice) };
+    if (maxPrice) {
+      query.highestBid = query.highestBid || {};
+      query.highestBid.$lte = parseFloat(maxPrice);
+    }
+    if (karosseri) query.karosseri = { $in: karosseri.split(',') };
+    if (fuelType) query.fuelType = fuelType;
+    if (transmission) query.transmission = transmission;
+    if (drivetrain) query.drivetrain = drivetrain;
+    if (auctionDuration) query.auctionDuration = parseInt(auctionDuration);
+    if (reservePrice) query.reservePrice = parseFloat(reservePrice);
+    if (auctionWithoutReserve) query.auctionWithoutReserve = auctionWithoutReserve === 'true';
+    if (taxClass) query.taxClass = taxClass;
+    if (fuel) query.fuel = fuel;
+    if (gearType) query.gearType = gearType;
+    if (mainColor) query.mainColor = mainColor;
+    if (power) query.power = parseInt(power);
+    if (seats) query.seats = parseInt(seats);
+    if (owners) query.owners = parseInt(owners);
+    if (doors) query.doors = parseInt(doors);
+    if (equipment) query.equipment = { $regex: new RegExp(equipment, 'i') };
+    if (city) query.city = city;
 
-        const liveAuctions = await liveAuctionCollection.find(query).toArray();
-        res.json(liveAuctions);
-      } catch (err) {
-        console.error('Error fetching filtered live auctions:', err);
-        res.status(500).json({ error: 'Internal Server Error' });
-      }
-    });
+    // Her bruker vi projection for å hente bare nødvendige felter
+    const liveAuctions = await liveAuctionCollection.find(query).project({
+      brand: 1,
+      model: 1,
+      year: 1,
+      endDate: 1,
+      highestBid: 1,
+      bidCount: 1,
+      status: 1,
+      location: 1,
+      images: 1
+    }).toArray();
+
+    res.json(liveAuctions);
+  } catch (err) {
+    console.error('Error fetching filtered live auctions:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
     app.delete('/api/liveauctions/:id', authenticateToken, async (req, res) => {
       try {
@@ -488,7 +501,18 @@ app.put('/api/liveauctions/:id', authenticateToken, async (req, res) => {
         let liveAuctions = myCache.get("allLiveAuctions");
         if (!liveAuctions) {
           // Hvis ikke, hent data fra databasen
-          liveAuctions = await liveAuctionCollection.find().toArray();
+          liveAuctions = await liveAuctionCollection.find({}).project({
+            brand: 1,
+            model: 1,
+            year: 1,
+            endDate: 1,
+            highestBid: 1,
+            bidCount: 1,
+            status: 1,
+            location: 1,
+            images: 1
+          }).toArray();
+    
           // Lagre resultatet i cachen
           myCache.set("allLiveAuctions", liveAuctions);
         }
@@ -499,6 +523,7 @@ app.put('/api/liveauctions/:id', authenticateToken, async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
     app.post('/api/liveauctions', authenticateToken, async (req, res) => {
       try {
         const user = await loginCollection.findOne({ _id: new ObjectId(req.user.userId) });
