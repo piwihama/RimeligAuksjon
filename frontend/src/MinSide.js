@@ -23,25 +23,27 @@ function MinSide() {
           return;
         }
   
-        const auctionResponse = await axios.get('https://rimelig-auksjon-backend.vercel.app/api/myauctions', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+        // Gjør alle API-kall parallelt for å optimalisere lastetiden
+        const [auctionResponse, messageResponse, userResponse] = await Promise.all([
+          axios.get('https://rimelig-auksjon-backend.vercel.app/api/myauctions', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }),
+          axios.get('https://rimelig-auksjon-backend.vercel.app/api/mymessages', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }),
+          axios.get('https://rimelig-auksjon-backend.vercel.app/api/userdetails', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          })
+        ]);
+  
         setAuctions(auctionResponse.data);
-  
-        const messageResponse = await axios.get('https://rimelig-auksjon-backend.vercel.app/api/mymessages', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
         setMessages(messageResponse.data);
-  
-        const userResponse = await axios.get('https://rimelig-auksjon-backend.vercel.app/api/userdetails', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
         setUserDetails(userResponse.data);
   
       } catch (error) {

@@ -21,6 +21,8 @@ redisClient.on('error', (err) => {
   console.error('Redis error:', err);
 });
 
+await redisClient.connect();
+console.log('Connected to Redis');
 
 const app = express();
 // CORS mellomvare skal komme først
@@ -62,16 +64,20 @@ async function connectDB() {
     async function getCachedAuctions(req, res, next) {
       const cacheKey = `auctions_${req.query.page || 1}`;
     
-      redisClient.get(cacheKey, (err, data) => {
-        if (err) throw err;
+      try {
+        const cachedData = await redisClient.get(cacheKey);
     
-        if (data !== null) {
-          return res.json(JSON.parse(data));
+        if (cachedData) {
+          return res.json(JSON.parse(cachedData));
         } else {
           next();
         }
-      });
+      } catch (err) {
+        console.error('Redis error:', err);
+        next(); // Gå videre uten caching hvis det oppstår en feil
+      }
     }
+    
 
     async function uploadImageToS3(imageBase64, userEmail, carBrand, carModel, carYear) {
       console.log('imageBase64:', imageBase64 ? 'Exists' : 'Missing');
@@ -883,6 +889,10 @@ app.get('/api/myauctions', authenticateToken, getCachedAuctions, async (req, res
         console.error(error);
         res.status(500).send('Feil under sending av e-post.');
       }
+    });
+    process.on('SIGINT', async () => {
+      await redisClient.quit();
+      process.exit(0);
     });
 
     const PORT = process.env.PORT || 8082;
