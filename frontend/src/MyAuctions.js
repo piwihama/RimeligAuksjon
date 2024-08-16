@@ -13,10 +13,10 @@ const MyAuctions = () => {
   };
 
   useEffect(() => {
-    const fetchAuctions = async () => {
+    const fetchAuctions = async (page = 1) => {
       try {
         const token = localStorage.getItem('token'); // Get the token from localStorage
-        const response = await axios.get('https://rimelig-auksjon-backend.vercel.app/api/myauctions', {
+        const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/myauctions?page=${page}&limit=10`, {
           headers: {
             'Authorization': `Bearer ${token}` // Include the token in the headers
           }
@@ -26,9 +26,10 @@ const MyAuctions = () => {
         console.error('Error fetching auctions:', error);
       }
     };
-
+  
     fetchAuctions();
   }, []);
+  
 
   return (
     <div className="my-auctions-container">

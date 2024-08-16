@@ -656,10 +656,16 @@ app.post('/api/liveauctions/:id/bid', authenticateToken, async (req, res) => {
 
 app.get('/api/myauctions', authenticateToken, async (req, res) => {
   try {
-    console.time('fetchMyAuctions');
     const userId = req.user.userId;
-    const auctions = await auctionCollection.find({ userId: new ObjectId(userId) }).toArray();
-    console.timeEnd('fetchMyAuctions');
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const auctions = await auctionCollection.find({ userId: new ObjectId(userId) })
+      .skip(skip)
+      .limit(limit)
+      .toArray();
+
     res.json(auctions);
   } catch (err) {
     console.error('Error fetching auctions:', err);
