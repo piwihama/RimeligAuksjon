@@ -499,12 +499,11 @@ app.put('/api/liveauctions/:id', authenticateToken, async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
-
     app.post('/api/liveauctions', authenticateToken, async (req, res) => {
       try {
         const user = await loginCollection.findOne({ _id: new ObjectId(req.user.userId) });
         const { startDate, endDate, ...auctionData } = req.body;
-
+    
         const newLiveAuction = {
           ...auctionData,
           startDate: new Date(startDate),
@@ -517,14 +516,19 @@ app.put('/api/liveauctions/:id', authenticateToken, async (req, res) => {
           userEmail: user.email,
           userName: `${user.firstName} ${user.lastName}`
         };
-
+    
         const result = await liveAuctionCollection.insertOne(newLiveAuction);
+    
+        // Tøm cachen for live auksjoner
+        myCache.del("allLiveAuctions");
+    
         res.status(201).json({ message: 'Live auction created successfully', result });
       } catch (err) {
         console.error('Error creating live auction:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
     
 
     app.get('/api/liveauctions/:id', async (req, res) => {
@@ -543,26 +547,38 @@ app.put('/api/liveauctions/:id', authenticateToken, async (req, res) => {
       try {
         const liveAuctionId = req.params.id;
         const result = await liveAuctionCollection.deleteOne({ _id: new ObjectId(liveAuctionId) });
+        
         if (result.deletedCount === 0) return res.status(404).json({ message: 'Live auction not found' });
+    
+        // Tøm cachen for live auksjoner
+        myCache.del("allLiveAuctions");
+    
         res.json({ message: 'Live auction deleted successfully' });
       } catch (err) {
         console.error('Error deleting live auction:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
 
     app.put('/api/liveauctions/:id', authenticateToken, async (req, res) => {
       try {
         const liveAuctionId = req.params.id;
         const updateData = { ...req.body };
         const result = await liveAuctionCollection.updateOne({ _id: new ObjectId(liveAuctionId) }, { $set: updateData });
+        
         if (result.matchedCount === 0) return res.status(404).json({ message: 'Live auction not found' });
+    
+        // Tøm cachen for live auksjoner
+        myCache.del("allLiveAuctions");
+    
         res.json({ message: 'Live auction updated successfully' });
       } catch (err) {
         console.error('Error updating live auction:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
 
     app.get('/api/search', async (req, res) => {
       try {

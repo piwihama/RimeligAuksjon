@@ -28,10 +28,19 @@ function LiveAuctions() {
 
   const navigate = useNavigate();
 
+  // Debounced fetching of live auctions based on filters
   useEffect(() => {
-    fetchLiveAuctions();
-    fetchFilterCounts();
+    const debounceTimeout = setTimeout(() => {
+      fetchLiveAuctions();
+    }, 300); // 300ms debounce-tid
+
+    return () => clearTimeout(debounceTimeout);
   }, [filters]);
+
+  // Fetch filter counts only once during initial render
+  useEffect(() => {
+    fetchFilterCounts();
+  }, []);
 
   const fetchLiveAuctions = async () => {
     try {
@@ -317,9 +326,6 @@ function LiveAuctions() {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric',
-                 /* hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit',*/
                 });
                 return (
                   <div key={auction._id} className="auction-item" onClick={() => navigate(`/liveauctions/${auction._id}`)}
@@ -329,18 +335,16 @@ function LiveAuctions() {
                     <div className="auction-info">
                       <h2>{auction.brand.toUpperCase()} {auction.model.toUpperCase()} - {auction.year} </h2>
                       <div className="auction-detail">
-                        <span className="left-text" ><strong>Gjenstår:</strong></span>
-                        <span className="right-text" style={{  color: 'rgb(211, 13, 13)', fontWeight: 'bold'}}>{timeLeft.days} Dager {timeLeft.hours}t {timeLeft.minutes}min {timeLeft.seconds}sek </span>
+                        <span className="left-text"><strong>Gjenstår:</strong></span>
+                        <span className="right-text" style={{ color: 'rgb(211, 13, 13)', fontWeight: 'bold'}}>{timeLeft.days} Dager {timeLeft.hours}t {timeLeft.minutes}min {timeLeft.seconds}sek</span>
                       </div>
                       <div className="auction-detail">
                         <span className="left-text"><strong>Høyeste Bud:</strong></span>
-                        <span className="right-text"style={{color: 'rgb(211, 13, 13)', fontWeight: 'bold'}}>{auction.highestBid},- </span>
-
+                        <span className="right-text"style={{color: 'rgb(211, 13, 13)', fontWeight: 'bold'}}>{auction.highestBid},-</span>
                       </div>
                       <div className="auction-detail">
                         <span className="left-text"><strong>Antall Bud:</strong></span>
-                        <span className="right-text"style={{color: 'rgb(211, 13, 13)', fontWeight: 'bold'}}>{auction.bidCount} </span>
-
+                        <span className="right-text"style={{color: 'rgb(211, 13, 13)', fontWeight: 'bold'}}>{auction.bidCount}</span>
                       </div>
                       <div className="auction-detail">
                         <span className="left-text"><strong>Avsluttes:</strong></span>
@@ -350,7 +354,6 @@ function LiveAuctions() {
                         <span className="left-text"><strong>Status:</strong></span>
                         <span className="right-text">{auction.status}</span>
                       </div>
-                     
                       <div className="auction-detail">
                         <span className="left-text"><strong>Sted:</strong></span>
                         <span className="right-text">{auction.location}</span>
