@@ -27,7 +27,7 @@ const Summary = ({ formData, prevStep }) => {
       const submissionData = { ...formData, images: base64Images };
 
       // Create the auction
-      const response = await fetch('http://localhost:8082/api/auctions', {
+      const response = await fetch('hhttps://rimelig-auksjon-backend.vercel.app/api/auctions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ const Summary = ({ formData, prevStep }) => {
         setIsSubmitted(true);
 
         // Send images via email
-        const emailResponse = await fetch('http://localhost:8082/send-image', {
+        const emailResponse = await fetch('https://rimelig-auksjon-backend.vercel.app/send-image', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

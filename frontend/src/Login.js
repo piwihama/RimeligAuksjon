@@ -39,7 +39,7 @@ function Login() {
 
   const handleForgotPasswordSubmit = (event) => {
     event.preventDefault();
-    axios.post('http://localhost:8082/forgot-password', { email: values.email })
+    axios.post('hhttps://rimelig-auksjon-backend.vercel.app/forgot-password', { email: values.email })
       .then(res => {
         setResetOtpSent(true);
         setValues(prev => ({ ...prev, otp: '' })); // Clear OTP field
@@ -52,7 +52,7 @@ function Login() {
 
   const handleResetPasswordSubmit = (event) => {
     event.preventDefault();
-    axios.post('http://localhost:8082/reset-password', { email: values.email, otp: resetOtp, newPassword })
+    axios.post('https://rimelig-auksjon-backend.vercel.app/reset-password', { email: values.email, otp: resetOtp, newPassword })
       .then(res => {
         setForgotPassword(false);
         setResetOtpSent(false);

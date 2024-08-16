@@ -9,7 +9,7 @@ function EditLiveAuction() {
 useEffect(() => {
   const fetchLiveAuction = async () => {
     try {
-      const response = await axios.get(`http://localhost:8082/api/liveauctions/${id}`, {
+      const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/liveauctions/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       const auctionData = response.data;
@@ -59,7 +59,7 @@ useEffect(() => {
   const handleSave = async () => {
     try {
       const { _id, ...updateData } = liveAuction; // Exclude _id
-      await axios.put(`http://localhost:8082/api/liveauctions/${id}`, updateData, {
+      await axios.put(`https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`, updateData, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       alert('Live auction updated successfully');

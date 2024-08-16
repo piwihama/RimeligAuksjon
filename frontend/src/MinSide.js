@@ -22,21 +22,21 @@ function MinSide() {
           return;
         }
 
-        const auctionResponse = await axios.get('https://rimelig-auksjon-backend-git-main-piwihamas-projects.vercel.app/api/myauctions', {
+        const auctionResponse = await axios.get('https://rimelig-auksjon-backend.vercel.app/api/myauctions', {
           headers: {
             'Authorization': `Bearer ${token}` // Include the token in the headers
           }
         });
         setAuctions(auctionResponse.data);
 
-        const messageResponse = await axios.get('https://rimelig-auksjon-backend-git-main-piwihamas-projects.vercel.app/api/mymessages', {
+        const messageResponse = await axios.get('https://rimelig-auksjon-backend.vercel.app/api/mymessages', {
           headers: {
             'Authorization': `Bearer ${token}` // Include the token in the headers
           }
         });
         setMessages(messageResponse.data);
 
-        const userResponse = await axios.get('https://rimelig-auksjon-backend-git-main-piwihamas-projects.vercel.app/api/userdetails', {
+        const userResponse = await axios.get('https://rimelig-auksjon-backend.vercel.app/api/userdetails', {
           headers: {
             'Authorization': `Bearer ${token}` // Include the token in the headers
           }

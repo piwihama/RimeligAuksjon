@@ -10,7 +10,7 @@ function ForgotPassword() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8082/password-reset-request', { email });
+      const response = await axios.post('https://rimelig-auksjon-backend.vercel.app/password-reset-request', { email });
       setMessage(response.data.message);
     } catch (error) {
       setMessage('Kunne ikke sende engangskode på e-post. Prøv igjen senere.');

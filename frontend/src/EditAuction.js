@@ -11,7 +11,7 @@ function EditAuction() {
   useEffect(() => {
     const fetchAuction = async () => {
       try {
-        const response = await axios.get(`http://localhost:8082/api/auctions/${id}`, {
+        const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/auctions/${id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         setAuction(response.data);
@@ -51,7 +51,7 @@ function EditAuction() {
 
   const handleSave = async () => {
     try {
-      await axios.put(`http://localhost:8082/api/auctions/${id}`, { ...auction, images }, {
+      await axios.put(`https://rimelig-auksjon-backend.vercel.app/api/auctions/${id}`, { ...auction, images }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       alert('Auksjon oppdatert');

@@ -77,7 +77,7 @@ function Home() {
 
   const fetchAuctions = async () => {
     try {
-      const response = await axios.get('hhttps://rimelig-auksjon-backend.vercel.app/api/liveauctions');
+      const response = await axios.get('https://rimelig-auksjon-backend.vercel.app/api/liveauctions');
       const auctionsWithTimeLeft = response.data.map((auction) => ({
         ...auction,
         timeLeft: calculateTimeLeft(auction.endDate),

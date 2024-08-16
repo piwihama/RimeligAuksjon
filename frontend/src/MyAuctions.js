@@ -16,7 +16,7 @@ const MyAuctions = () => {
     const fetchAuctions = async () => {
       try {
         const token = localStorage.getItem('token'); // Get the token from localStorage
-        const response = await axios.get('http://localhost:8082/api/myauctions', {
+        const response = await axios.get('https://rimelig-auksjon-backend.vercel.app/api/myauctions', {
           headers: {
             'Authorization': `Bearer ${token}` // Include the token in the headers
           }

@@ -16,7 +16,7 @@ function AdminDashboard() {
       return;
     }
 
-    axios.get('http://localhost:8082/api/auctions', {
+    axios.get('https://rimelig-auksjon-backend.vercel.app/api/auctions', {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -34,7 +34,7 @@ function AdminDashboard() {
         navigate('/');
       });
 
-    axios.get('http://localhost:8082/api/liveauctions', {
+    axios.get('https://rimelig-auksjon-backend.vercel.app/api/liveauctions', {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -58,7 +58,7 @@ function AdminDashboard() {
 
   const handleDelete = (id) => {
     const token = localStorage.getItem('token');
-    axios.delete(`http://localhost:8082/api/auctions/${id}`, {
+    axios.delete(`https://rimelig-auksjon-backend.vercel.app/api/auctions/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -77,7 +77,7 @@ function AdminDashboard() {
 
   const handleDeleteLive = (id) => {
     const token = localStorage.getItem('token');
-    axios.delete(`http://localhost:8082/api/liveauctions/${id}`, {
+    axios.delete(`https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

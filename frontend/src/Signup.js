@@ -47,7 +47,7 @@ function Signup() {
 
   useEffect(() => {
     if (isSubmitting) {
-      axios.post('http://localhost:8082/signup', values)
+      axios.post('https://rimelig-auksjon-backend.vercel.app/signup', values)
         .then(res => {
           console.log('Response from server:', res);
           setIsSubmitting(false);
@@ -69,7 +69,7 @@ function Signup() {
 
   const handleOtpSubmit = (event) => {
     event.preventDefault();
-    axios.post('http://localhost:8082/verify-otp', { email: values.email, otp })
+    axios.post('hhttps://rimelig-auksjon-backend.vercel.app/verify-otp', { email: values.email, otp })
       .then(res => {
         console.log('OTP verified:', res);
         setSuccessMessage('Email verified successfully. Redirecting to login page.');

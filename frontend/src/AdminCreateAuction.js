@@ -23,7 +23,7 @@ const AdminCreateAuction = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8082/api/auctions', auctionData);
+      await axios.post('https://rimelig-auksjon-backend.vercel.app/api/auctions', auctionData);
       alert('Auction created successfully');
       navigate('/admin/dashboard');
     } catch (error) {

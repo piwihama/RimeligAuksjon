@@ -55,7 +55,7 @@ function CreateLiveAuction() {
   useEffect(() => {
     const fetchAuction = async () => {
       try {
-        const response = await axios.get(`http://localhost:8082/api/auctions/${id}`, {
+        const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/auctions/${id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         setAuction(response.data);
@@ -139,7 +139,7 @@ function CreateLiveAuction() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8082/api/liveauctions', formData, {
+      await axios.post('https://rimelig-auksjon-backend.vercel.app/api/liveauctions', formData, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       alert('Live auction created successfully');

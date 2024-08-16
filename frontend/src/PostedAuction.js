@@ -17,7 +17,7 @@ function PostedAuction() {
   useEffect(() => {
     const fetchAuction = async () => {
       try {
-        const response = await axios.get(`http://localhost:8082/api/liveauctions/${id}`, {
+        const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         setAuction(response.data);
@@ -71,7 +71,7 @@ function PostedAuction() {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        `http://localhost:8082/api/liveauctions/${id}/bid`,
+        `https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}/bid`,
         { bidAmount: parseFloat(bidAmount) },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -79,7 +79,7 @@ function PostedAuction() {
       );
       setSuccessMessage('Bud lagt inn vellykket!');
       setBidAmount('');
-      const response = await axios.get(`http://localhost:8082/api/liveauctions/${id}`, {
+      const response = await axios.get(`hhttps://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAuction(response.data);
