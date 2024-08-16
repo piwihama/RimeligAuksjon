@@ -18,22 +18,17 @@ const s3 = new S3Client({
 
 const app = express();
 // CORS mellomvare skal komme først
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://www.rimeligauksjon.no');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-});
+app.use(cors({
+  origin: 'https://www.rimeligauksjon.no', // Tillat forespørsler fra denne frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
-
-
-app.options('*', (req, res) => {
-  res.header('Access-Control-Allow-Origin', 'https://www.rimeligauksjon.no');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.sendStatus(200);
-});
-
+app.options('*', cors({
+  origin: 'https://www.rimeligauksjon.no',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
@@ -96,6 +91,7 @@ async function connectDB() {
       const imageUrl = `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`;
       return imageUrl;
     }
+    
     
     const authenticateToken = (req, res, next) => {
       const token = req.headers['authorization']?.split(' ')[1];
@@ -337,63 +333,60 @@ app.post('/api/refresh-token', authenticateToken, (req, res) => {
   res.json({ accessToken: newToken });
 });
 
-    app.get('/api/liveauctions/counts', async (req, res) => {
-      try {
-        const counts = {
-          karosseri: {},
-          brand: {},
-          location: {},
-          fuel: {},
-          gearType: {},
-          driveType: {},
-          model: {}
-        };
-    
-        const karosserier = ['Stasjonsvogn', 'Cabriolet', 'Kombi 5-dørs', 'Flerbruksbil', 'Pickup', 'Kombi 3-dørs', 'Sedan', 'Coupe', 'SUV/Offroad', 'Kasse'];
-        const brands = ['AUDI', 'BMW', 'BYD', 'CHEVROLET', 'CHRYSLER', 'CITROEN', 'DODGE', 'FERRARI', 'FIAT', 'FORD', 'HONDA', 'HYUNDAI', 'JAGUAR', 'JEEP', 'KIA', 'LAMBORGHINI', 'LAND ROVER', 'LEXUS', 'MASERATI', 'MAZDA', 'MERCEDES-BENZ', 'MINI', 'MITSUBISHI', 'NISSAN', 'OPEL', 'PEUGEOT', 'PORSCHE', 'RENAULT', 'ROLLS ROYCE', 'SAAB', 'SEAT', 'SKODA', 'SUBARU', 'SUZUKI', 'TESLA', 'TOYOTA', 'VOLKSWAGEN', 'VOLVO'];
-        const locations = ['Akershus', 'Aust-Agder', 'Buskerud', 'Finnmark', 'Hedmark', 'Hordaland', 'Møre og Romsdal', 'Nordland', 'Nord-Trøndelag', 'Oppland', 'Oslo', 'Rogaland', 'Sogn og Fjordane', 'Sør-Trøndelag', 'Telemark', 'Troms', 'Vest-Agder', 'Vestfold', 'Østfold'];
-        const fuelTypes = ['Bensin', 'Diesel', 'Elektrisitet', 'Hybrid'];
-        const gearTypes = ['Automat', 'Manuell'];
-        const driveTypes = ['Bakhjulstrekk', 'Firehjulstrekk', 'Framhjulstrekk'];
+app.get('/api/liveauctions/counts', async (req, res) => {
+  try {
+    const counts = {
+      karosseri: {},
+      brand: {},
+      location: {},
+      fuel: {},
+      gearType: {},
+      driveType: {},
+      model: {}
+    };
 
-        // Function to calculate counts
-        const calculateCounts = async (field, values) => {
-          for (const value of values) {
-            counts[field][value] = await liveAuctionCollection.countDocuments({ [field]: value });
-          }
-        };
-    
-        // Calculate counts for each filter field
-        await calculateCounts('karosseri', karosserier);
-        await calculateCounts('brand', brands);
-        await calculateCounts('location', locations);
-        await calculateCounts('fuel', fuelTypes);
-        await calculateCounts('gearType', gearTypes);
-        await calculateCounts('driveType', driveTypes);
-    
-        // Calculate counts for distinct models
-        const models = await liveAuctionCollection.distinct('model');
-        await calculateCounts('model', models);
-    
-        res.json(counts);
-      } catch (err) {
-        console.error('Error fetching filter counts:', err);
-        res.status(500).json({ error: 'Internal Server Error' });
-      }
-    });
+    const karosserier = ['Stasjonsvogn', 'Cabriolet', 'Kombi 5-dørs', 'Flerbruksbil', 'Pickup', 'Kombi 3-dørs', 'Sedan', 'Coupe', 'SUV/Offroad', 'Kasse'];
+    const brands = ['AUDI', 'BMW', 'BYD', 'CHEVROLET', 'CHRYSLER', 'CITROEN', 'DODGE', 'FERRARI', 'FIAT', 'FORD', 'HONDA', 'HYUNDAI', 'JAGUAR', 'JEEP', 'KIA', 'LAMBORGHINI', 'LAND ROVER', 'LEXUS', 'MASERATI', 'MAZDA', 'MERCEDES-BENZ', 'MINI', 'MITSUBISHI', 'NISSAN', 'OPEL', 'PEUGEOT', 'PORSCHE', 'RENAULT', 'ROLLS ROYCE', 'SAAB', 'SEAT', 'SKODA', 'SUBARU', 'SUZUKI', 'TESLA', 'TOYOTA', 'VOLKSWAGEN', 'VOLVO'];
+    const locations = ['Akershus', 'Aust-Agder', 'Buskerud', 'Finnmark', 'Hedmark', 'Hordaland', 'Møre og Romsdal', 'Nordland', 'Nord-Trøndelag', 'Oppland', 'Oslo', 'Rogaland', 'Sogn og Fjordane', 'Sør-Trøndelag', 'Telemark', 'Troms', 'Vest-Agder', 'Vestfold', 'Østfold'];
+    const fuelTypes = ['Bensin', 'Diesel', 'Elektrisitet', 'Hybrid'];
+    const gearTypes = ['Automat', 'Manuell'];
+    const driveTypes = ['Bakhjulstrekk', 'Firehjulstrekk', 'Framhjulstrekk'];
 
-    app.put('/api/auctions/:id', authenticateToken, async (req, res) => {
-      try {
-        const auctionId = req.params.id;
-        const { _id, ...updateData } = req.body; // Remove _id from update data
-        const result = await auctionCollection.updateOne({ _id: new ObjectId(auctionId) }, { $set: updateData });
-        if (result.matchedCount === 0) return res.status(404).json({ message: 'Auction not found' });
-        res.json({ message: 'Auction updated successfully' });
-      } catch (err) {
-        console.error('Error updating auction:', err);
-        res.status(500).json({ error: 'Internal Server Error' });
+    const calculateCounts = async (field, values) => {
+      for (const value of values) {
+        counts[field][value] = await liveAuctionCollection.countDocuments({ [field]: value });
       }
-    });
+    };
+
+    await calculateCounts('karosseri', karosserier);
+    await calculateCounts('brand', brands);
+    await calculateCounts('location', locations);
+    await calculateCounts('fuel', fuelTypes);
+    await calculateCounts('gearType', gearTypes);
+    await calculateCounts('driveType', driveTypes);
+
+    const models = await liveAuctionCollection.distinct('model');
+    await calculateCounts('model', models);
+
+    res.json(counts);
+  } catch (err) {
+    console.error('Error fetching filter counts:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.put('/api/liveauctions/:id', authenticateToken, async (req, res) => {
+  try {
+    const liveAuctionId = req.params.id;
+    const updateData = { ...req.body };
+    const result = await liveAuctionCollection.updateOne({ _id: new ObjectId(liveAuctionId) }, { $set: updateData });
+    if (result.matchedCount === 0) return res.status(404).json({ message: 'Live auction not found' });
+    res.json({ message: 'Live auction updated successfully' });
+  } catch (err) {
+    console.error('Error updating live auction:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
     app.get('/api/liveauctions/filter', async (req, res) => {
       try {
@@ -439,16 +432,14 @@ app.post('/api/refresh-token', authenticateToken, (req, res) => {
       }
     });
 
-    app.delete('/api/auctions/:id', authenticateToken, async (req, res) => {
+    app.delete('/api/liveauctions/:id', authenticateToken, async (req, res) => {
       try {
-        const auctionId = req.params.id;
-        const result = await auctionCollection.deleteOne({ _id: new ObjectId(auctionId) });
-        if (result.deletedCount === 0) {
-          return res.status(404).json({ message: 'Auction not found' });
-        }
-        res.json({ message: 'Auction deleted successfully' });
+        const liveAuctionId = req.params.id;
+        const result = await liveAuctionCollection.deleteOne({ _id: new ObjectId(liveAuctionId) });
+        if (result.deletedCount === 0) return res.status(404).json({ message: 'Live auction not found' });
+        res.json({ message: 'Live auction deleted successfully' });
       } catch (err) {
-        console.error('Error deleting auction:', err);
+        console.error('Error deleting live auction:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
@@ -469,33 +460,32 @@ app.post('/api/refresh-token', authenticateToken, (req, res) => {
     app.get('/api/liveauctions', async (req, res) => {
       try {
         const liveAuctions = await liveAuctionCollection.find().toArray();
-        console.log('Live auctions data:', liveAuctions); // Legg til denne linjen for å logge resultatene
         res.json(liveAuctions);
       } catch (err) {
         console.error('Error fetching live auctions:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
-    
+
 
     app.post('/api/liveauctions', authenticateToken, async (req, res) => {
       try {
         const user = await loginCollection.findOne({ _id: new ObjectId(req.user.userId) });
         const { startDate, endDate, ...auctionData } = req.body;
-    
+
         const newLiveAuction = {
           ...auctionData,
           startDate: new Date(startDate),
           endDate: new Date(endDate),
-          status: 'Pågående', // Default status
-          bidCount: 0,  // Start bidCount at 0
-          bids: [],     // Initialize bids array
-          highestBid: 0, // Initialize highestBid
-          userId: req.user.userId, // Add userId from the authenticated user
-          userEmail: user.email, // Optionally add email for reference
-          userName: `${user.firstName} ${user.lastName}` // Optionally add name for reference
+          status: 'Pågående',
+          bidCount: 0,
+          bids: [],
+          highestBid: 0,
+          userId: req.user.userId,
+          userEmail: user.email,
+          userName: `${user.firstName} ${user.lastName}`
         };
-    
+
         const result = await liveAuctionCollection.insertOne(newLiveAuction);
         res.status(201).json({ message: 'Live auction created successfully', result });
       } catch (err) {
