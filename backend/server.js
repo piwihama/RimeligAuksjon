@@ -37,8 +37,6 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 const uri = "mongodb+srv://peiwast124:Heipiwi18.@cluster0.xfxhgbf.mongodb.net/";
 const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
   tls: true, // Ensure TLS/SSL is enforced
   tlsAllowInvalidCertificates: false, // Adjust based on your certificate setup
