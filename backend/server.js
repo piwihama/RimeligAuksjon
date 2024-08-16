@@ -414,6 +414,8 @@ app.put('/api/liveauctions/:id', authenticateToken, async (req, res) => {
 });
 
 app.get('/api/liveauctions/filter', async (req, res) => {
+  const startTime = Date.now(); // Start tidspunktsmåling for hele forespørselen
+
   try {
     const {
       brand, model, year, location, minPrice, maxPrice, karosseri, fuelType, transmission, drivetrain,
@@ -449,6 +451,9 @@ app.get('/api/liveauctions/filter', async (req, res) => {
     if (equipment) query.equipment = { $regex: new RegExp(equipment, 'i') };
     if (city) query.city = city;
 
+    // Start tidspunktsmåling for databaseoperasjon
+    const dbStartTime = Date.now();
+
     // Her bruker vi projection for å hente bare nødvendige felter
     const liveAuctions = await liveAuctionCollection.find(query).project({
       brand: 1,
@@ -462,12 +467,21 @@ app.get('/api/liveauctions/filter', async (req, res) => {
       images: 1
     }).toArray();
 
+    // Slutt tidspunktsmåling for databaseoperasjon
+    const dbEndTime = Date.now();
+    console.log(`DB query time: ${dbEndTime - dbStartTime}ms`); // Logg tiden det tok å hente data fra databasen
+
+    // Slutt tidspunktsmåling for hele forespørselen
+    const endTime = Date.now();
+    console.log(`Total API response time: ${endTime - startTime}ms`); // Logg total tid for API-forespørselen
+
     res.json(liveAuctions);
   } catch (err) {
     console.error('Error fetching filtered live auctions:', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 
     app.delete('/api/liveauctions/:id', authenticateToken, async (req, res) => {
@@ -496,33 +510,46 @@ app.get('/api/liveauctions/filter', async (req, res) => {
 
     // Live Auctions routes
     app.get('/api/liveauctions', async (req, res) => {
+      const startTime = Date.now(); // Start tidspunktsmåling for hele forespørselen
+
       try {
-        // Først, sjekk om data finnes i cachen
-        let liveAuctions = myCache.get("allLiveAuctions");
-        if (!liveAuctions) {
-          // Hvis ikke, hent data fra databasen
-          liveAuctions = await liveAuctionCollection.find({}).project({
-            brand: 1,
-            model: 1,
-            year: 1,
-            endDate: 1,
-            highestBid: 1,
-            bidCount: 1,
-            status: 1,
-            location: 1,
-            images: 1
-          }).toArray();
+        const page = parseInt(req.query.page) || 1; // Hvilken side vi er på
+        const limit = parseInt(req.query.limit) || 10; // Antall auksjoner per side
+        const skip = (page - 1) * limit;
     
-          // Lagre resultatet i cachen
-          myCache.set("allLiveAuctions", liveAuctions);
+        let liveAuctions = myCache.get(`allLiveAuctions-page-${page}-limit-${limit}`);
+        if (!liveAuctions) {
+          const dbStartTime = Date.now(); // Start måling for databaseoperasjon
+
+          liveAuctions = await liveAuctionCollection.find({})
+            .project({
+              brand: 1,
+              model: 1,
+              year: 1,
+              endDate: 1,
+              highestBid: 1,
+              bidCount: 1,
+              status: 1,
+              location: 1,
+              images: 1
+            })
+            .skip(skip) // Hopp over tidligere sider
+            .limit(limit) // Hent kun `limit` antall auksjoner
+            .toArray();
+    
+          myCache.set(`allLiveAuctions-page-${page}-limit-${limit}`, liveAuctions);
         }
-        // Send resultatet tilbake til klienten
+        const endTime = Date.now(); // Slutt tidspunktsmåling for hele forespørselen
+        console.log(`Total API response time: ${endTime - startTime}ms`); // Logg total tid for API-forespørselen
+    
+    
         res.json(liveAuctions);
       } catch (err) {
         console.error('Error retrieving live auctions:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
     
     app.post('/api/liveauctions', authenticateToken, async (req, res) => {
       try {
