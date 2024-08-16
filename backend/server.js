@@ -654,16 +654,19 @@ app.post('/api/liveauctions/:id/bid', authenticateToken, async (req, res) => {
 });
 
 
-    app.get('/api/myauctions', authenticateToken, async (req, res) => {
-      try {
-        const userId = req.user.userId;
-        const auctions = await auctionCollection.find({ userId: new ObjectId(userId) }).toArray();
-        res.json(auctions);
-      } catch (err) {
-        console.error('Error fetching auctions:', err);
-        res.status(500).json({ error: 'Internal Server Error' });
-      }
-    });
+app.get('/api/myauctions', authenticateToken, async (req, res) => {
+  try {
+    console.time('fetchMyAuctions');
+    const userId = req.user.userId;
+    const auctions = await auctionCollection.find({ userId: new ObjectId(userId) }).toArray();
+    console.timeEnd('fetchMyAuctions');
+    res.json(auctions);
+  } catch (err) {
+    console.error('Error fetching auctions:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
     app.get('/api/mymessages', authenticateToken, async (req, res) => {
       try {
