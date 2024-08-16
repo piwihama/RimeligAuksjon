@@ -24,6 +24,7 @@ function LiveAuctions() {
     auctionWithoutReserve: false,
   });
   const [showFilters, setShowFilters] = useState(false);
+  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
@@ -46,24 +47,40 @@ function LiveAuctions() {
         }
       }
 
+      const headers = {};
+      const token = localStorage.getItem('token');
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await axios.get('https://backend-96qojngd8-piwihamas-projects.vercel.app/api/liveauctions/filter', {
         params: queryParams,
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: headers
       });
       setLiveAuctions(response.data);
+      setError(null);
     } catch (error) {
       console.error('Error fetching live auctions:', error);
+      setError('Kunne ikke hente live auksjoner. Prøv igjen senere.');
     }
   };
 
   const fetchFilterCounts = async () => {
     try {
+      const headers = {};
+      const token = localStorage.getItem('token');
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await axios.get('https://backend-96qojngd8-piwihamas-projects.vercel.app/liveauctions/counts', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: headers
       });
       setFilterCounts(response.data);
+      setError(null);
     } catch (error) {
       console.error('Error fetching filter counts:', error);
+      setError('Kunne ikke hente filtertellerne. Prøv igjen senere.');
     }
   };
 
@@ -290,7 +307,8 @@ function LiveAuctions() {
             </form>
           </aside>
           <section className="auctions-section">
-            {liveAuctions.length === 0 ? (
+            {error && <p className="error-message">{error}</p>}
+            {liveAuctions.length === 0 && !error ? (
               <p>Ingen aktive auksjoner for øyeblikket</p>
             ) : (
               liveAuctions.map(auction => {
@@ -305,8 +323,8 @@ function LiveAuctions() {
                 });
                 return (
                   <div key={auction._id} className="auction-item" onClick={() => navigate(`/liveauctions/${auction._id}`)}
-                  style={{ cursor: 'pointer' }} // Dette gir en visuell indikasjon på at hele elementet er klikkbart
-                >
+                    style={{ cursor: 'pointer' }} // Dette gir en visuell indikasjon på at hele elementet er klikkbart
+                  >
                     <img src={auction.images[0]} alt={`${auction.brand} ${auction.model}`} className="auction-image" />
                     <div className="auction-info">
                       <h2>{auction.brand.toUpperCase()} {auction.model.toUpperCase()} - {auction.year} </h2>
@@ -340,8 +358,6 @@ function LiveAuctions() {
                     </div>
                   </div>
                 );
-                
-          
               })
             )}
           </section>
