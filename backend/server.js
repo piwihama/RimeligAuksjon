@@ -18,19 +18,19 @@ const s3 = new S3Client({
 
 const app = express();
 // CORS mellomvare skal komme først
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://www.rimeligauksjon.no');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-});
+const corsOptions = {
+  origin: 'https://www.rimeligauksjon.no', // Tillat kun forespørsler fra dette domenet
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS', // Tillat disse metodene
+  allowedHeaders: 'Content-Type, Authorization', // Tillat disse headerne
+  credentials: true, // Tillat bruk av credentials som cookies, autorisasjon headers
+};
 
-app.options('*', (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://www.rimeligauksjon.no');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.sendStatus(200);
-});
+app.use(cors(corsOptions));
+
+// Håndter OPTIONS-forespørsler for CORS preflight
+app.options('*', cors(corsOptions));
+
+
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
