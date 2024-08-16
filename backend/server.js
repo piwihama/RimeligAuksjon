@@ -16,19 +16,19 @@ const s3 = new S3Client({
       secretAccessKey: 'lk86nZYLS3iNAbgH3OnQfju+kw6cvTdtC8k/+q7I'
   }
 });
+
 const redisClient = redis.createClient();
 redisClient.on('error', (err) => {
   console.error('Redis error:', err);
 });
 
-
 const app = express();
 // CORS mellomvare skal komme først
 const corsOptions = {
-  origin: 'https://www.rimeligauksjon.no', // Tillat kun forespørsler fra dette domenet
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS', // Tillat disse metodene
-  allowedHeaders: 'Content-Type, Authorization', // Tillat disse headerne
-  credentials: true, // Tillat bruk av credentials som cookies, autorisasjon headers
+  origin: 'https://www.rimeligauksjon.no',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  allowedHeaders: 'Content-Type, Authorization',
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
@@ -36,25 +36,25 @@ app.use(cors(corsOptions));
 // Håndter OPTIONS-forespørsler for CORS preflight
 app.options('*', cors(corsOptions));
 
-
-
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 const uri = "mongodb+srv://peiwast124:Heipiwi18.@cluster0.xfxhgbf.mongodb.net/";
 const client = new MongoClient(uri, {
   serverApi: ServerApiVersion.v1,
-  tls: true, // Ensure TLS/SSL is enforced
-  tlsAllowInvalidCertificates: false, // Adjust based on your certificate setup
-  tlsAllowInvalidHostnames: false // Adjust based on your certificate setup
+  tls: true,
+  tlsAllowInvalidCertificates: false,
+  tlsAllowInvalidHostnames: false
 });
-await client.connect();
-console.log('Connected to the MongoDB database');
 
 async function connectDB() {
   try {
+    await redisClient.connect();
+    console.log('Connected to Redis');
+
     await client.connect();
     console.log('Connected to the MongoDB database');
+    
     const db = client.db("signup");
     const loginCollection = db.collection("login");
     const auctionCollection = db.collection("auctions");
@@ -890,9 +890,11 @@ app.get('/api/myauctions', authenticateToken, getCachedAuctions, async (req, res
         res.status(500).send('Feil under sending av e-post.');
       }
     });
-    
+
+   
     process.on('SIGINT', async () => {
       await redisClient.quit();
+      await client.close();  // Avslutt MongoDB-tilkobling før du avslutter prosessen
       process.exit(0);
     });
 
@@ -900,6 +902,7 @@ app.get('/api/myauctions', authenticateToken, getCachedAuctions, async (req, res
     app.listen(PORT, () => {
       console.log(`Listening on port ${PORT}`);
     });
+
   } catch (err) {
     console.error('Failed to connect to MongoDB', err);
   }
