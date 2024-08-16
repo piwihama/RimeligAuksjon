@@ -7,7 +7,6 @@ const speakeasy = require('speakeasy');
 const cron = require('node-cron');
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require('uuid');
-const redis = require('redis');
 
 const s3 = new S3Client({
   region: 'eu-north-1',
@@ -17,18 +16,13 @@ const s3 = new S3Client({
   }
 });
 
-const redisClient = redis.createClient();
-redisClient.on('error', (err) => {
-  console.error('Redis error:', err);
-});
-
 const app = express();
 // CORS mellomvare skal komme først
 const corsOptions = {
-  origin: 'https://www.rimeligauksjon.no',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-  allowedHeaders: 'Content-Type, Authorization',
-  credentials: true,
+  origin: 'https://www.rimeligauksjon.no', // Tillat kun forespørsler fra dette domenet
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS', // Tillat disse metodene
+  allowedHeaders: 'Content-Type, Authorization', // Tillat disse headerne
+  credentials: true, // Tillat bruk av credentials som cookies, autorisasjon headers
 };
 
 app.use(cors(corsOptions));
@@ -36,48 +30,28 @@ app.use(cors(corsOptions));
 // Håndter OPTIONS-forespørsler for CORS preflight
 app.options('*', cors(corsOptions));
 
+
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 const uri = "mongodb+srv://peiwast124:Heipiwi18.@cluster0.xfxhgbf.mongodb.net/";
 const client = new MongoClient(uri, {
   serverApi: ServerApiVersion.v1,
-  tls: true,
-  tlsAllowInvalidCertificates: false,
-  tlsAllowInvalidHostnames: false
+  tls: true, // Ensure TLS/SSL is enforced
+  tlsAllowInvalidCertificates: false, // Adjust based on your certificate setup
+  tlsAllowInvalidHostnames: false // Adjust based on your certificate setup
 });
 
 async function connectDB() {
   try {
-    await redisClient.connect();
-    console.log('Connected to Redis');
-
     await client.connect();
     console.log('Connected to the MongoDB database');
-    
     const db = client.db("signup");
     const loginCollection = db.collection("login");
     const auctionCollection = db.collection("auctions");
     const messageCollection = db.collection("messages");
     const liveAuctionCollection = db.collection('liveauctions');
-
-    async function getCachedAuctions(req, res, next) {
-      const cacheKey = `auctions_${req.query.page || 1}`;
-    
-      try {
-        const cachedData = await redisClient.get(cacheKey);
-    
-        if (cachedData) {
-          return res.json(JSON.parse(cachedData));
-        } else {
-          next();
-        }
-      } catch (err) {
-        console.error('Redis error:', err);
-        next(); // Gå videre uten caching hvis det oppstår en feil
-      }
-    }
-    
 
     async function uploadImageToS3(imageBase64, userEmail, carBrand, carModel, carYear) {
       console.log('imageBase64:', imageBase64 ? 'Exists' : 'Missing');
@@ -423,54 +397,49 @@ app.put('/api/liveauctions/:id', authenticateToken, async (req, res) => {
   }
 });
 
-app.get('/api/liveauctions/filter', async (req, res) => {
-  try {
-    const query = buildQueryFromFilters(req.query); // En funksjon for å lage en dynamisk query basert på filtre
+    app.get('/api/liveauctions/filter', async (req, res) => {
+      try {
+        const {
+          brand, model, year, location, minPrice, maxPrice, karosseri, fuelType, transmission, drivetrain,
+          auctionDuration, reservePrice, auctionWithoutReserve, taxClass, fuel, gearType, mainColor,
+          power, seats, owners, doors, equipment, city
+        } = req.query;
+        const query = {};
 
-    // Projeksjon av de nødvendige feltene
-    const liveAuctions = await liveAuctionCollection.find(query, {
-      projection: {
-        brand: 1,
-        model: 1,
-        year: 1,
-        highestBid: 1,
-        bidCount: 1,
-        endDate: 1,
-        status: 1,
-        location: 1,
-        images: { $slice: 1 } // Henter kun det første bildet
+        if (brand) query.brand = { $in: brand.split(',') };
+        if (model) query.model = model;
+        if (year) query.year = parseInt(year);
+        if (location) query.location = location;
+        if (minPrice) query.highestBid = { $gte: parseFloat(minPrice) };
+        if (maxPrice) {
+          query.highestBid = query.highestBid || {};
+          query.highestBid.$lte = parseFloat(maxPrice);
+        }
+        if (karosseri) query.karosseri = { $in: karosseri.split(',') };
+        if (fuelType) query.fuelType = fuelType;
+        if (transmission) query.transmission = transmission;
+        if (drivetrain) query.drivetrain = drivetrain;
+        if (auctionDuration) query.auctionDuration = parseInt(auctionDuration);
+        if (reservePrice) query.reservePrice = parseFloat(reservePrice);
+        if (auctionWithoutReserve) query.auctionWithoutReserve = auctionWithoutReserve === 'true';
+        if (taxClass) query.taxClass = taxClass;
+        if (fuel) query.fuel = fuel;
+        if (gearType) query.gearType = gearType;
+        if (mainColor) query.mainColor = mainColor;
+        if (power) query.power = parseInt(power);
+        if (seats) query.seats = parseInt(seats);
+        if (owners) query.owners = parseInt(owners);
+        if (doors) query.doors = parseInt(doors);
+        if (equipment) query.equipment = { $regex: new RegExp(equipment, 'i') };
+        if (city) query.city = city;
+
+        const liveAuctions = await liveAuctionCollection.find(query).toArray();
+        res.json(liveAuctions);
+      } catch (err) {
+        console.error('Error fetching filtered live auctions:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
       }
-    }).toArray();
-
-    res.json(liveAuctions);
-  } catch (err) {
-    console.error('Error fetching filtered live auctions:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-function buildQueryFromFilters(filters) {
-  const query = {};
-  
-  if (filters.brand) query.brand = { $in: filters.brand.split(',') };
-  if (filters.model) query.model = filters.model;
-  if (filters.year) query.year = parseInt(filters.year);
-  if (filters.location) query.location = { $in: filters.location.split(',') };
-  if (filters.minPrice || filters.maxPrice) {
-    query.highestBid = {};
-    if (filters.minPrice) query.highestBid.$gte = parseFloat(filters.minPrice);
-    if (filters.maxPrice) query.highestBid.$lte = parseFloat(filters.maxPrice);
-  }
-  if (filters.karosseri) query.karosseri = { $in: filters.karosseri.split(',') };
-  if (filters.fuel) query.fuel = { $in: filters.fuel.split(',') };
-  if (filters.gearType) query.gearType = { $in: filters.gearType.split(',') };
-  if (filters.driveType) query.driveType = { $in: filters.driveType.split(',') };
-  if (filters.auctionDuration) query.auctionDuration = parseInt(filters.auctionDuration);
-  if (filters.reservePrice) query.reservePrice = parseFloat(filters.reservePrice);
-  if (filters.auctionWithoutReserve) query.auctionWithoutReserve = filters.auctionWithoutReserve === 'true';
-
-  return query;
-}
+    });
 
     app.delete('/api/liveauctions/:id', authenticateToken, async (req, res) => {
       try {
@@ -484,79 +453,28 @@ function buildQueryFromFilters(filters) {
       }
     });
 
-   app.get('/api/liveauctions/:id', async (req, res) => {
-  try {
-    const liveAuctionId = req.params.id;
-
-    const liveAuction = await liveAuctionCollection.findOne({ _id: new ObjectId(liveAuctionId) }, {
-      projection: {
-        brand: 1,
-        model: 1,
-        year: 1,
-        highestBid: 1,
-        bidCount: 1,
-        endDate: 1,
-        status: 1,
-        location: 1,
-        images: 1,
-        mileage: 1,
-        description: 1,
-        conditionDescription: 1,
-        equipment: 1,
-        auctionWithoutReserve: 1,
-        fuel: 1,
-        gearType: 1,
-        driveType: 1,
-        mainColor: 1,
-        power: 1,
-        seats: 1,
-        weight: 1,
-        doors: 1,
-        owners: 1,
-        firstRegistration: 1,
-        taxClass: 1,
-        co2: 1,
-        omregistreringsavgift: 1,
-        lastEUApproval: 1,
-        chassisNumber: 1,
-        nextEUControl: 1,
-        bids: 1
+    app.get('/api/auctions/:id', authenticateToken, async (req, res) => {
+      try {
+        const auctionId = req.params.id;
+        const auction = await auctionCollection.findOne({ _id: new ObjectId(auctionId) });
+        if (!auction) return res.status(404).json({ message: 'Auction not found' });
+        res.json(auction);
+      } catch (err) {
+        console.error('Error fetching auction details:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
       }
     });
-
-    if (!liveAuction) {
-      return res.status(404).json({ message: 'Live auction not found' });
-    }
-
-    res.json(liveAuction);
-  } catch (err) {
-    console.error('Error fetching live auction:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
 
     // Live Auctions routes
     app.get('/api/liveauctions', async (req, res) => {
       try {
-        const liveAuctions = await liveAuctionCollection.find({}, {
-          projection: {
-            brand: 1,
-            model: 1,
-            year: 1,
-            highestBid: 1,
-            endDate: 1,
-            images: { $slice: 1 }, // Henter kun det første bildet
-            mileage: 1
-          }
-        }).toArray();
-    
+        const liveAuctions = await liveAuctionCollection.find().toArray();
         res.json(liveAuctions);
       } catch (err) {
         console.error('Error fetching live auctions:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
-    
 
 
     app.post('/api/liveauctions', authenticateToken, async (req, res) => {
@@ -736,7 +654,7 @@ app.post('/api/liveauctions/:id/bid', authenticateToken, async (req, res) => {
 });
 
 
-app.get('/api/myauctions', authenticateToken, getCachedAuctions, async (req, res) => {
+app.get('/api/myauctions', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId;
     const page = parseInt(req.query.page) || 1;
@@ -747,9 +665,6 @@ app.get('/api/myauctions', authenticateToken, getCachedAuctions, async (req, res
       .skip(skip)
       .limit(limit)
       .toArray();
-
-    // Cache the result
-    redisClient.setex(`auctions_${page}`, 3600, JSON.stringify(auctions));
 
     res.json(auctions);
   } catch (err) {
@@ -891,18 +806,10 @@ app.get('/api/myauctions', authenticateToken, getCachedAuctions, async (req, res
       }
     });
 
-   
-    process.on('SIGINT', async () => {
-      await redisClient.quit();
-      await client.close();  // Avslutt MongoDB-tilkobling før du avslutter prosessen
-      process.exit(0);
-    });
-
     const PORT = process.env.PORT || 8082;
     app.listen(PORT, () => {
       console.log(`Listening on port ${PORT}`);
     });
-
   } catch (err) {
     console.error('Failed to connect to MongoDB', err);
   }
