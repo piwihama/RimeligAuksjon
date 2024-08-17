@@ -7,34 +7,30 @@ const speakeasy = require('speakeasy');
 const cron = require('node-cron');
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require('uuid');
-const NodeCache = require('node-cache');
+const Redis = require('ioredis');
 
-
-const myCache = new NodeCache({ stdTTL: 600 }); // 600 sekunder (10 minutter)
+// Initialiser Redis-klienten
+const redis = new Redis(process.env.REDIS_URL);
 
 const s3 = new S3Client({
   region: 'eu-north-1',
   credentials: {
-      accessKeyId: 'AKIAR4M65FGP76COT3D6',
-      secretAccessKey: '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'
+    accessKeyId: 'AKIAR4M65FGP76COT3D6',
+    secretAccessKey: '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'
   }
 });
 
 const app = express();
 // CORS mellomvare skal komme først
 const corsOptions = {
-  origin: 'https://www.rimeligauksjon.no', // Tillat kun forespørsler fra dette domenet
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS', // Tillat disse metodene
-  allowedHeaders: 'Content-Type, Authorization', // Tillat disse headerne
-  credentials: true, // Tillat bruk av credentials som cookies, autorisasjon headers
+  origin: 'https://www.rimeligauksjon.no',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  allowedHeaders: 'Content-Type, Authorization',
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
-
-// Håndter OPTIONS-forespørsler for CORS preflight
 app.options('*', cors(corsOptions));
-
-
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
@@ -42,9 +38,9 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 const uri = "mongodb+srv://peiwast124:Heipiwi18.@cluster0.xfxhgbf.mongodb.net/";
 const client = new MongoClient(uri, {
   serverApi: ServerApiVersion.v1,
-  tls: true, // Ensure TLS/SSL is enforced
-  tlsAllowInvalidCertificates: false, // Adjust based on your certificate setup
-  tlsAllowInvalidHostnames: false // Adjust based on your certificate setup
+  tls: true,
+  tlsAllowInvalidCertificates: false,
+  tlsAllowInvalidHostnames: false
 });
 
 async function connectDB() {
@@ -65,74 +61,62 @@ async function connectDB() {
     await liveAuctionCollection.createIndex({ endDate: 1 });
 
     async function uploadImageToS3(imageBase64, userEmail, carBrand, carModel, carYear) {
-      console.log('imageBase64:', imageBase64 ? 'Exists' : 'Missing');
-      console.log('userEmail:', userEmail);
-      console.log('carBrand:', carBrand);
-      console.log('carModel:', carModel);
-      console.log('carYear:', carYear);
-    
       if (typeof imageBase64 !== 'string') {
         throw new Error('imageBase64 is not a string');
       }
-    
-      // Check if required parameters are provided
+
       if (!userEmail || !carBrand || !carModel || !carYear) {
         throw new Error('Missing required parameters');
       }
-    
+
       const uniqueImageName = `${uuidv4()}.jpg`;
       const buffer = Buffer.from(imageBase64.split(',')[1], 'base64');
-      
-      // Replace "@" with "_at_" to prevent issues in folder names
+
       const sanitizedEmail = userEmail.replace('@', '_at_');
-      const sanitizedCarBrand = carBrand.replace(/\s+/g, '-').toLowerCase(); // Sanitize car brand
-      const sanitizedCarModel = carModel.replace(/\s+/g, '-').toLowerCase(); // Sanitize car model
-      const carFolder = `${sanitizedCarBrand}-${carYear}-${sanitizedCarModel}`; // Create car folder name
-    
+      const sanitizedCarBrand = carBrand.replace(/\s+/g, '-').toLowerCase();
+      const sanitizedCarModel = carModel.replace(/\s+/g, '-').toLowerCase();
+      const carFolder = `${sanitizedCarBrand}-${carYear}-${sanitizedCarModel}`;
+
       const params = {
         Bucket: 'rimeligauksjon2024',
-        Key: `users/${sanitizedEmail}/${carFolder}/${uniqueImageName}`, // Store in user-specific folder with car details
+        Key: `users/${sanitizedEmail}/${carFolder}/${uniqueImageName}`,
         Body: buffer,
         ContentEncoding: 'base64',
         ContentType: 'image/jpeg'
       };
-    
+
       const command = new PutObjectCommand(params);
       const uploadResult = await s3.send(command);
       const imageUrl = `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`;
       return imageUrl;
     }
-    
-    
+
     const authenticateToken = (req, res, next) => {
       const authHeader = req.headers['authorization'];
       const token = authHeader && authHeader.split(' ')[1];
-      
+
       if (!token) {
-        console.log('No token found');
         return res.status(401).json({ message: 'No token provided' });
       }
-    
+
       jwt.verify(token, 'your_jwt_secret', (err, user) => {
         if (err) {
-          console.log('Token verification failed:', err.message);
           return res.status(403).json({ message: 'Token is not valid' });
         }
-        console.log('Token verified successfully for user:', user);
         req.user = user;
         next();
       });
     };
-    
-    cron.schedule('* * * * *', async () => { // Kjører hvert minutt
+
+    cron.schedule('* * * * *', async () => {
       try {
         const now = new Date();
         const expiredAuctions = await liveAuctionCollection.find({ endDate: { $lte: now }, status: 'Pågående' }).toArray();
-        
+
         for (let auction of expiredAuctions) {
           await liveAuctionCollection.updateOne({ _id: auction._id }, { $set: { status: 'Utgått' } });
         }
-        
+
       } catch (err) {
         console.error('Error updating expired auctions:', err);
       }
@@ -150,7 +134,7 @@ async function connectDB() {
         if (existingUser) return res.status(400).json({ message: 'User already exists' });
 
         const otp = speakeasy.totp({
-          secret: 'secret', // Ideally, use a user-specific secret
+          secret: 'secret',
           encoding: 'base32'
         });
 
@@ -178,7 +162,7 @@ async function connectDB() {
           service: 'gmail',
           auth: {
             user: 'peiwast124@gmail.com',
-            pass: 'eysj jfoz ahcj qqzo' // App-specific password
+            pass: 'eysj jfoz ahcj qqzo'
           }
         });
 
@@ -219,7 +203,7 @@ async function connectDB() {
         if (!user) return res.status(400).json({ message: 'User not found' });
 
         const otp = speakeasy.totp({
-          secret: 'secret', // Ideally, use a user-specific secret
+          secret: 'secret',
           encoding: 'base32'
         });
 
@@ -229,7 +213,7 @@ async function connectDB() {
           service: 'gmail',
           auth: {
             user: 'peiwast124@gmail.com',
-            pass: 'eysj jfoz ahcj qqzo' // App-specific password
+            pass: 'eysj jfoz ahcj qqzo'
           }
         });
 
@@ -270,7 +254,7 @@ async function connectDB() {
         if (!user) return res.status(400).json({ message: 'Invalid email or password' });
         if (!user.verified) {
           const otp = speakeasy.totp({
-            secret: 'secret', // Ideally, use a user-specific secret
+            secret: 'secret',
             encoding: 'base32'
           });
 
@@ -280,7 +264,7 @@ async function connectDB() {
             service: 'gmail',
             auth: {
               user: 'peiwast124@gmail.com',
-              pass: 'eysj jfoz ahcj qqzo' // App-specific password
+              pass: 'eysj jfoz ahcj qqzo'
             }
           });
 
@@ -309,7 +293,7 @@ async function connectDB() {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
-    
+
         const auctions = await auctionCollection.find().skip(skip).limit(limit).toArray();
         res.json(auctions);
       } catch (err) {
@@ -317,32 +301,30 @@ async function connectDB() {
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
-    
 
     app.post('/api/auctions', authenticateToken, async (req, res) => {
       try {
         const user = await loginCollection.findOne({ _id: new ObjectId(req.user.userId) });
-    
+
         if (!user) {
           return res.status(404).json({ message: 'User not found' });
         }
-    
-        const { brand, model, year, images } = req.body; // Extract car details and images from the request body
-    
+
+        const { brand, model, year, images } = req.body;
+
         const newAuction = {
           ...req.body,
           userId: new ObjectId(req.user.userId),
           userEmail: user.email,
           userName: `${user.firstName} ${user.lastName}`
         };
-    
-        // Upload each image and save the URLs
+
         const imageUrls = await Promise.all(images.map((imageBase64) => {
-          return uploadImageToS3(imageBase64, user.email, brand, model, year); // Pass the authenticated user's email
+          return uploadImageToS3(imageBase64, user.email, brand, model, year);
         }));
-    
-        newAuction.imageUrls = imageUrls; // Store image URLs in the auction data
-    
+
+        newAuction.imageUrls = imageUrls;
+
         const result = await auctionCollection.insertOne(newAuction);
         res.json(result);
       } catch (err) {
@@ -350,166 +332,157 @@ async function connectDB() {
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
-    
+
     // Endepunkt for å fornye tokenet
-app.post('/api/refresh-token', authenticateToken, (req, res) => {
-  const userId = req.user.userId;
-  const newToken = jwt.sign({ userId, role: req.user.role }, 'your_jwt_secret', { expiresIn: '15m' }); // Forny token i 15 minutter
-  res.json({ accessToken: newToken });
-});
+    app.post('/api/refresh-token', authenticateToken, (req, res) => {
+      const userId = req.user.userId;
+      const newToken = jwt.sign({ userId, role: req.user.role }, 'your_jwt_secret', { expiresIn: '15m' });
+      res.json({ accessToken: newToken });
+    });
 
-app.get('/api/liveauctions/counts', async (req, res) => {
-  try {
-    // Sjekk om resultatene allerede er i cache
-    const cacheKey = 'liveAuctionsCounts';
-    let counts = myCache.get(cacheKey);
+    app.get('/api/liveauctions/counts', async (req, res) => {
+      try {
+        const cacheKey = 'liveAuctionsCounts';
+        let counts = await redis.get(cacheKey);
 
-    if (!counts) {
-      console.log('Cache miss. Calculating counts.');
+        if (!counts) {
+          console.log('Cache miss. Calculating counts.');
 
-      counts = {
-        karosseri: {},
-        brand: {},
-        location: {},
-        fuel: {},
-        gearType: {},
-        driveType: {},
-        model: {}
-      };
+          counts = {
+            karosseri: {},
+            brand: {},
+            location: {},
+            fuel: {},
+            gearType: {},
+            driveType: {},
+            model: {}
+          };
 
-      const karosserier = ['Stasjonsvogn', 'Cabriolet', 'Kombi 5-dørs', 'Flerbruksbil', 'Pickup', 'Kombi 3-dørs', 'Sedan', 'Coupe', 'SUV/Offroad', 'Kasse'];
-      const brands = ['AUDI', 'BMW', 'BYD', 'CHEVROLET', 'CHRYSLER', 'CITROEN', 'DODGE', 'FERRARI', 'FIAT', 'FORD', 'HONDA', 'HYUNDAI', 'JAGUAR', 'JEEP', 'KIA', 'LAMBORGHINI', 'LAND ROVER', 'LEXUS', 'MASERATI', 'MAZDA', 'MERCEDES-BENZ', 'MINI', 'MITSUBISHI', 'NISSAN', 'OPEL', 'PEUGEOT', 'PORSCHE', 'RENAULT', 'ROLLS ROYCE', 'SAAB', 'SEAT', 'SKODA', 'SUBARU', 'SUZUKI', 'TESLA', 'TOYOTA', 'VOLKSWAGEN', 'VOLVO'];
-      const locations = ['Akershus', 'Aust-Agder', 'Buskerud', 'Finnmark', 'Hedmark', 'Hordaland', 'Møre og Romsdal', 'Nordland', 'Nord-Trøndelag', 'Oppland', 'Oslo', 'Rogaland', 'Sogn og Fjordane', 'Sør-Trøndelag', 'Telemark', 'Troms', 'Vest-Agder', 'Vestfold', 'Østfold'];
-      const fuelTypes = ['Bensin', 'Diesel', 'Elektrisitet', 'Hybrid'];
-      const gearTypes = ['Automat', 'Manuell'];
-      const driveTypes = ['Bakhjulstrekk', 'Firehjulstrekk', 'Framhjulstrekk'];
+          const karosserier = ['Stasjonsvogn', 'Cabriolet', 'Kombi 5-dørs', 'Flerbruksbil', 'Pickup', 'Kombi 3-dørs', 'Sedan', 'Coupe', 'SUV/Offroad', 'Kasse'];
+          const brands = ['AUDI', 'BMW', 'BYD', 'CHEVROLET', 'CHRYSLER', 'CITROEN', 'DODGE', 'FERRARI', 'FIAT', 'FORD', 'HONDA', 'HYUNDAI', 'JAGUAR', 'JEEP', 'KIA', 'LAMBORGHINI', 'LAND ROVER', 'LEXUS', 'MASERATI', 'MAZDA', 'MERCEDES-BENZ', 'MINI', 'MITSUBISHI', 'NISSAN', 'OPEL', 'PEUGEOT', 'PORSCHE', 'RENAULT', 'ROLLS ROYCE', 'SAAB', 'SEAT', 'SKODA', 'SUBARU', 'SUZUKI', 'TESLA', 'TOYOTA', 'VOLKSWAGEN', 'VOLVO'];
+          const locations = ['Akershus', 'Aust-Agder', 'Buskerud', 'Finnmark', 'Hedmark', 'Hordaland', 'Møre og Romsdal', 'Nordland', 'Nord-Trøndelag', 'Oppland', 'Oslo', 'Rogaland', 'Sogn og Fjordane', 'Sør-Trøndelag', 'Telemark', 'Troms', 'Vest-Agder', 'Vestfold', 'Østfold'];
+          const fuelTypes = ['Bensin', 'Diesel', 'Elektrisitet', 'Hybrid'];
+          const gearTypes = ['Automat', 'Manuell'];
+          const driveTypes = ['Bakhjulstrekk', 'Firehjulstrekk', 'Framhjulstrekk'];
 
-      const calculateCounts = async (field, values) => {
-        for (const value of values) {
-          counts[field][value] = await liveAuctionCollection.countDocuments({ [field]: value });
+          const calculateCounts = async (field, values) => {
+            for (const value of values) {
+              counts[field][value] = await liveAuctionCollection.countDocuments({ [field]: value });
+            }
+          };
+
+          await calculateCounts('karosseri', karosserier);
+          await calculateCounts('brand', brands);
+          await calculateCounts('location', locations);
+          await calculateCounts('fuel', fuelTypes);
+          await calculateCounts('gearType', gearTypes);
+          await calculateCounts('driveType', driveTypes);
+
+          const models = await liveAuctionCollection.distinct('model');
+          await calculateCounts('model', models);
+
+          await redis.set(cacheKey, JSON.stringify(counts), 'EX', 600);
+        } else {
+          console.log('Cache hit! Returning cached counts.');
+          counts = JSON.parse(counts);
         }
-      };
 
-      await calculateCounts('karosseri', karosserier);
-      await calculateCounts('brand', brands);
-      await calculateCounts('location', locations);
-      await calculateCounts('fuel', fuelTypes);
-      await calculateCounts('gearType', gearTypes);
-      await calculateCounts('driveType', driveTypes);
+        res.json(counts);
+      } catch (err) {
+        console.error('Error fetching filter counts:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    });
 
-      const models = await liveAuctionCollection.distinct('model');
-      await calculateCounts('model', models);
+    app.put('/api/liveauctions/:id', authenticateToken, async (req, res) => {
+      try {
+        const liveAuctionId = req.params.id;
+        const updateData = { ...req.body };
+        const result = await liveAuctionCollection.updateOne({ _id: new ObjectId(liveAuctionId) }, { $set: updateData });
+        if (result.matchedCount === 0) return res.status(404).json({ message: 'Live auction not found' });
+        res.json({ message: 'Live auction updated successfully' });
+      } catch (err) {
+        console.error('Error updating live auction:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    });
 
-      // Lagre resultatet i cache i 10 minutter
-      myCache.set(cacheKey, counts, 600);
-    } else {
-      console.log('Cache hit! Returning cached counts.');
-    }
+    app.get('/api/liveauctions/filter', async (req, res) => {
+      const startTime = Date.now();
 
-    res.json(counts);
-  } catch (err) {
-    console.error('Error fetching filter counts:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
+      try {
+        const {
+          brand, model, year, location, minPrice, maxPrice, karosseri, fuelType, transmission, drivetrain,
+          auctionDuration, reservePrice, auctionWithoutReserve, taxClass, fuel, gearType, mainColor,
+          power, seats, owners, doors, equipment, city
+        } = req.query;
+        const query = {};
 
+        if (brand) query.brand = { $in: brand.split(',') };
+        if (model) query.model = model;
+        if (year) query.year = parseInt(year);
+        if (location) query.location = location;
+        if (minPrice) query.highestBid = { $gte: parseFloat(minPrice) };
+        if (maxPrice) {
+          query.highestBid = query.highestBid || {};
+          query.highestBid.$lte = parseFloat(maxPrice);
+        }
+        if (karosseri) query.karosseri = { $in: karosseri.split(',') };
+        if (fuelType) query.fuelType = fuelType;
+        if (transmission) query.transmission = transmission;
+        if (drivetrain) query.drivetrain = drivetrain;
+        if (auctionDuration) query.auctionDuration = parseInt(auctionDuration);
+        if (reservePrice) query.reservePrice = parseFloat(reservePrice);
+        if (auctionWithoutReserve) query.auctionWithoutReserve = auctionWithoutReserve === 'true';
+        if (taxClass) query.taxClass = taxClass;
+        if (fuel) query.fuel = fuel;
+        if (gearType) query.gearType = gearType;
+        if (mainColor) query.mainColor = mainColor;
+        if (power) query.power = parseInt(power);
+        if (seats) query.seats = parseInt(seats);
+        if (owners) query.owners = parseInt(owners);
+        if (doors) query.doors = parseInt(doors);
+        if (equipment) query.equipment = { $regex: new RegExp(equipment, 'i') };
+        if (city) query.city = city;
 
-app.put('/api/liveauctions/:id', authenticateToken, async (req, res) => {
-  try {
-    const liveAuctionId = req.params.id;
-    const updateData = { ...req.body };
-    const result = await liveAuctionCollection.updateOne({ _id: new ObjectId(liveAuctionId) }, { $set: updateData });
-    if (result.matchedCount === 0) return res.status(404).json({ message: 'Live auction not found' });
-    res.json({ message: 'Live auction updated successfully' });
-  } catch (err) {
-    console.error('Error updating live auction:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
+        const cacheKey = `liveAuctionsFilter-${JSON.stringify(req.query)}`;
+        let liveAuctions = await redis.get(cacheKey);
 
-app.get('/api/liveauctions/filter', async (req, res) => {
-  const startTime = Date.now(); // Start tidspunktsmåling for hele forespørselen
+        if (!liveAuctions) {
+          console.log('Cache miss. Fetching from database.');
 
-  try {
-    const {
-      brand, model, year, location, minPrice, maxPrice, karosseri, fuelType, transmission, drivetrain,
-      auctionDuration, reservePrice, auctionWithoutReserve, taxClass, fuel, gearType, mainColor,
-      power, seats, owners, doors, equipment, city
-    } = req.query;
-    const query = {};
+          const dbStartTime = Date.now();
 
-    if (brand) query.brand = { $in: brand.split(',') };
-    if (model) query.model = model;
-    if (year) query.year = parseInt(year);
-    if (location) query.location = location;
-    if (minPrice) query.highestBid = { $gte: parseFloat(minPrice) };
-    if (maxPrice) {
-      query.highestBid = query.highestBid || {};
-      query.highestBid.$lte = parseFloat(maxPrice);
-    }
-    if (karosseri) query.karosseri = { $in: karosseri.split(',') };
-    if (fuelType) query.fuelType = fuelType;
-    if (transmission) query.transmission = transmission;
-    if (drivetrain) query.drivetrain = drivetrain;
-    if (auctionDuration) query.auctionDuration = parseInt(auctionDuration);
-    if (reservePrice) query.reservePrice = parseFloat(reservePrice);
-    if (auctionWithoutReserve) query.auctionWithoutReserve = auctionWithoutReserve === 'true';
-    if (taxClass) query.taxClass = taxClass;
-    if (fuel) query.fuel = fuel;
-    if (gearType) query.gearType = gearType;
-    if (mainColor) query.mainColor = mainColor;
-    if (power) query.power = parseInt(power);
-    if (seats) query.seats = parseInt(seats);
-    if (owners) query.owners = parseInt(owners);
-    if (doors) query.doors = parseInt(doors);
-    if (equipment) query.equipment = { $regex: new RegExp(equipment, 'i') };
-    if (city) query.city = city;
+          liveAuctions = await liveAuctionCollection.find(query).project({
+            brand: 1,
+            model: 1,
+            year: 1,
+            endDate: 1,
+            highestBid: 1,
+            bidCount: 1,
+            status: 1,
+            location: 1,
+            images: 1
+          }).toArray();
 
-    // Lag en unik cache-nøkkel basert på forespørselens query parameters
-    const cacheKey = `liveAuctionsFilter-${JSON.stringify(req.query)}`;
-    let liveAuctions = myCache.get(cacheKey);
+          const dbEndTime = Date.now();
+          console.log(`DB query time: ${dbEndTime - dbStartTime}ms`);
 
-    if (!liveAuctions) {
-      console.log('Cache miss. Fetching from database.');
+          await redis.set(cacheKey, JSON.stringify(liveAuctions), 'EX', 600);
+        } else {
+          console.log('Cache hit!');
+          liveAuctions = JSON.parse(liveAuctions);
+        }
 
-      // Start tidspunktsmåling for databaseoperasjon
-      const dbStartTime = Date.now();
+        const endTime = Date.now();
+        console.log(`Total API response time: ${endTime - startTime}ms`);
 
-      // Her bruker vi projection for å hente bare nødvendige felter
-      liveAuctions = await liveAuctionCollection.find(query).project({
-        brand: 1,
-        model: 1,
-        year: 1,
-        endDate: 1,
-        highestBid: 1,
-        bidCount: 1,
-        status: 1,
-        location: 1,
-        images: 1
-      }).toArray();
-
-      // Slutt tidspunktsmåling for databaseoperasjon
-      const dbEndTime = Date.now();
-      console.log(`DB query time: ${dbEndTime - dbStartTime}ms`); // Logg tiden det tok å hente data fra databasen
-
-      // Lagre resultatet i cache
-      myCache.set(cacheKey, liveAuctions, 600); // Cache i 10 minutter
-    } else {
-      console.log('Cache hit!');
-    }
-
-    // Slutt tidspunktsmåling for hele forespørselen
-    const endTime = Date.now();
-    console.log(`Total API response time: ${endTime - startTime}ms`); // Logg total tid for API-forespørselen
-
-    res.json(liveAuctions);
-  } catch (err) {
-    console.error('Error fetching filtered live auctions:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-
+        res.json(liveAuctions);
+      } catch (err) {
+        console.error('Error fetching filtered live auctions:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    });
 
     app.delete('/api/liveauctions/:id', authenticateToken, async (req, res) => {
       try {
@@ -535,18 +508,17 @@ app.get('/api/liveauctions/filter', async (req, res) => {
       }
     });
 
-    // Live Auctions routes
     app.get('/api/liveauctions', async (req, res) => {
       const startTime = Date.now();
-    
+
       try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
-    
+
         const cacheKey = `allLiveAuctions-page-${page}-limit-${limit}`;
-        let liveAuctions = myCache.get(cacheKey);
-    
+        let liveAuctions = await redis.get(cacheKey);
+
         if (!liveAuctions) {
           console.log(`Cache miss. Fetching from database.`);
           liveAuctions = await liveAuctionCollection.find({})
@@ -561,32 +533,31 @@ app.get('/api/liveauctions/filter', async (req, res) => {
               location: 1,
               images: 1
             })
-            .skip(skip) // Skip pages
-            .limit(limit) // Limit the number of results
+            .skip(skip)
+            .limit(limit)
             .toArray();
-          
-          // Cache the result for future requests
-          myCache.set(cacheKey, liveAuctions, 600); // Cache for 10 minutes
+
+          await redis.set(cacheKey, JSON.stringify(liveAuctions), 'EX', 600);
         } else {
           console.log(`Cache hit!`);
+          liveAuctions = JSON.parse(liveAuctions);
         }
-    
+
         const endTime = Date.now();
         console.log(`Total API response time: ${endTime - startTime}ms`);
-    
+
         res.json(liveAuctions);
       } catch (err) {
         console.error('Error retrieving live auctions:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
-    
-    
+
     app.post('/api/liveauctions', authenticateToken, async (req, res) => {
       try {
         const user = await loginCollection.findOne({ _id: new ObjectId(req.user.userId) });
         const { startDate, endDate, ...auctionData } = req.body;
-    
+
         const newLiveAuction = {
           ...auctionData,
           startDate: new Date(startDate),
@@ -599,88 +570,78 @@ app.get('/api/liveauctions/filter', async (req, res) => {
           userEmail: user.email,
           userName: `${user.firstName} ${user.lastName}`
         };
-    
+
         const result = await liveAuctionCollection.insertOne(newLiveAuction);
-    
-        // Tøm cachen for live auksjoner
-        myCache.del("allLiveAuctions");
-    
+
+        await redis.del("allLiveAuctions");
+
         res.status(201).json({ message: 'Live auction created successfully', result });
       } catch (err) {
         console.error('Error creating live auction:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
-    
-    
 
     app.get('/api/liveauctions/:id', async (req, res) => {
       try {
-          const liveAuctionId = req.params.id;
-          const cacheKey = `liveAuction-${liveAuctionId}`; // Unik nøkkel basert på auksjons-ID
-  
-          // Sjekk om data finnes i cachen
-          let liveAuction = myCache.get(cacheKey);
-  
+        const liveAuctionId = req.params.id;
+        const cacheKey = `liveAuction-${liveAuctionId}`;
+
+        let liveAuction = await redis.get(cacheKey);
+
+        if (!liveAuction) {
+          liveAuction = await liveAuctionCollection.findOne({ _id: new ObjectId(liveAuctionId) });
+
           if (!liveAuction) {
-              // Hvis ikke i cachen, hent fra databasen
-              liveAuction = await liveAuctionCollection.findOne({ _id: new ObjectId(liveAuctionId) });
-  
-              if (!liveAuction) {
-                  return res.status(404).json({ message: 'Live auction not found' });
-              }
-  
-              // Lagre dataene i cachen
-              myCache.set(cacheKey, liveAuction);
-              console.log('Cache miss. Data hentet fra databasen.');
-          } else {
-              console.log('Cache hit! Data hentet fra cachen.');
+            return res.status(404).json({ message: 'Live auction not found' });
           }
-  
-          res.json(liveAuction);
+
+          await redis.set(cacheKey, JSON.stringify(liveAuction));
+          console.log('Cache miss. Data hentet fra databasen.');
+        } else {
+          console.log('Cache hit! Data hentet fra cachen.');
+          liveAuction = JSON.parse(liveAuction);
+        }
+
+        res.json(liveAuction);
       } catch (err) {
-          console.error('Error fetching live auction:', err);
-          res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error fetching live auction:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
       }
-  });
-  
+    });
 
     app.delete('/api/liveauctions/:id', authenticateToken, async (req, res) => {
       try {
         const liveAuctionId = req.params.id;
         const result = await liveAuctionCollection.deleteOne({ _id: new ObjectId(liveAuctionId) });
-        
+
         if (result.deletedCount === 0) return res.status(404).json({ message: 'Live auction not found' });
-    
-        // Tøm cachen for live auksjoner
-        myCache.del("allLiveAuctions");
-    
+
+        await redis.del("allLiveAuctions");
+
         res.json({ message: 'Live auction deleted successfully' });
       } catch (err) {
         console.error('Error deleting live auction:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
-    
 
     app.put('/api/liveauctions/:id', authenticateToken, async (req, res) => {
       try {
         const liveAuctionId = req.params.id;
         const updateData = { ...req.body };
         const result = await liveAuctionCollection.updateOne({ _id: new ObjectId(liveAuctionId) }, { $set: updateData });
-        
+
         if (result.matchedCount === 0) return res.status(404).json({ message: 'Live auction not found' });
-    
-        // Tøm cachen for live auksjoner
-        myCache.del("allLiveAuctions");
-    
+
+        await redis.del("allLiveAuctions");
+
         res.json({ message: 'Live auction updated successfully' });
       } catch (err) {
         console.error('Error updating live auction:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
-    
 
     app.get('/api/search', async (req, res) => {
       try {
@@ -699,121 +660,112 @@ app.get('/api/liveauctions/filter', async (req, res) => {
       }
     });
 
-    const nodemailer = require('nodemailer');
-const { ObjectId } = require('mongodb');
+    app.post('/api/liveauctions/:id/bid', authenticateToken, async (req, res) => {
+      try {
+        const liveAuctionId = req.params.id;
+        const { bidAmount } = req.body;
 
-app.post('/api/liveauctions/:id/bid', authenticateToken, async (req, res) => {
-  try {
-    const liveAuctionId = req.params.id;
-    const { bidAmount } = req.body;
+        const liveAuction = await liveAuctionCollection.findOne({ _id: new ObjectId(liveAuctionId) });
+        if (!liveAuction) return res.status(404).json({ message: 'Auksjonen ble ikke funnet' });
 
-    const liveAuction = await liveAuctionCollection.findOne({ _id: new ObjectId(liveAuctionId) });
-    if (!liveAuction) return res.status(404).json({ message: 'Auksjonen ble ikke funnet' });
-
-    if (bidAmount <= liveAuction.highestBid) {
-      return res.status(400).json({ message: 'Bud må være høyere enn nåværende høyeste bud' });
-    }
-
-    const reservePriceMet = bidAmount >= liveAuction.reservePrice;
-
-    // Sjekk om brukeren allerede har plassert et bud på denne auksjonen
-    let userBidderNumber = liveAuction.bidders && liveAuction.bidders[req.user.userId];
-
-    if (!userBidderNumber) {
-      userBidderNumber = Object.keys(liveAuction.bidders || {}).length + 1; // Tildel nytt nummer
-      await liveAuctionCollection.updateOne(
-        { _id: new ObjectId(liveAuctionId) },
-        { $set: { [`bidders.${req.user.userId}`]: userBidderNumber } }  // Lagre budgiver-nummer i auksjonen
-      );
-    }
-
-    // Oppdater budlisten med det nye budet
-    const newBid = {
-      bidder: `Budgiver ${userBidderNumber}`,  // Bruk budgiver-nummeret
-      amount: bidAmount,
-      time: new Date()  // Tidsstempelet for når budet ble lagt inn
-    };
-
-    await liveAuctionCollection.updateOne(
-      { _id: new ObjectId(liveAuctionId) },
-      {
-        $set: {
-          highestBid: bidAmount,
-          highestBidder: req.user.userId,
-          reservePriceMet
-        },
-        $push: {
-          bids: newBid  // Legger til det nye budet i budlisten
-        },
-        $inc: {
-          bidCount: 1,  // Øker antall bud med 1
+        if (bidAmount <= liveAuction.highestBid) {
+          return res.status(400).json({ message: 'Bud må være høyere enn nåværende høyeste bud' });
         }
-      }
-    );
 
-    // Send e-postvarsel til høyeste budgiver
-    const highestBidder = await loginCollection.findOne({ _id: new ObjectId(req.user.userId) });
+        const reservePriceMet = bidAmount >= liveAuction.reservePrice;
 
-    let transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'peiwast124@gmail.com',
-        pass: 'eysj jfoz ahcj qqzo' // App-spesifikt passordt passord for Gmail
+        let userBidderNumber = liveAuction.bidders && liveAuction.bidders[req.user.userId];
+
+        if (!userBidderNumber) {
+          userBidderNumber = Object.keys(liveAuction.bidders || {}).length + 1;
+          await liveAuctionCollection.updateOne(
+            { _id: new ObjectId(liveAuctionId) },
+            { $set: { [`bidders.${req.user.userId}`]: userBidderNumber } }
+          );
+        }
+
+        const newBid = {
+          bidder: `Budgiver ${userBidderNumber}`,
+          amount: bidAmount,
+          time: new Date()
+        };
+
+        await liveAuctionCollection.updateOne(
+          { _id: new ObjectId(liveAuctionId) },
+          {
+            $set: {
+              highestBid: bidAmount,
+              highestBidder: req.user.userId,
+              reservePriceMet
+            },
+            $push: {
+              bids: newBid
+            },
+            $inc: {
+              bidCount: 1,
+            }
+          }
+        );
+
+        const highestBidder = await loginCollection.findOne({ _id: new ObjectId(req.user.userId) });
+
+        let transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: 'peiwast124@gmail.com',
+            pass: 'eysj jfoz ahcj qqzo'
+          }
+        });
+
+        let mailOptions = {
+          from: '"RimeligAuksjon.no" <dinemail@gmail.com>',
+          to: highestBidder.email,
+          subject: 'Du er den høyeste budgiveren!',
+          text: `Gratulerer! Du er for øyeblikket den høyeste budgiveren for auksjonen ${liveAuction.brand} ${liveAuction.model} med et bud på ${bidAmount}.`
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        if (reservePriceMet) {
+          const auctionOwner = await loginCollection.findOne({ _id: new ObjectId(liveAuction.userId) });
+
+          if (auctionOwner) {
+            let ownerMailOptions = {
+              from: '"RimeligAuksjon.no" <dinemail@gmail.com>',
+              to: auctionOwner.email,
+              subject: 'Nytt bud på din auksjon!',
+              text: `Din auksjon for ${liveAuction.brand} ${liveAuction.model} har mottatt et nytt bud på ${bidAmount} fra ${highestBidder.email}. Minsteprisen er nådd!`
+            };
+
+            await transporter.sendMail(ownerMailOptions);
+          }
+        }
+
+        res.json({ message: 'Bud lagt inn vellykket' });
+      } catch (err) {
+        console.error('Feil ved innlegging av bud:', err);
+        res.status(500).json({ error: 'Intern serverfeil' });
       }
     });
 
-    let mailOptions = {
-      from: '"RimeligAuksjon.no" <dinemail@gmail.com>',
-      to: highestBidder.email,
-      subject: 'Du er den høyeste budgiveren!',
-      text: `Gratulerer! Du er for øyeblikket den høyeste budgiveren for auksjonen ${liveAuction.brand} ${liveAuction.model} med et bud på ${bidAmount}.`
-    };
+    app.get('/api/myauctions', authenticateToken, async (req, res) => {
+      try {
+        const userId = req.user.userId;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
 
-    await transporter.sendMail(mailOptions);
+        const auctions = await auctionCollection.find({ userId: new ObjectId(userId) })
+          .skip(skip)
+          .limit(limit)
+          .toArray();
 
-    // Send e-postvarsel til auksjonseieren hvis reserveprisen er møtt
-    if (reservePriceMet) {
-      const auctionOwner = await loginCollection.findOne({ _id: new ObjectId(liveAuction.userId) });
-
-      if (auctionOwner) {
-        let ownerMailOptions = {
-          from: '"RimeligAuksjon.no" <dinemail@gmail.com>',
-          to: auctionOwner.email,
-          subject: 'Nytt bud på din auksjon!',
-          text: `Din auksjon for ${liveAuction.brand} ${liveAuction.model} har mottatt et nytt bud på ${bidAmount} fra ${highestBidder.email}. Minsteprisen er nådd!`
-        };
-
-        await transporter.sendMail(ownerMailOptions);
+        res.json(auctions);
+      } catch (err) {
+        console.error('Error fetching auctions:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
       }
-    }
-
-    res.json({ message: 'Bud lagt inn vellykket' }); // Endret her
-  } catch (err) {
-    console.error('Feil ved innlegging av bud:', err);
-    res.status(500).json({ error: 'Intern serverfeil' });
-  }
-});
-
-
-app.get('/api/myauctions', authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user.userId;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
-
-    const auctions = await auctionCollection.find({ userId: new ObjectId(userId) })
-      .skip(skip)
-      .limit(limit)
-      .toArray();
-
-    res.json(auctions);
-  } catch (err) {
-    console.error('Error fetching auctions:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
+    });
 
     app.get('/api/mymessages', authenticateToken, async (req, res) => {
       try {
@@ -871,12 +823,10 @@ app.get('/api/myauctions', authenticateToken, async (req, res) => {
           return res.status(400).json({ error: 'No images found in the document' });
         }
 
-        // Upload images to S3 and get URLs
         const imageUrls = await Promise.all(images.map(base64Image => {
           return uploadImageToS3(base64Image, user.email, document.brand, document.model, document.year);
         }));
 
-        // Set up email transport
         let transporter = nodemailer.createTransport({
           service: 'gmail',
           auth: {
@@ -885,7 +835,6 @@ app.get('/api/myauctions', authenticateToken, async (req, res) => {
           }
         });
 
-        // Prepare email content
         let emailContent = `
           <p>Hei,</p>
           <p>Her er informasjonen om din auksjonsforespørsel:</p>
@@ -937,7 +886,6 @@ app.get('/api/myauctions', authenticateToken, async (req, res) => {
           html: emailContent,
         };
 
-        // Send e-posten
         let info = await transporter.sendMail(mailOptions);
         console.log('E-post sendt: %s', info.messageId);
         res.status(200).send('E-post sendt med bildet.');
