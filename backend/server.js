@@ -38,8 +38,8 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 const uri = "mongodb+srv://peiwast124:Heipiwi18.@cluster0.xfxhgbf.mongodb.net/";
 const client = new MongoClient(uri, {
   serverApi: ServerApiVersion.v1,
-  connectTimeoutMS: 30000, // Øk timeout for tilkobling
-  socketTimeoutMS: 30000,  // Øk socket t
+  connectTimeoutMS: 60000, // Øk tilkoblingstiden til 60 sekunder
+  socketTimeoutMS: 60000,  // Øk socket t
   tls: true,
   tlsAllowInvalidCertificates: false,
   tlsAllowInvalidHostnames: false
