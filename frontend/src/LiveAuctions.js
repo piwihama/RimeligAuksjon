@@ -383,7 +383,7 @@ function LiveAuctions() {
             )}
             {loading && <p>Laster flere auksjoner...</p>}
             {hasMore && !loading && (
-              <button onClick={loadMore} className="load-more-button">Last flere auksjoner</button>
+              <button onClick={loadMore} className="load-more-button">Last auksjoner</button>
             )}
           </section>
         </div>
