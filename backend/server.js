@@ -289,18 +289,19 @@ async function connectDB() {
     });
 
     app.get('/api/auctions', async (req, res) => {
+      console.log('Fetching auctions...');
       try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
-        const skip = (page - 1) * limit;
-
-        const auctions = await auctionCollection.find().skip(skip).limit(limit).toArray();
+        const startTime = Date.now();
+        const auctions = await auctionCollection.find().toArray();
+        const endTime = Date.now();
+        console.log(`Fetched ${auctions.length} auctions in ${endTime - startTime}ms`);
         res.json(auctions);
       } catch (err) {
         console.error('Error retrieving auctions:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
 
     app.post('/api/auctions', authenticateToken, async (req, res) => {
       try {
