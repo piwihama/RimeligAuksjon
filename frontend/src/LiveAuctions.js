@@ -66,7 +66,7 @@ function LiveAuctions() {
         headers.Authorization = `Bearer ${token}`;
       }
 
-      const response = await axios.get('https://rimelig-auksjon-backend.vercel.app/api/liveauctions/filter', {
+      const response = await axios.get('https://backend-production-e909.up.railway.app/api/liveauctions/filter', {
         params: queryParams,
         headers: headers
       });
@@ -90,7 +90,7 @@ function LiveAuctions() {
         headers.Authorization = `Bearer ${token}`;
       }
 
-      const response = await axios.get('https://rimelig-auksjon-backend.vercel.app/api/liveauctions/counts', {
+      const response = await axios.get('https://backend-production-e909.up.railway.app/api/liveauctions/counts', {
         headers: headers
       });
       setFilterCounts(response.data);
