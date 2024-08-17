@@ -511,16 +511,19 @@ app.get('/api/liveauctions/filter', async (req, res) => {
     // Live Auctions routes
     app.get('/api/liveauctions', async (req, res) => {
       const startTime = Date.now(); // Start tidspunktsmåling for hele forespørselen
-
+    
       try {
         const page = parseInt(req.query.page) || 1; // Hvilken side vi er på
         const limit = parseInt(req.query.limit) || 10; // Antall auksjoner per side
         const skip = (page - 1) * limit;
     
-        let liveAuctions = myCache.get(`allLiveAuctions-page-${page}-limit-${limit}`);
+        // Bruk Vercel Data Cache
+        const cacheKey = `allLiveAuctions-page-${page}-limit-${limit}`;
+        let liveAuctions = await res.revalidate(cacheKey);
+        
         if (!liveAuctions) {
           const dbStartTime = Date.now(); // Start måling for databaseoperasjon
-
+    
           liveAuctions = await liveAuctionCollection.find({})
             .project({
               brand: 1,
@@ -536,12 +539,13 @@ app.get('/api/liveauctions/filter', async (req, res) => {
             .skip(skip) // Hopp over tidligere sider
             .limit(limit) // Hent kun `limit` antall auksjoner
             .toArray();
-    
-          myCache.set(`allLiveAuctions-page-${page}-limit-${limit}`, liveAuctions);
+          
+          // Lagre resultatene i Vercel Data Cache
+          await res.cache(cacheKey, liveAuctions, 60 * 60); // Cache i 1 time
         }
+        
         const endTime = Date.now(); // Slutt tidspunktsmåling for hele forespørselen
         console.log(`Total API response time: ${endTime - startTime}ms`); // Logg total tid for API-forespørselen
-    
     
         res.json(liveAuctions);
       } catch (err) {
