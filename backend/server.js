@@ -360,38 +360,51 @@ app.post('/api/refresh-token', authenticateToken, (req, res) => {
 
 app.get('/api/liveauctions/counts', async (req, res) => {
   try {
-    const counts = {
-      karosseri: {},
-      brand: {},
-      location: {},
-      fuel: {},
-      gearType: {},
-      driveType: {},
-      model: {}
-    };
+    // Sjekk om resultatene allerede er i cache
+    const cacheKey = 'liveAuctionsCounts';
+    let counts = myCache.get(cacheKey);
 
-    const karosserier = ['Stasjonsvogn', 'Cabriolet', 'Kombi 5-dørs', 'Flerbruksbil', 'Pickup', 'Kombi 3-dørs', 'Sedan', 'Coupe', 'SUV/Offroad', 'Kasse'];
-    const brands = ['AUDI', 'BMW', 'BYD', 'CHEVROLET', 'CHRYSLER', 'CITROEN', 'DODGE', 'FERRARI', 'FIAT', 'FORD', 'HONDA', 'HYUNDAI', 'JAGUAR', 'JEEP', 'KIA', 'LAMBORGHINI', 'LAND ROVER', 'LEXUS', 'MASERATI', 'MAZDA', 'MERCEDES-BENZ', 'MINI', 'MITSUBISHI', 'NISSAN', 'OPEL', 'PEUGEOT', 'PORSCHE', 'RENAULT', 'ROLLS ROYCE', 'SAAB', 'SEAT', 'SKODA', 'SUBARU', 'SUZUKI', 'TESLA', 'TOYOTA', 'VOLKSWAGEN', 'VOLVO'];
-    const locations = ['Akershus', 'Aust-Agder', 'Buskerud', 'Finnmark', 'Hedmark', 'Hordaland', 'Møre og Romsdal', 'Nordland', 'Nord-Trøndelag', 'Oppland', 'Oslo', 'Rogaland', 'Sogn og Fjordane', 'Sør-Trøndelag', 'Telemark', 'Troms', 'Vest-Agder', 'Vestfold', 'Østfold'];
-    const fuelTypes = ['Bensin', 'Diesel', 'Elektrisitet', 'Hybrid'];
-    const gearTypes = ['Automat', 'Manuell'];
-    const driveTypes = ['Bakhjulstrekk', 'Firehjulstrekk', 'Framhjulstrekk'];
+    if (!counts) {
+      console.log('Cache miss. Calculating counts.');
 
-    const calculateCounts = async (field, values) => {
-      for (const value of values) {
-        counts[field][value] = await liveAuctionCollection.countDocuments({ [field]: value });
-      }
-    };
+      counts = {
+        karosseri: {},
+        brand: {},
+        location: {},
+        fuel: {},
+        gearType: {},
+        driveType: {},
+        model: {}
+      };
 
-    await calculateCounts('karosseri', karosserier);
-    await calculateCounts('brand', brands);
-    await calculateCounts('location', locations);
-    await calculateCounts('fuel', fuelTypes);
-    await calculateCounts('gearType', gearTypes);
-    await calculateCounts('driveType', driveTypes);
+      const karosserier = ['Stasjonsvogn', 'Cabriolet', 'Kombi 5-dørs', 'Flerbruksbil', 'Pickup', 'Kombi 3-dørs', 'Sedan', 'Coupe', 'SUV/Offroad', 'Kasse'];
+      const brands = ['AUDI', 'BMW', 'BYD', 'CHEVROLET', 'CHRYSLER', 'CITROEN', 'DODGE', 'FERRARI', 'FIAT', 'FORD', 'HONDA', 'HYUNDAI', 'JAGUAR', 'JEEP', 'KIA', 'LAMBORGHINI', 'LAND ROVER', 'LEXUS', 'MASERATI', 'MAZDA', 'MERCEDES-BENZ', 'MINI', 'MITSUBISHI', 'NISSAN', 'OPEL', 'PEUGEOT', 'PORSCHE', 'RENAULT', 'ROLLS ROYCE', 'SAAB', 'SEAT', 'SKODA', 'SUBARU', 'SUZUKI', 'TESLA', 'TOYOTA', 'VOLKSWAGEN', 'VOLVO'];
+      const locations = ['Akershus', 'Aust-Agder', 'Buskerud', 'Finnmark', 'Hedmark', 'Hordaland', 'Møre og Romsdal', 'Nordland', 'Nord-Trøndelag', 'Oppland', 'Oslo', 'Rogaland', 'Sogn og Fjordane', 'Sør-Trøndelag', 'Telemark', 'Troms', 'Vest-Agder', 'Vestfold', 'Østfold'];
+      const fuelTypes = ['Bensin', 'Diesel', 'Elektrisitet', 'Hybrid'];
+      const gearTypes = ['Automat', 'Manuell'];
+      const driveTypes = ['Bakhjulstrekk', 'Firehjulstrekk', 'Framhjulstrekk'];
 
-    const models = await liveAuctionCollection.distinct('model');
-    await calculateCounts('model', models);
+      const calculateCounts = async (field, values) => {
+        for (const value of values) {
+          counts[field][value] = await liveAuctionCollection.countDocuments({ [field]: value });
+        }
+      };
+
+      await calculateCounts('karosseri', karosserier);
+      await calculateCounts('brand', brands);
+      await calculateCounts('location', locations);
+      await calculateCounts('fuel', fuelTypes);
+      await calculateCounts('gearType', gearTypes);
+      await calculateCounts('driveType', driveTypes);
+
+      const models = await liveAuctionCollection.distinct('model');
+      await calculateCounts('model', models);
+
+      // Lagre resultatet i cache i 10 minutter
+      myCache.set(cacheKey, counts, 600);
+    } else {
+      console.log('Cache hit! Returning cached counts.');
+    }
 
     res.json(counts);
   } catch (err) {
@@ -399,6 +412,7 @@ app.get('/api/liveauctions/counts', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 app.put('/api/liveauctions/:id', authenticateToken, async (req, res) => {
   try {
@@ -451,25 +465,38 @@ app.get('/api/liveauctions/filter', async (req, res) => {
     if (equipment) query.equipment = { $regex: new RegExp(equipment, 'i') };
     if (city) query.city = city;
 
-    // Start tidspunktsmåling for databaseoperasjon
-    const dbStartTime = Date.now();
+    // Lag en unik cache-nøkkel basert på forespørselens query parameters
+    const cacheKey = `liveAuctionsFilter-${JSON.stringify(req.query)}`;
+    let liveAuctions = myCache.get(cacheKey);
 
-    // Her bruker vi projection for å hente bare nødvendige felter
-    const liveAuctions = await liveAuctionCollection.find(query).project({
-      brand: 1,
-      model: 1,
-      year: 1,
-      endDate: 1,
-      highestBid: 1,
-      bidCount: 1,
-      status: 1,
-      location: 1,
-      images: 1
-    }).toArray();
+    if (!liveAuctions) {
+      console.log('Cache miss. Fetching from database.');
 
-    // Slutt tidspunktsmåling for databaseoperasjon
-    const dbEndTime = Date.now();
-    console.log(`DB query time: ${dbEndTime - dbStartTime}ms`); // Logg tiden det tok å hente data fra databasen
+      // Start tidspunktsmåling for databaseoperasjon
+      const dbStartTime = Date.now();
+
+      // Her bruker vi projection for å hente bare nødvendige felter
+      liveAuctions = await liveAuctionCollection.find(query).project({
+        brand: 1,
+        model: 1,
+        year: 1,
+        endDate: 1,
+        highestBid: 1,
+        bidCount: 1,
+        status: 1,
+        location: 1,
+        images: 1
+      }).toArray();
+
+      // Slutt tidspunktsmåling for databaseoperasjon
+      const dbEndTime = Date.now();
+      console.log(`DB query time: ${dbEndTime - dbStartTime}ms`); // Logg tiden det tok å hente data fra databasen
+
+      // Lagre resultatet i cache
+      myCache.set(cacheKey, liveAuctions, 600); // Cache i 10 minutter
+    } else {
+      console.log('Cache hit!');
+    }
 
     // Slutt tidspunktsmåling for hele forespørselen
     const endTime = Date.now();
