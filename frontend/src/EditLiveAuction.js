@@ -6,26 +6,26 @@ function EditLiveAuction() {
   const { id } = useParams();
   const [liveAuction, setLiveAuction] = useState(null);
 
-useEffect(() => {
-  const fetchLiveAuction = async () => {
-    try {
-      const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/liveauctions/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
-      const auctionData = response.data;
-      
-      // Ensure equipment is an array
-      if (!Array.isArray(auctionData.equipment)) {
-        auctionData.equipment = [];
+  useEffect(() => {
+    const fetchLiveAuction = async () => {
+      try {
+        const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`, { // Endret endpoint her
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+        const auctionData = response.data;
+
+        // Ensure equipment is an array
+        if (!Array.isArray(auctionData.equipment)) {
+          auctionData.equipment = [];
+        }
+
+        setLiveAuction(auctionData);
+      } catch (error) {
+        console.error('Error fetching live auction:', error);
       }
-      
-      setLiveAuction(auctionData);
-    } catch (error) {
-      console.error('Error fetching live auction:', error);
-    }
-  };
-  fetchLiveAuction();
-}, [id]);
+    };
+    fetchLiveAuction();
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
