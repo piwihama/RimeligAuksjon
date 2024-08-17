@@ -616,15 +616,34 @@ app.get('/api/liveauctions/filter', async (req, res) => {
 
     app.get('/api/liveauctions/:id', async (req, res) => {
       try {
-        const liveAuctionId = req.params.id;
-        const liveAuction = await liveAuctionCollection.findOne({ _id: new ObjectId(liveAuctionId) });
-        if (!liveAuction) return res.status(404).json({ message: 'Live auction not found' });
-        res.json(liveAuction);
+          const liveAuctionId = req.params.id;
+          const cacheKey = `liveAuction-${liveAuctionId}`; // Unik nøkkel basert på auksjons-ID
+  
+          // Sjekk om data finnes i cachen
+          let liveAuction = myCache.get(cacheKey);
+  
+          if (!liveAuction) {
+              // Hvis ikke i cachen, hent fra databasen
+              liveAuction = await liveAuctionCollection.findOne({ _id: new ObjectId(liveAuctionId) });
+  
+              if (!liveAuction) {
+                  return res.status(404).json({ message: 'Live auction not found' });
+              }
+  
+              // Lagre dataene i cachen
+              myCache.set(cacheKey, liveAuction);
+              console.log('Cache miss. Data hentet fra databasen.');
+          } else {
+              console.log('Cache hit! Data hentet fra cachen.');
+          }
+  
+          res.json(liveAuction);
       } catch (err) {
-        console.error('Error fetching live auction:', err);
-        res.status(500).json({ error: 'Internal Server Error' });
+          console.error('Error fetching live auction:', err);
+          res.status(500).json({ error: 'Internal Server Error' });
       }
-    });
+  });
+  
 
     app.delete('/api/liveauctions/:id', authenticateToken, async (req, res) => {
       try {
