@@ -510,20 +510,18 @@ app.get('/api/liveauctions/filter', async (req, res) => {
 
     // Live Auctions routes
     app.get('/api/liveauctions', async (req, res) => {
-      const startTime = Date.now(); // Start tidspunktsmåling for hele forespørselen
+      const startTime = Date.now();
     
       try {
-        const page = parseInt(req.query.page) || 1; // Hvilken side vi er på
-        const limit = parseInt(req.query.limit) || 10; // Antall auksjoner per side
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
     
-        // Bruk Vercel Data Cache
         const cacheKey = `allLiveAuctions-page-${page}-limit-${limit}`;
-        let liveAuctions = await res.revalidate(cacheKey);
-        
-        if (!liveAuctions) {
-          const dbStartTime = Date.now(); // Start måling for databaseoperasjon
+        let liveAuctions = myCache.get(cacheKey);
     
+        if (!liveAuctions) {
+          console.log(`Cache miss. Fetching from database.`);
           liveAuctions = await liveAuctionCollection.find({})
             .project({
               brand: 1,
@@ -536,16 +534,18 @@ app.get('/api/liveauctions/filter', async (req, res) => {
               location: 1,
               images: 1
             })
-            .skip(skip) // Hopp over tidligere sider
-            .limit(limit) // Hent kun `limit` antall auksjoner
+            .skip(skip) // Skip pages
+            .limit(limit) // Limit the number of results
             .toArray();
           
-          // Lagre resultatene i Vercel Data Cache
-          await res.cache(cacheKey, liveAuctions, 60 * 60); // Cache i 1 time
+          // Cache the result for future requests
+          myCache.set(cacheKey, liveAuctions, 600); // Cache for 10 minutes
+        } else {
+          console.log(`Cache hit!`);
         }
-        
-        const endTime = Date.now(); // Slutt tidspunktsmåling for hele forespørselen
-        console.log(`Total API response time: ${endTime - startTime}ms`); // Logg total tid for API-forespørselen
+    
+        const endTime = Date.now();
+        console.log(`Total API response time: ${endTime - startTime}ms`);
     
         res.json(liveAuctions);
       } catch (err) {
