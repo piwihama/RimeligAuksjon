@@ -774,7 +774,6 @@ async function connectDB() {
         let auctions = await redis.get(cacheKey);
     
         if (auctions) {
-          // Hvis dataene finnes i cachen, parse dem og returner
           console.log('Cache hit! Returning cached data.');
           return res.json(JSON.parse(auctions));
         }
@@ -785,10 +784,18 @@ async function connectDB() {
           .limit(limit)
           .toArray();
     
-        // Lagre resultatene i cachen for senere bruk
-        await redis.set(cacheKey, JSON.stringify(auctions), 'EX', 600); // Sett cachen til å utløpe etter 10 minutter
+        // Håndtere tilfelle hvor det ikke er noen auksjoner
+        if (!auctions || auctions.length === 0) {
+          return res.status(404).json({ message: 'Ingen auksjoner funnet.' });
+        }
     
-        // Returner resultatene
+        // Valider størrelsen på dataene før caching
+        if (JSON.stringify(auctions).length < MAX_CACHE_SIZE) {
+          await redis.set(cacheKey, JSON.stringify(auctions), 'EX', 600);
+        } else {
+          console.log('Dataene er for store til å cache.');
+        }
+    
         res.json(auctions);
       } catch (err) {
         console.error('Error fetching auctions:', err);

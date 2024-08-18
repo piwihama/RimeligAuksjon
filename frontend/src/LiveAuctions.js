@@ -25,9 +25,9 @@ function LiveAuctions() {
     auctionWithoutReserve: false,
   });
   const [showFilters, setShowFilters] = useState(false);
-  const [page, setPage] = useState(1); // Sette opp paginering
-  const [hasMore, setHasMore] = useState(true); // Sjekke om det er flere auksjoner å laste
-  const [loading, setLoading] = useState(false); // Sporing av lastestatus
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false); // Legg til lastestatus
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
@@ -47,7 +47,7 @@ function LiveAuctions() {
   const fetchLiveAuctions = async () => {
     setLoading(true); // Start lasting
     try {
-      const queryParams = { page, limit: 10 }; // Juster limit til antall auksjoner du vil laste per side
+      const queryParams = { page, limit: 10 };
 
       for (const key in filters) {
         if (Array.isArray(filters[key])) {
@@ -71,7 +71,7 @@ function LiveAuctions() {
       });
 
       setLiveAuctions(prevAuctions => [...prevAuctions, ...response.data]);
-      setHasMore(response.data.length > 0); // Oppdater hasMore hvis det er flere data
+      setHasMore(response.data.length > 0);
       setError(null);
 
       // Oppdater tid for hver auksjon
@@ -115,8 +115,8 @@ function LiveAuctions() {
         : prevFilters[name].filter(v => v !== newValue);
       return { ...prevFilters, [name]: newValues };
     });
-    setPage(1); // Tilbakestill siden når filtre endres
-    setLiveAuctions([]); // Tøm eksisterende auksjoner
+    setPage(1);
+    setLiveAuctions([]);
   };
 
   const handleFilterChange = (e) => {
@@ -126,8 +126,8 @@ function LiveAuctions() {
       ...filters,
       [name]: type === 'checkbox' ? checked : newValue
     });
-    setPage(1); // Tilbakestill siden når filtre endres
-    setLiveAuctions([]); // Tøm eksisterende auksjoner
+    setPage(1);
+    setLiveAuctions([]);
   };
 
   const loadMore = () => {
@@ -168,6 +168,7 @@ function LiveAuctions() {
       return updatedTimeLeftMap;
     });
   };
+
   return (
     <div>
       <Header />
