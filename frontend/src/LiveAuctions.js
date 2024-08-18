@@ -7,6 +7,7 @@ import Footer from './Footer';
 
 function LiveAuctions() {
   const [liveAuctions, setLiveAuctions] = useState([]);
+  const [timeLeftMap, setTimeLeftMap] = useState({});
   const [filterCounts, setFilterCounts] = useState({});
   const [filters, setFilters] = useState({
     brand: [],
@@ -31,16 +32,14 @@ function LiveAuctions() {
 
   const navigate = useNavigate();
 
-  // Debounced fetching of live auctions based on filters
   useEffect(() => {
-    const debounceTimeout = setTimeout(() => {
-      fetchLiveAuctions();
-    }, 300); // 300ms debounce-tid
+    fetchLiveAuctions();
+    const interval = setInterval(() => {
+      updateAllTimeLeft();
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [filters, page]);
 
-    return () => clearTimeout(debounceTimeout);
-  }, [filters, page]); // Oppdater når side eller filtre endres
-
-  // Fetch filter counts only once during initial render
   useEffect(() => {
     fetchFilterCounts();
   }, []);
@@ -71,10 +70,16 @@ function LiveAuctions() {
         headers: headers
       });
 
-      // Kombinere gamle og nye auksjoner
       setLiveAuctions(prevAuctions => [...prevAuctions, ...response.data]);
       setHasMore(response.data.length > 0); // Oppdater hasMore hvis det er flere data
       setError(null);
+
+      // Oppdater tid for hver auksjon
+      const newTimeLeftMap = {};
+      response.data.forEach(auction => {
+        newTimeLeftMap[auction._id] = calculateTimeLeft(auction.endDate);
+      });
+      setTimeLeftMap(newTimeLeftMap);
     } catch (error) {
       console.error('Error fetching live auctions:', error);
       setError('Kunne ikke hente live auksjoner. Prøv igjen senere.');
@@ -154,6 +159,15 @@ function LiveAuctions() {
     return timeLeft;
   };
 
+  const updateAllTimeLeft = () => {
+    setTimeLeftMap(prevTimeLeftMap => {
+      const updatedTimeLeftMap = { ...prevTimeLeftMap };
+      liveAuctions.forEach(auction => {
+        updatedTimeLeftMap[auction._id] = calculateTimeLeft(auction.endDate);
+      });
+      return updatedTimeLeftMap;
+    });
+  };
   return (
     <div>
       <Header />

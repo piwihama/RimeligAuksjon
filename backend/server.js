@@ -766,18 +766,36 @@ async function connectDB() {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
-
-        const auctions = await auctionCollection.find({ userId: new ObjectId(userId) })
+    
+        // Lag en unik cache-nøkkel basert på bruker-ID og sideparametere
+        const cacheKey = `myauctions:${userId}:page:${page}:limit:${limit}`;
+    
+        // Sjekk om dataene allerede er i cachen
+        let auctions = await redis.get(cacheKey);
+    
+        if (auctions) {
+          // Hvis dataene finnes i cachen, parse dem og returner
+          console.log('Cache hit! Returning cached data.');
+          return res.json(JSON.parse(auctions));
+        }
+    
+        // Hvis dataene ikke er i cachen, hent dem fra databasen
+        auctions = await auctionCollection.find({ userId: new ObjectId(userId) })
           .skip(skip)
           .limit(limit)
           .toArray();
-
+    
+        // Lagre resultatene i cachen for senere bruk
+        await redis.set(cacheKey, JSON.stringify(auctions), 'EX', 600); // Sett cachen til å utløpe etter 10 minutter
+    
+        // Returner resultatene
         res.json(auctions);
       } catch (err) {
         console.error('Error fetching auctions:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
 
     app.get('/api/mymessages', authenticateToken, async (req, res) => {
       try {
