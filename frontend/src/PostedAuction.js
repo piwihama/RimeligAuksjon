@@ -26,16 +26,18 @@ function PostedAuction() {
         console.error('Error fetching auction details:', error);
       }
     };
+  
     fetchAuction();
-
+  
     const interval = setInterval(() => {
       if (auction && auction.endDate) {
         calculateTimeLeft(auction.endDate);
       }
     }, 1000);
-
+  
     return () => clearInterval(interval);
-  }, [id, auction]);
+  }, [id]);
+  
 
   const calculateTimeLeft = (endDate) => {
     const difference = new Date(endDate) - new Date();
