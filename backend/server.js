@@ -8,7 +8,7 @@ const cron = require('node-cron');
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require('uuid');
 const Redis = require('ioredis');
-const MAX_CACHE_SIZE = 100000; // 100 KB
+const MAX_CACHE_SIZE = 100000000; // 100 KB
 
 // Initialiser Redis-klienten
 const redis = new Redis(process.env.REDIS_URL);
