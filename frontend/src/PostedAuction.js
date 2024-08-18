@@ -194,9 +194,11 @@ function PostedAuction() {
                 <span className="detail-info-below">Tilstand</span>
                 <span className="">{auction.conditionDescription}</span>          
                 <span className="detail-info-below">Utstyr</span>
-  {auction.equipment && auction.equipment.split(', ').map((item, index) => (
+                {auction.equipment && (Array.isArray(auction.equipment) ? auction.equipment : auction.equipment.split(', ')).map((item, index) => (
     <span key={index} className="equipment-item">- {item}</span>
-  ))}                </div>  
+))}
+    </div>
+
 
                 </div>  
           <div className='posted-small-details'>
