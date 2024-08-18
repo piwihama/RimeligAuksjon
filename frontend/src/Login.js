@@ -39,7 +39,7 @@ function Login() {
 
   const handleForgotPasswordSubmit = (event) => {
     event.preventDefault();
-    axios.post('hhttps://rimelig-auksjon-backend.vercel.app/forgot-password', { email: values.email })
+    axios.post('https://rimelig-auksjon-backend.vercel.app/forgot-password', { email: values.email })
       .then(res => {
         setResetOtpSent(true);
         setValues(prev => ({ ...prev, otp: '' })); // Clear OTP field
@@ -109,7 +109,7 @@ function Login() {
 
   const handleOtpSubmit = (event) => {
     event.preventDefault();
-    axios.post('http://localhost:8082/verify-otp', { email: userEmail, otp: values.otp })
+    axios.post('https://rimelig-auksjon-backend.vercel.app/forgot-password/verify-otp', { email: userEmail, otp: values.otp })
       .then(res => {
         setSuccessMessage('Engangskode verifisert. Vennligst logg inn.');
         setOtpRequired(false);
