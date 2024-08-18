@@ -7,10 +7,11 @@ import Footer from './Footer';
 
 function MinSide() {
   const [auctions, setAuctions] = useState([]);
+  const [liveAuctions, setLiveAuctions] = useState([]);
   const [messages, setMessages] = useState([]);
   const [userDetails, setUserDetails] = useState({});
   const [activeSection, setActiveSection] = useState(null); 
-  const [loading, setLoading] = useState(true); // Legger til en lastetilstand
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,8 +25,13 @@ function MinSide() {
         }
   
         // Gjør alle API-kall parallelt for å optimalisere lastetiden
-        const [auctionResponse, messageResponse, userResponse] = await Promise.all([
+        const [auctionResponse, liveAuctionResponse, messageResponse, userResponse] = await Promise.all([
           axios.get('https://rimelig-auksjon-backend.vercel.app/api/myauctions', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }),
+          axios.get('https://rimelig-auksjon-backend.vercel.app/api/myliveauctions', { // Legg til et nytt endepunkt for live auksjoner
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -43,13 +49,14 @@ function MinSide() {
         ]);
   
         setAuctions(auctionResponse.data);
+        setLiveAuctions(liveAuctionResponse.data); // Sett live auksjoner tilstanden
         setMessages(messageResponse.data);
         setUserDetails(userResponse.data);
-        setLoading(false); // Dataene er lastet, sett lastetilstanden til false
+        setLoading(false);
   
       } catch (error) {
         console.error('Error fetching data:', error.response ? error.response.data : error.message);
-        setLoading(false); // Selv om det er en feil, må vi stoppe lasting
+        setLoading(false);
       }
     };
   
@@ -83,12 +90,12 @@ function MinSide() {
             <div className='myside-section'>
               <div className='myside-card'>
                 <div className='myside-card-header' onClick={() => toggleSection('auctions')}>
-                  <h5 className='myside-card-title'>Mine Auksjoner</h5>
+                  <h5 className='myside-card-title'>Mine Auksjoner (Forespørsler)</h5>
                   <i className={`myside-toggle-icon ${activeSection === 'auctions' ? 'active' : ''}`}>&#9660;</i>
                 </div>
                 <div className={`myside-card-body ${activeSection === 'auctions' ? 'active' : ''}`}>
                   {loading ? (
-                    <p>Laster inn auksjoner...</p> // Viser lastemelding
+                    <p>Laster inn auksjoner...</p>
                   ) : auctions.length > 0 ? (
                     <div className="myside-auctions-grid">
                       {auctions.map(auction => (
@@ -107,9 +114,41 @@ function MinSide() {
                       ))}
                     </div>
                   ) : (
-                    <p>Ingen auksjoner funnet.</p> // Viser melding hvis ingen auksjoner finnes etter lasting
+                    <p>Ingen auksjoner funnet.</p>
                   )}
                   <a href='/myauctions' className='myside-btn myside-btn-primary'>Se Mine Auksjoner</a>
+                </div>
+              </div>
+            </div>
+            <div className='myside-section'>
+              <div className='myside-card'>
+                <div className='myside-card-header' onClick={() => toggleSection('liveAuctions')}>
+                  <h5 className='myside-card-title'>Mine Live Auksjoner</h5>
+                  <i className={`myside-toggle-icon ${activeSection === 'liveAuctions' ? 'active' : ''}`}>&#9660;</i>
+                </div>
+                <div className={`myside-card-body ${activeSection === 'liveAuctions' ? 'active' : ''}`}>
+                  {loading ? (
+                    <p>Laster inn live auksjoner...</p>
+                  ) : liveAuctions.length > 0 ? (
+                    <div className="myside-auctions-grid">
+                      {liveAuctions.map(auction => (
+                        <div className="myside-auction-card" key={auction._id}>
+                          <h6>{auction.title}</h6>
+                          {auction.images && auction.images.length > 0 && (
+                            <img src={auction.images[0]} alt={auction.title} className="myside-auction-image" />
+                          )}
+                          <p><strong>Merke:</strong> {auction.brand}</p>
+                          <p><strong>Modell:</strong> {auction.model}</p>
+                          <p><strong>År:</strong> {auction.year}</p>
+                          <p><strong>Høyeste bud:</strong> {auction.highestBid}</p>
+                          <p><strong>Status:</strong> {auction.status}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p>Ingen live auksjoner funnet.</p>
+                  )}
+                  <a href='/myliveauctions' className='myside-btn myside-btn-primary'>Se Mine Live Auksjoner</a>
                 </div>
               </div>
             </div>
@@ -121,7 +160,7 @@ function MinSide() {
                 </div>
                 <div className={`myside-card-body ${activeSection === 'messages' ? 'active' : ''}`}>
                   {loading ? (
-                    <p>Laster inn meldinger...</p> // Viser lastemelding
+                    <p>Laster inn meldinger...</p>
                   ) : messages.length > 0 ? (
                     <div className="myside-messages-grid">
                       {messages.map(message => (
@@ -131,7 +170,7 @@ function MinSide() {
                       ))}
                     </div>
                   ) : (
-                    <p>Ingen meldinger funnet.</p> // Viser melding hvis ingen meldinger finnes etter lasting
+                    <p>Ingen meldinger funnet.</p>
                   )}
                   <a href='/messages' className='myside-btn myside-btn-primary'>Se Meldinger</a>
                 </div>
@@ -145,7 +184,7 @@ function MinSide() {
                 </div>
                 <div className={`myside-card-body ${activeSection === 'account' ? 'active' : ''}`}>
                   {loading ? (
-                    <p>Laster inn kontoopplysninger...</p> // Viser lastemelding
+                    <p>Laster inn kontoopplysninger...</p>
                   ) : (
                     <>
                       <p><strong>Fornavn:</strong> {userDetails.firstName}</p>
