@@ -13,6 +13,7 @@ function PostedAuction() {
   const [successMessage, setSuccessMessage] = useState('');
   const [timeLeft, setTimeLeft] = useState({});
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [endDate, setEndDate] = useState(null);
 
   useEffect(() => {
     const fetchAuction = async () => {
@@ -21,26 +22,28 @@ function PostedAuction() {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         setAuction(response.data);
-        calculateTimeLeft(response.data.endDate);
+        setEndDate(new Date(response.data.endDate));
+        calculateTimeLeft(new Date(response.data.endDate));
       } catch (error) {
         console.error('Error fetching auction details:', error);
       }
     };
   
     fetchAuction();
-  
-    const interval = setInterval(() => {
-      if (auction && auction.endDate) {
-        calculateTimeLeft(auction.endDate);
-      }
-    }, 1000);
-  
-    return () => clearInterval(interval);
   }, [id]);
+
+  useEffect(() => {
+    if (endDate) {
+      const interval = setInterval(() => {
+        calculateTimeLeft(endDate);
+      }, 1000);
   
+      return () => clearInterval(interval);
+    }
+  }, [endDate]);
 
   const calculateTimeLeft = (endDate) => {
-    const difference = new Date(endDate) - new Date();
+    const difference = endDate - new Date();
     let timeLeft = {};
 
     if (difference > 0) {
@@ -87,6 +90,7 @@ function PostedAuction() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAuction(response.data);
+      setEndDate(new Date(response.data.endDate));
 
     } catch (error) {
       const message = error.response && error.response.data ? error.response.data.message : 'Feil ved innlegging av bud. Prøv igjen.';
