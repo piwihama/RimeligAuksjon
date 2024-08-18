@@ -79,10 +79,13 @@ function PostedAuction() {
       );
       setSuccessMessage('Bud lagt inn vellykket!');
       setBidAmount('');
-      const response = await axios.get(`hhttps://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`, {
+
+      // Re-fetch auction details after placing a bid
+      const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAuction(response.data);
+
     } catch (error) {
       const message = error.response && error.response.data ? error.response.data.message : 'Feil ved innlegging av bud. Prøv igjen.';
       setError(message);
