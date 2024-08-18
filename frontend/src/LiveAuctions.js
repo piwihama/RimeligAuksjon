@@ -27,7 +27,7 @@ function LiveAuctions() {
   const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false); // Legg til lastestatus
+  const [loading, setLoading] = useState(true); // Start med å sette loading til true
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
@@ -349,11 +349,14 @@ function LiveAuctions() {
             </form>
           </aside>
           <section className="auctions-section">
-            {error && <p className="error-message">{error}</p>}
-            {liveAuctions.length === 0 && !error ? (
-              <p>Ingen aktive auksjoner for øyeblikket</p>
-            ) : (
-              liveAuctions.map(auction => {
+  {loading ? (
+    <p>Laster inn auksjoner...</p>
+  ) : error ? (
+    <p className="error-message">{error}</p>
+  ) : liveAuctions.length === 0 ? (
+    <p>Ingen aktive auksjoner for øyeblikket</p>
+  ) : (
+    liveAuctions.map(auction => {
                 const timeLeft = calculateTimeLeft(auction.endDate);
                 const formattedDate = new Date(auction.endDate).toLocaleDateString('no-NO', {
                   year: 'numeric',
