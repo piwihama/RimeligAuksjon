@@ -109,7 +109,7 @@ function Login() {
 
   const handleOtpSubmit = (event) => {
     event.preventDefault();
-    axios.post('https://rimelig-auksjon-backend.vercel.app/forgot-password/verify-otp', { email: userEmail, otp: values.otp })
+    axios.post('https://rimelig-auksjon-backend.vercel.app/verify-otp', { email: userEmail, otp: values.otp })
       .then(res => {
         setSuccessMessage('Engangskode verifisert. Vennligst logg inn.');
         setOtpRequired(false);
