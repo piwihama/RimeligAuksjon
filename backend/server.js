@@ -774,6 +774,8 @@ async function connectDB() {
         console.error('Error fetching live auctions:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
+    
+      
     });
     
     
