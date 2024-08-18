@@ -9,6 +9,8 @@ const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require('uuid');
 const Redis = require('ioredis');
 const MAX_CACHE_SIZE = 10000000; // 100 KB
+console.log("MAX_CACHE_SIZE is set to:", MAX_CACHE_SIZE);
+
 
 // Initialiser Redis-klienten
 const redis = new Redis(process.env.REDIS_URL);
