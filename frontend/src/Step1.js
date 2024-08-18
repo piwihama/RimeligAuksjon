@@ -21,7 +21,7 @@ const Step1 = ({ formData, setFormData, nextStep }) => {
         validationSchema={validationSchema}
         onSubmit={async (values) => {
           try {
-            const response = await fetch(`https://rimelig-auksjon-backend.vercel.app/api/carinfo/${values.regNumber}`);
+            const response = await fetch(`https://rimelig-auksjon-backend.vercel.app/proxy/api/carinfo/${values.regNumber}`);
             const carData = await response.json();
             const carInfo = carData.kjoretoydataListe ? carData.kjoretoydataListe[0] : {};
             const tekniskeData = carInfo.godkjenning?.tekniskGodkjenning?.tekniskeData || {};

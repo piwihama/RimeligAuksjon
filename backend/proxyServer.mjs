@@ -1,17 +1,16 @@
-// proxyServer.mjs
-
 import express from 'express';
-import fetch from 'node-fetch';
 import cors from 'cors';
 
+// Opprett Express-appen
 const app = express();
-const port = 8081; // Bruk en annen port for proxy-serveren
 
+// Bruk CORS og JSON mellomvare
 app.use(cors());
 app.use(express.json());
 
 const API_KEY = 'e59b5fa7-0331-4359-9c99-bbe1a520db87';
 
+// Definer API-ruten
 app.get('/api/carinfo/:regNumber', async (req, res) => {
   const regNumber = req.params.regNumber;
   const url = `http://www.vegvesen.no/ws/no/vegvesen/kjoretoy/felles/datautlevering/enkeltoppslag/kjoretoydata?kjennemerke=${regNumber}`;
@@ -36,6 +35,5 @@ app.get('/api/carinfo/:regNumber', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Proxy server is running on http://localhost:${port}`);
-});
+// Eksporter appen som standard for Vercel å håndtere
+export default app;
