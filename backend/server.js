@@ -8,7 +8,7 @@ const cron = require('node-cron');
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require('uuid');
 const Redis = require('ioredis');
-const MAX_CACHE_SIZE = 100000000; // 100 KB
+const MAX_CACHE_SIZE = 100000; // 100 KB
 
 // Initialiser Redis-klienten
 const redis = new Redis(process.env.REDIS_URL);
@@ -762,49 +762,31 @@ async function connectDB() {
     
 
     
-app.get('/api/myauctions', authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user.userId;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
-
-    // Create a unique cache key based on user ID and pagination parameters
-    const cacheKey = `myauctions:${userId}:page:${page}:limit:${limit}`;
-
-    // Check if the data is already in the cache
-    let auctions = await redis.get(cacheKey);
-
-    if (auctions) {
-      console.log('Cache hit! Returning cached data.');
-      return res.json(JSON.parse(auctions));
-    }
-
-    // If data is not in cache, fetch from the database
-    auctions = await auctionCollection.find({ userId: new ObjectId(userId) })
-      .skip(skip)
-      .limit(limit)
-      .toArray();
-
-    // Handle case where no auctions are found
-    if (!auctions || auctions.length === 0) {
-      return res.status(404).json({ message: 'Ingen auksjoner funnet.' });
-    }
-
-    // Validate the size of the data before caching
-    if (JSON.stringify(auctions).length < MAX_CACHE_SIZE) {
-      await redis.set(cacheKey, JSON.stringify(auctions), 'EX', 600); // Cache for 10 minutes
-    } else {
-      console.log('Dataene er for store til å cache.');
-    }
-
-    res.json(auctions);
-  } catch (err) {
-    console.error('Error fetching auctions:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
+    app.get('/api/myauctions', authenticateToken, async (req, res) => {
+      try {
+        const userId = req.user.userId;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+    
+        // Fetch auctions directly from the database without caching
+        const auctions = await auctionCollection.find({ userId: new ObjectId(userId) })
+          .skip(skip)
+          .limit(limit)
+          .toArray();
+    
+        // Handle case where no auctions are found
+        if (!auctions || auctions.length === 0) {
+          return res.status(404).json({ message: 'Ingen auksjoner funnet.' });
+        }
+    
+        res.json(auctions);
+      } catch (err) {
+        console.error('Error fetching auctions:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    });
+    
     
 
     app.get('/api/mymessages', authenticateToken, async (req, res) => {
