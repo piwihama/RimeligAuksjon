@@ -135,12 +135,13 @@ async function connectDB() {
         const { firstName, lastName, email, confirmEmail, password, mobile, birthDate, address1, address2, postalCode, city, country, accountNumber } = req.body;
         const existingUser = await loginCollection.findOne({ email });
         if (existingUser) return res.status(400).json({ message: 'User already exists' });
-
+    
+        const secret = speakeasy.generateSecret({ length: 20 }).base32; // Generer unik secret
         const otp = speakeasy.totp({
-          secret: 'secret',
+          secret: secret,
           encoding: 'base32'
         });
-
+    
         const newUser = {
           firstName,
           lastName,
@@ -156,11 +157,12 @@ async function connectDB() {
           accountNumber,
           role: 'user',
           verified: false,
+          otpSecret: secret, // Lagre secret
           otp
         };
-
+    
         await loginCollection.insertOne(newUser);
-
+    
         let transporter = nodemailer.createTransport({
           service: 'gmail',
           auth: {
@@ -168,14 +170,14 @@ async function connectDB() {
             pass: 'eysj jfoz ahcj qqzo'
           }
         });
-
+    
         let mailOptions = {
           from: '"RimeligAuksjon.no" <peiwast124@gmail.com>',
           to: email,
           subject: 'Verifiser din brukerkonto.',
           text: `Engangskoden din er: ${otp}`
         };
-
+    
         await transporter.sendMail(mailOptions);
         res.status(200).json({ message: 'Signup successful, please verify your email', userId: newUser._id });
       } catch (err) {
@@ -183,21 +185,31 @@ async function connectDB() {
         res.status(500).json({ message: 'Internal Server Error' });
       }
     });
+    
 
     app.post('/verify-otp', async (req, res) => {
       try {
         const { email, otp } = req.body;
         const user = await loginCollection.findOne({ email });
         if (!user) return res.status(400).json({ message: 'User not found' });
-        if (user.otp !== otp) return res.status(400).json({ message: 'Invalid OTP' });
-
-        await loginCollection.updateOne({ email }, { $set: { verified: true }, $unset: { otp: "" } });
+    
+        const isValid = speakeasy.totp.verify({
+          secret: user.otpSecret, // Bruk lagret secret
+          encoding: 'base32',
+          token: otp,
+          window: 1 // Tillater 30 sekunder før/etter OTP-en ble generert for tidsforskjeller
+        });
+    
+        if (!isValid) return res.status(400).json({ message: 'Invalid OTP' });
+    
+        await loginCollection.updateOne({ email }, { $set: { verified: true }, $unset: { otpSecret: "" } });
         res.status(200).json({ message: 'Email verified successfully' });
       } catch (err) {
         console.error('Error during OTP verification:', err);
         res.status(500).json({ message: 'Internal Server Error' });
       }
     });
+    
 
     app.post('/forgot-password', async (req, res) => {
       try {
