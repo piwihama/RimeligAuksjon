@@ -761,22 +761,24 @@ async function connectDB() {
     });
     
     app.get('/api/myliveauctions', authenticateToken, async (req, res) => {
+      console.log('Request received at /api/myliveauctions');
       try {
         const userId = req.user.userId;
         const liveAuctions = await liveAuctionCollection.find({ userId: new ObjectId(userId) }).toArray();
     
         if (!liveAuctions || liveAuctions.length === 0) {
+          console.log('No live auctions found for user', userId);
           return res.status(404).json({ message: 'Ingen live auksjoner funnet.' });
         }
     
+        console.log('Live auctions found:', liveAuctions);
         res.json(liveAuctions);
       } catch (err) {
         console.error('Error fetching live auctions:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
-    
-      
     });
+    
     
     
     app.get('/api/myauctions', authenticateToken, async (req, res) => {
