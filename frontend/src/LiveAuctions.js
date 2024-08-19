@@ -163,7 +163,7 @@ function LiveAuctions() {
     if (hasMore && !loading) {
       setPage(prevPage => prevPage + 1);
     }
-  };
+  }; //Random
 
   const calculateTimeLeft = (endDate) => {
     const difference = new Date(endDate) - new Date();
@@ -212,6 +212,7 @@ function LiveAuctions() {
             >
               {showFilters ? 'Skjul filtre' : 'Vis søkefiltre'}
             </button>
+
             <form onSubmit={(e) => e.preventDefault()} className={showFilters ? 'filters-form open' : 'filters-form'}>
               <div className="filter-group">
                 <h3>Karosseri</h3>
