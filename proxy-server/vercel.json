@@ -11,9 +11,13 @@
     ],
     "routes": [
       {
-        "src": "/proxy/(.*)",
+        "src": "/(.*)",
+        "headers": {
+          "Access-Control-Allow-Origin": "https://www.rimeligauksjon.no",
+          "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization"
+        },
         "dest": "/proxyServer.mjs"
       }
     ]
   }
-  
