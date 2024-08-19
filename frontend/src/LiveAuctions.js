@@ -29,6 +29,7 @@ function LiveAuctions() {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true); // Start med å sette loading til true
   const [error, setError] = useState(null);
+  const [sortOption, setSortOption] = useState('avsluttes-forst'); // Ny state for sortering
 
   const navigate = useNavigate();
 
@@ -38,7 +39,7 @@ function LiveAuctions() {
       updateAllTimeLeft();
     }, 1000);
     return () => clearInterval(interval);
-  }, [filters, page]);
+  }, [filters, page, sortOption]);
 
   useEffect(() => {
     fetchFilterCounts();
@@ -70,7 +71,12 @@ function LiveAuctions() {
         headers: headers
       });
 
-      setLiveAuctions(prevAuctions => [...prevAuctions, ...response.data]);
+      let sortedAuctions = response.data;
+
+      // Sorter auksjonene basert på sortOption
+      sortedAuctions = sortAuctions(sortedAuctions, sortOption);
+
+      setLiveAuctions(prevAuctions => [...prevAuctions, ...sortedAuctions]);
       setHasMore(response.data.length > 0);
       setError(null);
 
@@ -104,6 +110,29 @@ function LiveAuctions() {
       console.error('Error fetching filter counts:', error);
       setError('Kunne ikke hente filtertellerne. Prøv igjen senere.');
     }
+  };
+
+  const sortAuctions = (auctions, option) => {
+    switch (option) {
+      case 'avsluttes-forst':
+        return auctions.sort((a, b) => new Date(a.endDate) - new Date(b.endDate));
+      case 'avsluttes-sist':
+        return auctions.sort((a, b) => new Date(b.endDate) - new Date(a.endDate));
+      case 'nyeste-auksjoner':
+        return auctions.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+      case 'hoyeste-bud':
+        return auctions.sort((a, b) => b.highestBid - a.highestBid);
+      case 'laveste-bud':
+        return auctions.sort((a, b) => a.highestBid - b.highestBid);
+      default:
+        return auctions;
+    }
+  };
+
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
+    setPage(1);
+    setLiveAuctions([]);
   };
 
   const handleCheckboxChange = (e) => {
@@ -347,16 +376,26 @@ function LiveAuctions() {
               </div>
               <button onClick={fetchLiveAuctions} className="live-btn live-btn-primary">Filtrer</button>
             </form>
-          </aside>
+            </aside>
           <section className="auctions-section">
-  {loading ? (
-    <p>Laster inn auksjoner...</p>
-  ) : error ? (
-    <p className="error-message">{error}</p>
-  ) : liveAuctions.length === 0 ? (
-    <p>Ingen aktive auksjoner for øyeblikket</p>
-  ) : (
-    liveAuctions.map(auction => {
+            <div className="sort-options">
+              <label htmlFor="sort">Sorter etter:</label>
+              <select id="sort" value={sortOption} onChange={handleSortChange}>
+                <option value="avsluttes-forst">Avsluttes først</option>
+                <option value="avsluttes-sist">Avsluttes sist</option>
+                <option value="nyeste-auksjoner">Nyeste auksjoner</option>
+                <option value="hoyeste-bud">Høyeste bud</option>
+                <option value="laveste-bud">Laveste bud</option>
+              </select>
+            </div>
+            {loading ? (
+              <p>Laster inn auksjoner...</p>
+            ) : error ? (
+              <p className="error-message">{error}</p>
+            ) : liveAuctions.length === 0 ? (
+              <p>Ingen aktive auksjoner for øyeblikket</p>
+            ) : (
+              liveAuctions.map(auction => {
                 const timeLeft = calculateTimeLeft(auction.endDate);
                 const formattedDate = new Date(auction.endDate).toLocaleDateString('no-NO', {
                   year: 'numeric',
