@@ -24,28 +24,28 @@ const Step1 = ({ formData, setFormData, nextStep }) => {
               const contentType = response.headers.get('content-type');
               if (contentType && contentType.indexOf('application/json') !== -1) {
                 const carData = await response.json();
-                const carInfo = (carData.kjoretoydataListe && carData.kjoretoydataListe.length > 0) ? carData.kjoretoydataListe[0] : {};
+                const carInfo = Array.isArray(carData.kjoretoydataListe) && carData.kjoretoydataListe.length > 0 ? carData.kjoretoydataListe[0] : {};
                 const tekniskeData = carInfo.godkjenning?.tekniskGodkjenning?.tekniskeData || {};
 
                 const updatedFormData = {
                   ...formData,
                   ...values,
-                  brand: (tekniskeData.generelt?.merke && tekniskeData.generelt.merke.length > 0) ? tekniskeData.generelt.merke[0]?.merke || '' : '',
-                  model: (tekniskeData.generelt?.handelsbetegnelse && tekniskeData.generelt.handelsbetegnelse.length > 0) ? tekniskeData.generelt.handelsbetegnelse[0] || '' : '',
+                  brand: Array.isArray(tekniskeData.generelt?.merke) && tekniskeData.generelt.merke.length > 0 ? tekniskeData.generelt.merke[0]?.merke || '' : '',
+                  model: Array.isArray(tekniskeData.generelt?.handelsbetegnelse) && tekniskeData.generelt.handelsbetegnelse.length > 0 ? tekniskeData.generelt.handelsbetegnelse[0] || '' : '',
                   year: carInfo.godkjenning?.forstegangsGodkjenning?.forstegangRegistrertDato?.split('-')[0] || '',
                   chassisNumber: carInfo.kjoretoyId?.understellsnummer || '',
                   taxClass: carInfo.godkjenning?.tekniskGodkjenning?.kjoretoyklassifisering?.beskrivelse || '',
-                  fuel: (tekniskeData.miljodata?.miljoOgdrivstoffGruppe && tekniskeData.miljodata.miljoOgDrivstoffGruppe.length > 0) ? tekniskeData.miljodata.miljoOgDrivstoffGruppe[0]?.drivstoffKodeMiljodata?.kodeNavn || '' : '',
+                  fuel: Array.isArray(tekniskeData.miljodata?.miljoOgDrivstoffGruppe) && tekniskeData.miljodata.miljoOgDrivstoffGruppe.length > 0 ? tekniskeData.miljodata.miljoOgDrivstoffGruppe[0]?.drivstoffKodeMiljodata?.kodeNavn || '' : '',
                   gearType: tekniskeData.motorOgDrivverk?.girkassetype?.kodeBeskrivelse || '',
                   driveType: tekniskeData.motorOgDrivverk?.kjoresystem?.kodeBeskrivelse || '',
-                  mainColor: (tekniskeData.karosseriOgLasteplan?.rFarge && tekniskeData.karosseriOgLasteplan.rFarge.length > 0) ? tekniskeData.karosseriOgLasteplan.rFarge[0]?.kodeNavn || '' : '',
-                  power: (tekniskeData.motorOgDrivverk?.motor && tekniskeData.motorOgDrivverk.motor.length > 0) ? tekniskeData.motorOgDrivverk.motor[0]?.maksNettoEffekt || '' : '',
+                  mainColor: Array.isArray(tekniskeData.karosseriOgLasteplan?.rFarge) && tekniskeData.karosseriOgLasteplan.rFarge.length > 0 ? tekniskeData.karosseriOgLasteplan.rFarge[0]?.kodeNavn || '' : '',
+                  power: Array.isArray(tekniskeData.motorOgDrivverk?.motor) && tekniskeData.motorOgDrivverk.motor.length > 0 ? tekniskeData.motorOgDrivverk.motor[0]?.maksNettoEffekt || '' : '',
                   seats: tekniskeData.persontall?.sitteplasserTotalt || '',
                   owners: carInfo.eierskap?.antall || '',
                   firstRegistration: carInfo.godkjenning?.forstegangsGodkjenning?.forstegangRegistrertDato || '',
-                  doors: (tekniskeData.karosseriOgLasteplan?.antallDorer && tekniskeData.karosseriOgLasteplan.antallDorer.length > 0) ? tekniskeData.karosseriOgLasteplan.antallDorer[0] || '' : '',
+                  doors: Array.isArray(tekniskeData.karosseriOgLasteplan?.antallDorer) && tekniskeData.karosseriOgLasteplan.antallDorer.length > 0 ? tekniskeData.karosseriOgLasteplan.antallDorer[0] || '' : '',
                   weight: tekniskeData.vekter?.egenvekt || '',
-                  co2: (tekniskeData.miljodata?.forbrukOgUtslipp && tekniskeData.miljodata.forbrukOgUtslipp.length > 0) ? tekniskeData.miljodata.forbrukOgUtslipp[0]?.co2BlandetKjoring || '' : '',
+                  co2: Array.isArray(tekniskeData.miljodata?.forbrukOgUtslipp) && tekniskeData.miljodata.forbrukOgUtslipp.length > 0 ? tekniskeData.miljodata.forbrukOgUtslipp[0]?.co2BlandetKjoring || '' : '',
                   omregistreringsavgift: carInfo.omregistreringsavgift || '',
                   lastEUApproval: carInfo.periodiskKjoretoyKontroll?.sistGodkjent || '',
                   nextEUControl: carInfo.periodiskKjoretoyKontroll?.kontrollfrist || '',
