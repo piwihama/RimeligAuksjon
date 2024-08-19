@@ -1,0 +1,19 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "proxyServer.mjs",
+        "use": "@vercel/node",
+        "config": {
+          "maxDuration": 30
+        }
+      }
+    ],
+    "routes": [
+      {
+        "src": "/proxy/(.*)",
+        "dest": "/proxyServer.mjs"
+      }
+    ]
+  }
+  
