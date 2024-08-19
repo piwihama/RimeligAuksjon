@@ -5,6 +5,9 @@
         "src": "api/proxy.mjs",
         "use": "@vercel/node"
       }
+    ],
+    "routes": [
+      { "src": "/api/(.*)", "dest": "/api/proxy.mjs" }
     ]
   }
   
