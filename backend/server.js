@@ -514,18 +514,28 @@ async function connectDB() {
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
-
     app.get('/api/liveauctions', async (req, res) => {
       const startTime = Date.now();
-
+    
       try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
-
+    
         const cacheKey = `allLiveAuctions-page-${page}-limit-${limit}`;
-        let liveAuctions = await redis.get(cacheKey);
-
+        let liveAuctions;
+    
+        try {
+          liveAuctions = await redis.get(cacheKey);
+          if (liveAuctions) {
+            console.log(`Cache hit!`);
+            liveAuctions = JSON.parse(liveAuctions);
+          }
+        } catch (redisError) {
+          console.error('Redis error:', redisError);
+          liveAuctions = null; // Fortsett uten cache om Redis feiler
+        }
+    
         if (!liveAuctions) {
           console.log(`Cache miss. Fetching from database.`);
           liveAuctions = await liveAuctionCollection.find({})
@@ -543,22 +553,28 @@ async function connectDB() {
             .skip(skip)
             .limit(limit)
             .toArray();
-
-          await redis.set(cacheKey, JSON.stringify(liveAuctions), 'EX', 600);
-        } else {
-          console.log(`Cache hit!`);
-          liveAuctions = JSON.parse(liveAuctions);
+    
+          if (!liveAuctions || liveAuctions.length === 0) {
+            console.log('No live auctions found.');
+          } else {
+            try {
+              await redis.set(cacheKey, JSON.stringify(liveAuctions), 'EX', 600);
+            } catch (redisSetError) {
+              console.error('Error setting Redis cache:', redisSetError);
+            }
+          }
         }
-
+    
         const endTime = Date.now();
         console.log(`Total API response time: ${endTime - startTime}ms`);
-
+    
         res.json(liveAuctions);
       } catch (err) {
-        console.error('Error retrieving live auctions:', err);
+        console.error('Error retrieving live auctions:', err.message || err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
 
     app.post('/api/liveauctions', authenticateToken, async (req, res) => {
       try {
@@ -788,7 +804,7 @@ async function connectDB() {
       try {
         const userId = req.user.userId;
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) || 15;
         const skip = (page - 1) * limit;
     
         // Fetch auctions directly from the database without caching
