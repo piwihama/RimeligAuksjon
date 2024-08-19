@@ -405,7 +405,7 @@ function LiveAuctions() {
                 });
                 return (
                   <div key={auction._id} className="auction-item" onClick={() => navigate(`/liveauctions/${auction._id}`)}
-                    style={{ cursor: 'pointer' }} // Dette gir en visuell indikasjon på at hele elementet er klikkbart
+                    style={{ cursor: 'pointer' }} // Dette en visuell indikasjon på at hele elementet er klikkbart
                   >
                     <img src={auction.images[0]} alt={`${auction.brand} ${auction.model}`} className="auction-image" />
                     <div className="auction-info">
