@@ -104,7 +104,7 @@ body {
 
 /* Menu Styling */
 .menu {
-  display: grid; /* Endre fra flex til grid */
+  display: grid; /* Grid layout for mobile */
   grid-template-columns: repeat(2, 1fr); /* 2 kolonner på mobil */
   gap: 10px;
   justify-content: center;
@@ -137,7 +137,9 @@ body {
 
 @media (min-width: 768px) {
   .menu {
-    grid-template-columns: repeat(4, 1fr); /* 4 kolonner på større skjermer */
+    display: inline-flex; /* Change to inline-flex on larger screens */
+
+    gap: 20px; /* Adjust gap between buttons */
   }
 }
 
