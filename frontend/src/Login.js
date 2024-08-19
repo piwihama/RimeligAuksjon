@@ -39,20 +39,21 @@ function Login() {
 
   const handleForgotPasswordSubmit = (event) => {
     event.preventDefault();
-    axios.post('https://rimelig-auksjon-backend.vercel.app/forgot-password', { email: values.email })
+    axios.post('https://rimelig-auksjon-backend.vercel.app/forgot-password', { email: values.email }, { withCredentials: true })
       .then(res => {
         setResetOtpSent(true);
         setValues(prev => ({ ...prev, otp: '' })); // Clear OTP field
         setSuccessMessage('En engangskode har blitt sendt til din e-post.');
       })
       .catch(err => {
+        console.error('Forgot password error:', err.response ? err.response.data : err.message);
         setErrors({ general: 'Feil ved sending av engangskode, prøv igjen senere.' });
       });
   };
 
   const handleResetPasswordSubmit = (event) => {
     event.preventDefault();
-    axios.post('https://rimelig-auksjon-backend.vercel.app/reset-password', { email: values.email, otp: resetOtp, newPassword })
+    axios.post('https://rimelig-auksjon-backend.vercel.app/reset-password', { email: values.email, otp: resetOtp, newPassword }, { withCredentials: true })
       .then(res => {
         setForgotPassword(false);
         setResetOtpSent(false);
@@ -63,6 +64,7 @@ function Login() {
         }, 3000); // Clear success message and navigate after 3 seconds
       })
       .catch(err => {
+        console.error('Reset password error:', err.response ? err.response.data : err.message);
         setErrors({ general: 'Feil engangskode eller feil ved tilbakestilling av passord.' });
       });
   };
@@ -74,7 +76,7 @@ function Login() {
     setSuccessMessage('');
   
     if (Object.keys(validationErrors).length === 0) {
-      axios.post('https://rimelig-auksjon-backend.vercel.app/login', values)
+      axios.post('https://rimelig-auksjon-backend.vercel.app/login', values, { withCredentials: true })
         .then(res => {
           if (res.data.accessToken) {
             console.log('Login successful, token received:', res.data.accessToken);
@@ -109,7 +111,7 @@ function Login() {
 
   const handleOtpSubmit = (event) => {
     event.preventDefault();
-    axios.post('https://rimelig-auksjon-backend.vercel.app/verify-otp', { email: userEmail, otp: values.otp })
+    axios.post('https://rimelig-auksjon-backend.vercel.app/verify-otp', { email: userEmail, otp: values.otp }, { withCredentials: true })
       .then(res => {
         setSuccessMessage('Engangskode verifisert. Vennligst logg inn.');
         setOtpRequired(false);
@@ -119,6 +121,7 @@ function Login() {
         }, 3000); // Clear success message and navigate after 3 seconds
       })
       .catch(err => {
+        console.error('OTP verification error:', err.response ? err.response.data : err.message);
         setErrors({ otp: 'Ugyldig engangskode. Vennligst prøv igjen.' });
       });
   };
