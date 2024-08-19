@@ -5,7 +5,6 @@ const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const speakeasy = require('speakeasy');
 const cron = require('node-cron');
-const fetch = require('node-fetch'); // Hvis du ikke allerede har dette, må du installere det med `npm install node-fetch`
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require('uuid');
 const Redis = require('ioredis');
