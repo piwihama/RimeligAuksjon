@@ -10,6 +10,7 @@ function Home() {
   const [auctions, setAuctions] = useState([]);
   const [visibleAuctions, setVisibleAuctions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true); // Legger til loading state
 
   useEffect(() => {
     fetchAuctions();
@@ -29,9 +30,11 @@ function Home() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const nextIndex = (currentIndex + 1) % auctions.length;
-      setCurrentIndex(nextIndex);
-      setVisibleAuctions(auctions.slice(nextIndex, nextIndex + 3));
+      if (auctions.length > 0) {
+        const nextIndex = (currentIndex + 1) % auctions.length;
+        setCurrentIndex(nextIndex);
+        setVisibleAuctions(auctions.slice(nextIndex, nextIndex + 3));
+      }
     }, 5000); // Change auction every 5 seconds
 
     return () => clearInterval(interval);
@@ -83,8 +86,10 @@ function Home() {
         timeLeft: calculateTimeLeft(auction.endDate),
       }));
       setAuctions(auctionsWithTimeLeft);
+      setLoading(false); // Sett loading til false når dataene er hentet
     } catch (error) {
       console.error('Error fetching auctions:', error);
+      setLoading(false); // Sett loading til false selv om det er en feil
     }
   };
 
@@ -105,33 +110,37 @@ function Home() {
 
           <div className="home-auctions-section">
             <h2>Fremhevede Auksjoner</h2>
-            <div className="home-auction-list">
-              {visibleAuctions.map((auction) => (
-                <div key={auction._id} className="home-auction-item" onClick={() => navigate(`/liveauctions/${auction._id}`)}
-                  style={{ cursor: 'pointer' }} >
-                  <img src={auction.images[0]} alt={`${auction.brand} ${auction.model}`} className="home-auction-image" />
-                  <div className="home-auction-details">
-                    <h3>{auction.brand} {auction.model} {auction.year} </h3>
-                    <p style={{ fontWeight: '', fontSize: '17px' }}>{auction.mileage} KM</p>
-                    <div className='home-auction-smalldetails'>
-                      <div className='home-title-value-auction'>
-                        <span className="home-auction-title"><strong>Gjenstår:</strong></span>
-                        <span className="home-auction-value" style={{ color: 'rgb(211, 13, 13)', fontWeight: 'bold' }}>
-                          {auction.timeLeft.days} Dager {auction.timeLeft.hours}t {auction.timeLeft.minutes}min {auction.timeLeft.seconds}sek
-                        </span>
+            {loading ? ( // Hvis loading er true, vis lastemeldingen
+              <p>Laster inn auksjoner...</p>
+            ) : (
+              <div className="home-auction-list">
+                {visibleAuctions.map((auction) => (
+                  <div key={auction._id} className="home-auction-item" onClick={() => navigate(`/liveauctions/${auction._id}`)}
+                    style={{ cursor: 'pointer' }} >
+                    <img src={auction.images[0]} alt={`${auction.brand} ${auction.model}`} className="home-auction-image" />
+                    <div className="home-auction-details">
+                      <h3>{auction.brand} {auction.model} {auction.year} </h3>
+                      <p style={{ fontWeight: '', fontSize: '17px' }}>{auction.mileage} KM</p>
+                      <div className='home-auction-smalldetails'>
+                        <div className='home-title-value-auction'>
+                          <span className="home-auction-title"><strong>Gjenstår:</strong></span>
+                          <span className="home-auction-value" style={{ color: 'rgb(211, 13, 13)', fontWeight: 'bold' }}>
+                            {auction.timeLeft.days} Dager {auction.timeLeft.hours}t {auction.timeLeft.minutes}min {auction.timeLeft.seconds}sek
+                          </span>
+                        </div>
+                        <div className='home-title-value-auction'>
+                          <span className="home-auction-title"><strong>Høyeste Bud:</strong></span>
+                          <span className="home-auction-value" style={{ color: 'rgb(211, 13, 13)', fontWeight: 'bold' }}>{auction.highestBid},-</span>
+                        </div>
                       </div>
-                      <div className='home-title-value-auction'>
-                        <span className="home-auction-title"><strong>Høyeste Bud:</strong></span>
-                        <span className="home-auction-value" style={{ color: 'rgb(211, 13, 13)', fontWeight: 'bold' }}>{auction.highestBid},-</span>
-                      </div>
+                      <Link to={`/liveauctions/${auction._id}`} className="home-auction-link">
+                        Se auksjon
+                      </Link>
                     </div>
-                    <Link to={`/liveauctions/${auction._id}`} className="home-auction-link">
-                      Se auksjon
-                    </Link>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
