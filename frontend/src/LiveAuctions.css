@@ -91,7 +91,7 @@ body {
     gap: 20px;
 }
 
-/* Dropdown styling */
+/* Stylized dropdown styling */
 .sort-options {
     margin-bottom: 20px;
     display: flex;
@@ -105,17 +105,26 @@ body {
 }
 
 .sort-options select {
-    padding: 8px 12px;
+    padding: 10px 15px;
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    background-color: #fff;
-    cursor: pointer;
-    transition: border-color 0.3s;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s, box-shadow 0.3s;
+    appearance: none; /* Fjerner standard pil for en mer ren look */
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAiIGhlaWdodD0iNSIgdmlld0JveD0iMCAwIDEwIDUiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTAgMGw1IDVsNS01IiBmaWxsPSIjNjY2Ii8+PC9zdmc+'); /* Egendefinert pil */
+    background-repeat: no-repeat;
+    background-position: right 10px center;
 }
 
 .sort-options select:focus {
     border-color: #005050; /* Teal color */
+    box-shadow: 0 0 5px rgba(0, 80, 80, 0.2); /* Subtle shadow effect */
+}
+
+.sort-options select:hover {
+    border-color: #007b7b;
 }
 
 .auction-item {
