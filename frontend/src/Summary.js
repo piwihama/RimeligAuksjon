@@ -27,7 +27,7 @@ const Summary = ({ formData, prevStep }) => {
       const submissionData = { ...formData, images: base64Images };
 
       // Create the auction
-      const response = await fetch('hhttps://rimelig-auksjon-backend.vercel.app/api/auctions', {
+      const response = await fetch('https://rimelig-auksjon-backend.vercel.app/api/auctions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
