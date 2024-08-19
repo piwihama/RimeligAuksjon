@@ -2,14 +2,8 @@
     "version": 2,
     "builds": [
       {
-        "src": "proxyServer.mjs",
+        "src": "api/proxy.mjs",
         "use": "@vercel/node"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/proxy/api/carinfo/(.*)",
-        "dest": "/proxyServer.mjs"
       }
     ]
   }
