@@ -19,7 +19,7 @@ const Step1 = ({ formData, setFormData, nextStep }) => {
           validationSchema={validationSchema}
           onSubmit={async (values) => {
             try {
-              const response = await fetch(`https://rimelig-auksjon-4c8j.vercel.app/api/vehicle-data/${values.regNumber}`);
+              const response = await fetch(`https://proxyservervegvesen.onrender.com/vehicle-data/${values.regNumber}`);
 
               // Sjekk innholdstypen i responsen
               const contentType = response.headers.get('content-type');
