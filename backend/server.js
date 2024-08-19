@@ -187,7 +187,7 @@ async function connectDB() {
         res.status(500).json({ message: 'Internal Server Error' });
       }
     });
-    
+   
 
     app.post('/verify-otp', async (req, res) => {
       try {
@@ -240,53 +240,6 @@ async function connectDB() {
       }
     });
 
-    app.get('/api/vehicle-data/:regNumber', async (req, res) => {
-      const regNumber = req.params.regNumber;
-    
-      try {
-        const response = await fetch(`https://www.vegvesen.no/ws/no/vegvesen/kjoretoy/felles/datautlevering/enkeltoppslag/kjoretoydata?kjennemerke=${regNumber}`, {
-          method: 'GET',
-          headers: {
-            'SVV-Authorization': 'Apikey e59b5fa7-0331-4359-9c99-bbe1a520db87',
-          },
-        });
-    
-        if (!response.ok) {
-          return res.status(response.status).json({ error: `HTTP error! status: ${response.status}` });
-        }
-    
-        const carData = await response.json();
-        const carInfo = carData.kjoretoydataListe ? carData.kjoretoydataListe[0] : {};
-        const tekniskeData = carInfo.godkjenning?.tekniskGodkjenning?.tekniskeData || {};
-    
-        const formattedData = {
-          brand: tekniskeData.generelt?.merke[0]?.merke || '',
-          model: tekniskeData.generelt?.handelsbetegnelse[0] || '',
-          year: carInfo.godkjenning?.forstegangsGodkjenning?.forstegangRegistrertDato?.split('-')[0] || '',
-          chassisNumber: carInfo.kjoretoyId?.understellsnummer || '',
-          taxClass: carInfo.godkjenning?.tekniskGodkjenning?.kjoretoyklassifisering?.beskrivelse || '',
-          fuel: tekniskeData.miljodata?.miljoOgdrivstoffGruppe ? tekniskeData.miljodata.miljoOgDrivstoffGruppe[0]?.drivstoffKodeMiljodata?.kodeNavn || '' : '',
-          gearType: tekniskeData.motorOgDrivverk?.girkassetype?.kodeBeskrivelse || '',
-          driveType: tekniskeData.motorOgDrivverk?.kjoresystem?.kodeBeskrivelse || '',
-          mainColor: tekniskeData.karosseriOgLasteplan?.rFarge ? tekniskeData.karosseriOgLasteplan.rFarge[0]?.kodeNavn || '' : '',
-          power: tekniskeData.motorOgDrivverk?.motor && tekniskeData.motorOgDrivverk.motor.length > 0 ? tekniskeData.motorOgDrivverk.motor[0]?.maksNettoEffekt || '' : '',
-          seats: tekniskeData.persontall?.sitteplasserTotalt || '',
-          owners: carInfo.eierskap?.antall || '',
-          firstRegistration: carInfo.godkjenning?.forstegangsGodkjenning?.forstegangRegistrertDato || '',
-          doors: tekniskeData.karosseriOgLasteplan?.antallDorer ? tekniskeData.karosseriOgLasteplan.antallDorer[0] || '' : '',
-          weight: tekniskeData.vekter?.egenvekt || '',
-          co2: tekniskeData.miljodata?.forbrukOgUtslipp?.length > 0 ? tekniskeData.miljodata.forbrukOgUtslipp[0]?.co2BlandetKjoring || '' : '',
-          omregistreringsavgift: carInfo.omregistreringsavgift || '',
-          lastEUApproval: carInfo.periodiskKjoretoyKontroll?.sistGodkjent || '',
-          nextEUControl: carInfo.periodiskKjoretoyKontroll?.kontrollfrist || '',
-        };
-    
-        res.json(formattedData);
-      } catch (error) {
-        console.error('Error fetching car data:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-      }
-    });
     app.post('/reset-password', async (req, res) => {
       try {
         const { email, otp, newPassword } = req.body;
