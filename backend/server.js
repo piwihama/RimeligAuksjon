@@ -10,6 +10,7 @@ const { v4: uuidv4 } = require('uuid');
 const Redis = require('ioredis');
 const MAX_CACHE_SIZE = 100000; // 100 KB
 
+
 // Initialiser Redis-klienten
 const redis = new Redis(process.env.REDIS_URL);
 
@@ -253,6 +254,7 @@ async function connectDB() {
       }
     });
 
+    
     app.post('/login', async (req, res) => {
       try {
         const { email, password } = req.body;
@@ -272,8 +274,7 @@ async function connectDB() {
               user: 'peiwast124@gmail.com',
               pass: 'eysj jfoz ahcj qqzo'
             }
-          });
-
+          }); 
           let mailOptions = {
             from: '"RimeligAuksjon.no" <peiwast124@gmail.com>',
             to: email,
@@ -293,7 +294,6 @@ async function connectDB() {
         res.status(500).json({ message: 'Internal Server Error' });
       }
     });
-
     app.get('/api/auctions', async (req, res) => {
       console.log('Fetching auctions...');
       try {
