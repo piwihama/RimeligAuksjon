@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "express": "^4.19.2",
     "git": "^0.1.5",
     "react-helmet": "^6.1.0",
     "redis": "^4.7.0"
