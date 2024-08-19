@@ -193,15 +193,29 @@ async function connectDB() {
         const { email, otp } = req.body;
         const user = await loginCollection.findOne({ email });
         if (!user) return res.status(400).json({ message: 'User not found' });
-        if (user.otp !== otp) return res.status(400).json({ message: 'Invalid OTP' });
-
-        await loginCollection.updateOne({ email }, { $set: { verified: true }, $unset: { otp: "" } });
+    
+        if (!user.otpSecret) {
+          console.error('No OTP secret found for user:', email);
+          return res.status(400).json({ message: 'Invalid request' });
+        }
+    
+        const isValid = speakeasy.totp.verify({
+          secret: user.otpSecret, 
+          encoding: 'base32',
+          token: otp,
+          window: 1 
+        });
+    
+        if (!isValid) return res.status(400).json({ message: 'Invalid OTP' });
+    
+        await loginCollection.updateOne({ email }, { $set: { verified: true }, $unset: { otpSecret: "" } });
         res.status(200).json({ message: 'Email verified successfully' });
       } catch (err) {
         console.error('Error during OTP verification:', err);
         res.status(500).json({ message: 'Internal Server Error' });
       }
     });
+    
 
     app.post('/forgot-password', async (req, res) => {
       try {
