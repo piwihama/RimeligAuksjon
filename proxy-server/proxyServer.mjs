@@ -16,7 +16,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-const API_KEY = process.env.SVV_API_KEY;
+const API_KEY = 'e59b5fa7-0331-4359-9c99-bbe1a520db87'; // Hardkodet API-nøkkel
 
 app.get('/api/carinfo/:regNumber', async (req, res) => {
   const regNumber = req.params.regNumber;
