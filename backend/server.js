@@ -811,11 +811,18 @@ async function connectDB() {
       console.log('Request received at /api/myliveauctions');
       try {
         const userId = req.user.userId;
+        console.log('User ID:', userId);
+        
+        if (!ObjectId.isValid(userId)) {
+          console.log('Invalid userId:', userId);
+          return res.status(400).json({ message: 'Invalid user ID' });
+        }
+        
         const liveAuctions = await liveAuctionCollection.find({ userId: new ObjectId(userId) }).toArray();
     
         if (!liveAuctions || liveAuctions.length === 0) {
           console.log('No live auctions found for user', userId);
-          return res.status(404).json({ message: 'Ingen live auksjoner funnet.' });
+          return res.status(200).json([]); // Returner en tom array
         }
     
         console.log('Live auctions found:', liveAuctions);
