@@ -163,7 +163,7 @@ function LiveAuctions() {
     if (hasMore && !loading) {
       setPage(prevPage => prevPage + 1);
     }
-  }; //Random
+  }; //Random heihei
 
   const calculateTimeLeft = (endDate) => {
     const difference = new Date(endDate) - new Date();
