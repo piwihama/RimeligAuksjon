@@ -809,24 +809,28 @@ async function connectDB() {
     app.get('/api/myliveauctions', authenticateToken, async (req, res) => {
       console.log('Request received at /api/myliveauctions');
       try {
-        const userId = req.user.userId;
-        console.log('User ID:', userId);
-    
-        // Bruk userId som en streng i stedet for ObjectId
-        const liveAuctions = await liveAuctionCollection.find({ userId: userId }).toArray();
-    
-        if (!liveAuctions || liveAuctions.length === 0) {
-          console.log('No live auctions found for user', userId);
-          return res.status(200).json([]); // Returner en tom array i stedet for 404
-        }
-    
-        console.log('Live auctions found:', liveAuctions);
-        res.json(liveAuctions);
+          const userId = req.user.userId;
+  
+          // Bygg søkespørringen. Hvis `userId` kan være både streng eller ObjectId, bør vi håndtere begge tilfeller.
+          const query = {
+              userId: userId // Her behandler vi `userId` som en streng
+          };
+  
+          const liveAuctions = await liveAuctionCollection.find(query).toArray();
+  
+          if (!liveAuctions || liveAuctions.length === 0) {
+              console.log('No live auctions found for user', userId);
+              return res.status(200).json([]); // Returnerer en tom array i stedet for 404 for bedre brukeropplevelse
+          }
+  
+          console.log('Live auctions found:', liveAuctions);
+          res.json(liveAuctions);
       } catch (err) {
-        console.error('Error fetching live auctions:', err);
-        res.status(500).json({ error: 'Internal Server Error' });
+          console.error('Error fetching live auctions:', err);
+          res.status(500).json({ error: 'Internal Server Error' });
       }
-    });
+  });
+  
     
     
     
