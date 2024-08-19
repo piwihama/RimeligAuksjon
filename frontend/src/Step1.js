@@ -21,33 +21,31 @@ const Step1 = ({ formData, setFormData, nextStep }) => {
             try {
               const response = await fetch(`https://proxyservervegvesen.onrender.com/vehicle-data/${values.regNumber}`);
 
-              // Sjekk innholdstypen i responsen
               const contentType = response.headers.get('content-type');
               if (contentType && contentType.indexOf('application/json') !== -1) {
-                // Parse JSON hvis innholdstypen er application/json
                 const carData = await response.json();
-                const carInfo = carData.kjoretoydataListe ? carData.kjoretoydataListe[0] : {};
+                const carInfo = carData.kjoretoydataListe && carData.kjoretoydataListe.length > 0 ? carData.kjoretoydataListe[0] : {};
                 const tekniskeData = carInfo.godkjenning?.tekniskGodkjenning?.tekniskeData || {};
 
                 const updatedFormData = {
                   ...formData,
                   ...values,
-                  brand: tekniskeData.generelt?.merke[0]?.merke || '',
-                  model: tekniskeData.generelt?.handelsbetegnelse[0] || '',
+                  brand: tekniskeData.generelt?.merke && tekniskeData.generelt.merke.length > 0 ? tekniskeData.generelt.merke[0]?.merke || '' : '',
+                  model: tekniskeData.generelt?.handelsbetegnelse && tekniskeData.generelt.handelsbetegnelse.length > 0 ? tekniskeData.generelt.handelsbetegnelse[0] || '' : '',
                   year: carInfo.godkjenning?.forstegangsGodkjenning?.forstegangRegistrertDato?.split('-')[0] || '',
                   chassisNumber: carInfo.kjoretoyId?.understellsnummer || '',
                   taxClass: carInfo.godkjenning?.tekniskGodkjenning?.kjoretoyklassifisering?.beskrivelse || '',
-                  fuel: tekniskeData.miljodata?.miljoOgdrivstoffGruppe ? tekniskeData.miljodata.miljoOgDrivstoffGruppe[0]?.drivstoffKodeMiljodata?.kodeNavn || '' : '',
+                  fuel: tekniskeData.miljodata?.miljoOgdrivstoffGruppe && tekniskeData.miljodata.miljoOgDrivstoffGruppe.length > 0 ? tekniskeData.miljodata.miljoOgDrivstoffGruppe[0]?.drivstoffKodeMiljodata?.kodeNavn || '' : '',
                   gearType: tekniskeData.motorOgDrivverk?.girkassetype?.kodeBeskrivelse || '',
                   driveType: tekniskeData.motorOgDrivverk?.kjoresystem?.kodeBeskrivelse || '',
-                  mainColor: tekniskeData.karosseriOgLasteplan?.rFarge ? tekniskeData.karosseriOgLasteplan.rFarge[0]?.kodeNavn || '' : '',
+                  mainColor: tekniskeData.karosseriOgLasteplan?.rFarge && tekniskeData.karosseriOgLasteplan.rFarge.length > 0 ? tekniskeData.karosseriOgLasteplan.rFarge[0]?.kodeNavn || '' : '',
                   power: tekniskeData.motorOgDrivverk?.motor && tekniskeData.motorOgDrivverk.motor.length > 0 ? tekniskeData.motorOgDrivverk.motor[0]?.maksNettoEffekt || '' : '',
                   seats: tekniskeData.persontall?.sitteplasserTotalt || '',
                   owners: carInfo.eierskap?.antall || '',
                   firstRegistration: carInfo.godkjenning?.forstegangsGodkjenning?.forstegangRegistrertDato || '',
-                  doors: tekniskeData.karosseriOgLasteplan?.antallDorer ? tekniskeData.karosseriOgLasteplan.antallDorer[0] || '' : '',
+                  doors: tekniskeData.karosseriOgLasteplan?.antallDorer && tekniskeData.karosseriOgLasteplan.antallDorer.length > 0 ? tekniskeData.karosseriOgLasteplan.antallDorer[0] || '' : '',
                   weight: tekniskeData.vekter?.egenvekt || '',
-                  co2: tekniskeData.miljodata?.forbrukOgUtslipp?.length > 0 ? tekniskeData.miljodata.forbrukOgUtslipp[0]?.co2BlandetKjoring || '' : '',
+                  co2: tekniskeData.miljodata?.forbrukOgUtslipp && tekniskeData.miljodata.forbrukOgUtslipp.length > 0 ? tekniskeData.miljodata.forbrukOgUtslipp[0]?.co2BlandetKjoring || '' : '',
                   omregistreringsavgift: carInfo.omregistreringsavgift || '',
                   lastEUApproval: carInfo.periodiskKjoretoyKontroll?.sistGodkjent || '',
                   nextEUControl: carInfo.periodiskKjoretoyKontroll?.kontrollfrist || '',
@@ -56,7 +54,6 @@ const Step1 = ({ formData, setFormData, nextStep }) => {
                 setFormData(updatedFormData);
                 nextStep();
               } else {
-                // Håndterer ikke-JSON-respons
                 const textData = await response.text();
                 console.error('Unexpected content type:', contentType);
                 console.error('Response text:', textData);
