@@ -416,16 +416,24 @@ async function connectDB() {
 
     app.get('/api/liveauctions/filter', async (req, res) => {
       const startTime = Date.now();
-
+    
       try {
         const {
           brand, model, year, location, minPrice, maxPrice, karosseri, fuelType, transmission, drivetrain,
           auctionDuration, reservePrice, auctionWithoutReserve, taxClass, fuel, gearType, mainColor,
           power, seats, owners, doors, equipment, city
         } = req.query;
+    
+        // Log incoming request data for debugging
+        console.log('Received filter parameters:', req.query);
+    
         const query = {};
-
-        if (brand) query.brand = { $in: brand.split(',') };
+    
+        // Construct the query with additional logging
+        if (brand) {
+          query.brand = { $in: brand.split(',') };
+          console.log(`Filtering by brand: ${query.brand}`);
+        }
         if (model) query.model = model;
         if (year) query.year = parseInt(year);
         if (location) query.location = location;
@@ -451,15 +459,29 @@ async function connectDB() {
         if (doors) query.doors = parseInt(doors);
         if (equipment) query.equipment = { $regex: new RegExp(equipment, 'i') };
         if (city) query.city = city;
-
+    
+        // Log the constructed query
+        console.log('Constructed query:', query);
+    
         const cacheKey = `liveAuctionsFilter-${JSON.stringify(req.query)}`;
-        let liveAuctions = await redis.get(cacheKey);
-
+        let liveAuctions;
+    
+        try {
+          liveAuctions = await redis.get(cacheKey);
+          if (liveAuctions) {
+            console.log('Cache hit!');
+            liveAuctions = JSON.parse(liveAuctions);
+          }
+        } catch (redisError) {
+          console.error('Redis error:', redisError);
+          liveAuctions = null;
+        }
+    
         if (!liveAuctions) {
           console.log('Cache miss. Fetching from database.');
-
+          
           const dbStartTime = Date.now();
-
+    
           liveAuctions = await liveAuctionCollection.find(query).project({
             brand: 1,
             model: 1,
@@ -471,25 +493,31 @@ async function connectDB() {
             location: 1,
             images: 1
           }).toArray();
-
+    
           const dbEndTime = Date.now();
           console.log(`DB query time: ${dbEndTime - dbStartTime}ms`);
-
-          await redis.set(cacheKey, JSON.stringify(liveAuctions), 'EX', 600);
-        } else {
-          console.log('Cache hit!');
-          liveAuctions = JSON.parse(liveAuctions);
+    
+          if (!liveAuctions || liveAuctions.length === 0) {
+            console.log('No live auctions found.');
+          } else {
+            try {
+              await redis.set(cacheKey, JSON.stringify(liveAuctions), 'EX', 600);
+            } catch (redisSetError) {
+              console.error('Error setting Redis cache:', redisSetError);
+            }
+          }
         }
-
+    
         const endTime = Date.now();
         console.log(`Total API response time: ${endTime - startTime}ms`);
-
+    
         res.json(liveAuctions);
       } catch (err) {
-        console.error('Error fetching filtered live auctions:', err);
+        console.error('Error fetching filtered live auctions:', err.message || err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
 
     app.delete('/api/liveauctions/:id', authenticateToken, async (req, res) => {
       try {
