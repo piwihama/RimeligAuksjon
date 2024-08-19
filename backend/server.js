@@ -806,23 +806,18 @@ async function connectDB() {
         res.status(500).json({ error: 'Intern serverfeil' });
       }
     });
-    
     app.get('/api/myliveauctions', authenticateToken, async (req, res) => {
       console.log('Request received at /api/myliveauctions');
       try {
         const userId = req.user.userId;
         console.log('User ID:', userId);
-        
-        if (!ObjectId.isValid(userId)) {
-          console.log('Invalid userId:', userId);
-          return res.status(400).json({ message: 'Invalid user ID' });
-        }
-        
-        const liveAuctions = await liveAuctionCollection.find({ userId: new ObjectId(userId) }).toArray();
+    
+        // Bruk userId som en streng i stedet for ObjectId
+        const liveAuctions = await liveAuctionCollection.find({ userId: userId }).toArray();
     
         if (!liveAuctions || liveAuctions.length === 0) {
           console.log('No live auctions found for user', userId);
-          return res.status(200).json([]); // Returner en tom array
+          return res.status(200).json([]); // Returner en tom array i stedet for 404
         }
     
         console.log('Live auctions found:', liveAuctions);
@@ -832,6 +827,7 @@ async function connectDB() {
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
     
     
     
