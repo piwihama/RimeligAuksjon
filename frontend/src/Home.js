@@ -117,7 +117,7 @@ function Home() {
                 {visibleAuctions.map((auction) => (
                   <div key={auction._id} className="home-auction-item" onClick={() => navigate(`/liveauctions/${auction._id}`)}
                     style={{ cursor: 'pointer' }} >
-                    <img src={auction.images[0]} alt={`${auction.brand} ${auction.model}`} className="home-auction-image" />
+                    <img src={auction.imageUrls[0]} alt={`${auction.brand} ${auction.model}`} className="home-auction-image" />
                     <div className="home-auction-details">
                       <h3>{auction.brand} {auction.model} {auction.year} </h3>
                       <p style={{ fontWeight: '', fontSize: '17px' }}>{auction.mileage} KM</p>
