@@ -9,82 +9,54 @@ const Summary = ({ formData, prevStep }) => {
   let timeout = null; // For debounce
 
   const handleSubmit = async () => {
-    if (isLoading) return; // Unngå flere kall hvis den allerede er i gang
-    setIsLoading(true); // Sett loading til true når forespørselen starter
+    if (isLoading) return; 
+    setIsLoading(true); 
 
-    console.log("Submitting form...");
+    console.log("Submitting form with XMLHttpRequest...");
 
     try {
       const token = localStorage.getItem('token');
-      console.log("Token:", token);
+      const xhr = new XMLHttpRequest();
 
-      // Ensure formData.images are Base64 strings
+      xhr.open('POST', 'https://rimelig-auksjon-backend.vercel.app/api/auctions', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          console.log("XHR response status:", xhr.status);
+          if (xhr.status === 200) {
+            console.log("Auction created successfully:", xhr.responseText);
+            setIsSubmitted(true);
+          } else {
+            console.error("Error creating auction:", xhr.responseText);
+          }
+          setIsLoading(false);
+        }
+      };
+
       const images = formData.images || [];
       const base64Images = images.map(img => {
         if (typeof img === 'string' && img.startsWith('data:image/')) {
-          return img; // already base64
+          return img; 
         } else {
           console.error('Invalid image format:', img);
           return null;
         }
       }).filter(img => img !== null);
 
-      console.log("Base64 Images:", base64Images);
-
-      // Include base64 images in the formData
       const submissionData = { ...formData, images: base64Images };
-
-      // Create the auction with simplified fetch
-      const response = await fetch('https://rimelig-auksjon-backend.vercel.app/api/auctions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(submissionData),
-      });
-
-      console.log("Auction creation response:", response);
-
-      const result = await response.json();
-      if (response.ok) {
-        console.log('Auction created successfully:', result);
-        setIsSubmitted(true);
-        await sendEmail(result.insertedId, formData.email, token); // Send e-posten etter at auksjonen er opprettet
-      } else {
-        console.error('Error creating auction:', result);
-      }
+      xhr.send(JSON.stringify(submissionData));
     } catch (error) {
       console.error('Error submitting form:', error);
-    } finally {
-      setIsLoading(false); // Sett loading tilbake til false når forespørselen er ferdig
-    }
-  };
-
-  const sendEmail = async (documentId, email, token) => {
-    console.log("Sending email with documentId:", documentId);
-    const emailResponse = await fetch('https://rimelig-auksjon-backend.vercel.app/send-image', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({ documentId, email }),
-    });
-
-    console.log("Email send response:", emailResponse);
-
-    if (emailResponse.ok) {
-      console.log('Image and data sent via email successfully');
-    } else {
-      console.error('Error sending image and data via email');
+      setIsLoading(false);
     }
   };
 
   const handleClick = () => {
     if (timeout) return;
     handleSubmit();
-    timeout = setTimeout(() => { timeout = null; }, 1000); // 1 sekund mellom tillatte klikk
+    timeout = setTimeout(() => { timeout = null; }, 1000); 
   };
 
   if (isSubmitted) {
@@ -98,6 +70,7 @@ const Summary = ({ formData, prevStep }) => {
       </div>
     );
   }
+
 
   return (
     <div>
