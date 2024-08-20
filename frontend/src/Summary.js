@@ -5,12 +5,18 @@ import Header from './Header';
 
 const Summary = ({ formData, prevStep }) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Ny loading state
+  const [isLoading, setIsLoading] = useState(false);
+  let timeout = null; // For debounce
 
   const handleSubmit = async () => {
+    if (isLoading) return; // Unngå flere kall hvis den allerede er i gang
     setIsLoading(true); // Sett loading til true når forespørselen starter
+
+    console.log("Submitting form...");
+
     try {
       const token = localStorage.getItem('token');
+      console.log("Token:", token);
 
       // Ensure formData.images are Base64 strings
       const images = formData.images || [];
@@ -23,10 +29,12 @@ const Summary = ({ formData, prevStep }) => {
         }
       }).filter(img => img !== null);
 
+      console.log("Base64 Images:", base64Images);
+
       // Include base64 images in the formData
       const submissionData = { ...formData, images: base64Images };
 
-      // Create the auction
+      // Create the auction with simplified fetch
       const response = await fetch('https://rimelig-auksjon-backend.vercel.app/api/auctions', {
         method: 'POST',
         headers: {
@@ -35,6 +43,8 @@ const Summary = ({ formData, prevStep }) => {
         },
         body: JSON.stringify(submissionData),
       });
+
+      console.log("Auction creation response:", response);
 
       const result = await response.json();
       if (response.ok) {
@@ -52,6 +62,7 @@ const Summary = ({ formData, prevStep }) => {
   };
 
   const sendEmail = async (documentId, email, token) => {
+    console.log("Sending email with documentId:", documentId);
     const emailResponse = await fetch('https://rimelig-auksjon-backend.vercel.app/send-image', {
       method: 'POST',
       headers: {
@@ -61,11 +72,19 @@ const Summary = ({ formData, prevStep }) => {
       body: JSON.stringify({ documentId, email }),
     });
 
+    console.log("Email send response:", emailResponse);
+
     if (emailResponse.ok) {
       console.log('Image and data sent via email successfully');
     } else {
       console.error('Error sending image and data via email');
     }
+  };
+
+  const handleClick = () => {
+    if (timeout) return;
+    handleSubmit();
+    timeout = setTimeout(() => { timeout = null; }, 1000); // 1 sekund mellom tillatte klikk
   };
 
   if (isSubmitted) {
@@ -139,7 +158,7 @@ const Summary = ({ formData, prevStep }) => {
         </div>
         <div className="form-navigation">
           <button type="button" onClick={prevStep} className="btn btn-secondary">Tilbake</button>
-          <button type="button" onClick={handleSubmit} className="btn btn-primary" disabled={isLoading}>
+          <button type="button" onClick={handleClick} className="btn btn-primary" disabled={isLoading}>
             {isLoading ? 'Sender...' : 'Send inn'}
           </button>
         </div>
