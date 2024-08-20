@@ -86,10 +86,10 @@ function Home() {
         timeLeft: calculateTimeLeft(auction.endDate),
       }));
       setAuctions(auctionsWithTimeLeft);
-      setLoading(false); // Sett loading til false når dataene er hentet
     } catch (error) {
       console.error('Error fetching auctions:', error);
-      setLoading(false); // Sett loading til false selv om det er en feil
+    } finally {
+      setLoading(false); // Sett loading til false når dataene er hentet eller hvis det er en feil
     }
   };
 
@@ -112,12 +112,18 @@ function Home() {
             <h2>Fremhevede Auksjoner</h2>
             {loading ? ( // Hvis loading er true, vis lastemeldingen
               <p>Laster inn auksjoner...</p>
+            ) : auctions.length === 0 ? ( // Hvis det ikke er noen auksjoner
+              <p>Ingen auksjoner tilgjengelig for øyeblikket.</p>
             ) : (
               <div className="home-auction-list">
                 {visibleAuctions.map((auction) => (
                   <div key={auction._id} className="home-auction-item" onClick={() => navigate(`/liveauctions/${auction._id}`)}
                     style={{ cursor: 'pointer' }} >
-                    <img src={auction.imageUrls[0]} alt={`${auction.brand} ${auction.model}`} className="home-auction-image" />
+                    <img 
+                      src={auction.imageUrls && auction.imageUrls.length > 0 ? auction.imageUrls[0] : '/path-to-default-image.jpg'}
+                      alt={`${auction.brand} ${auction.model}`} 
+                      className="home-auction-image" 
+                    />
                     <div className="home-auction-details">
                       <h3>{auction.brand} {auction.model} {auction.year} </h3>
                       <p style={{ fontWeight: '', fontSize: '17px' }}>{auction.mileage} KM</p>

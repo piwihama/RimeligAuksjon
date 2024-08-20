@@ -156,16 +156,16 @@ function AdminDashboard() {
           <h2>Live Auctions</h2>
           <ul className="admin-live-auction-list">
             {liveAuctions.map(liveAuction => {
-              const imageCount = liveAuction.images ? liveAuction.images.length : 0; // Endret fra liveAuctions.imageUrls
+              const imageCount = liveAuction.imageUrls ? liveAuction.imageUrls.length : 0; // Endret fra liveAuctions.imageUrls
               const currentIndex = currentImageIndex[liveAuction._id] || 0;
               return (
                 <li key={liveAuction._id} className="admin-live-auction-item">
                   <div className="admin-live-auction-details">
                     <h3>{liveAuction.brand} {liveAuction.model} - {liveAuction.year}</h3>
-                    {liveAuction.images && liveAuction.images.length > 0 && ( // Endret fra liveAuction.imageUrls
+                    {liveAuction.imageUrls && liveAuction.imageUrls.length > 0 && ( // Endret fra liveAuction.imageUrls
                       <div className="admin-auction-carousel">
                         <img
-                          src={liveAuction.images[currentIndex]} // Endret fra liveAuction.imageUrls
+                          src={liveAuction.imageUrls[currentIndex]} // Endret fra liveAuction.imageUrls
                           alt={`${liveAuction.brand} ${liveAuction.model}`}
                           className="admin-live-auction-image"
                         />
