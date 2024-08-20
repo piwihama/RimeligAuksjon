@@ -28,6 +28,30 @@ const Summary = ({ formData, prevStep }) => {
           if (xhr.status === 200) {
             console.log("Auction created successfully:", xhr.responseText);
             setIsSubmitted(true);
+
+            // Parse the response to get the auction ID
+            const response = JSON.parse(xhr.responseText);
+            const documentId = response.insertedId; // Assuming MongoDB returns the inserted ID in this field
+
+            // Call the send-image endpoint to trigger the email
+            fetch('https://rimelig-auksjon-backend.vercel.app/send-image', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({ documentId: documentId })
+            })
+            .then(response => {
+              if (response.ok) {
+                console.log("Email sent successfully.");
+              } else {
+                console.error("Error sending email:", response.statusText);
+              }
+            })
+            .catch(error => {
+              console.error("Error sending email:", error);
+            });
           } else {
             console.error("Error creating auction:", xhr.responseText);
           }
@@ -70,7 +94,6 @@ const Summary = ({ formData, prevStep }) => {
       </div>
     );
   }
-
 
   return (
     <div>
