@@ -496,7 +496,7 @@ async function connectDB() {
             bidCount: 1,
             status: 1,
             location: 1,
-            images: 1
+            imageUrls: 1
           }).toArray();
     
           const dbEndTime = Date.now();
