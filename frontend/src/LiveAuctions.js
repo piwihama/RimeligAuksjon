@@ -405,14 +405,19 @@ function LiveAuctions() {
                 });
                 return (
                   <div key={auction._id} className="auction-item" onClick={() => navigate(`/liveauctions/${auction._id}`)}
-                    style={{ cursor: 'pointer' }} // Dette en visuell indikasjon på at hele elementet er klikkbart
-                  >
-                    <img src={auction.imageUrls[0]} alt={`${auction.brand} ${auction.model}`} className="auction-image" />
+                    style={{ cursor: 'pointer' }}>
+                    <img 
+                      src={auction.imageUrls && auction.imageUrls.length > 0 ? auction.imageUrls[0] : '/path-to-default-image.jpg'} 
+                      alt={`${auction.brand} ${auction.model}`} 
+                      className="auction-image" 
+                    />
                     <div className="auction-info">
-                      <h2>{auction.brand.toUpperCase()} {auction.model.toUpperCase()} - {auction.year} </h2>
+                      <h2>{auction.brand.toUpperCase()} {auction.model.toUpperCase()} - {auction.year}</h2>
                       <div className="auction-detail">
                         <span className="left-text"><strong>Gjenstår:</strong></span>
-                        <span className="right-text" style={{ color: 'rgb(211, 13, 13)', fontWeight: 'bold'}}>{timeLeft.days} Dager {timeLeft.hours}t {timeLeft.minutes}min {timeLeft.seconds}sek</span>
+                        <span className="right-text" style={{ color: 'rgb(211, 13, 13)', fontWeight: 'bold'}}>
+                          {timeLeft.days} Dager {timeLeft.hours}t {timeLeft.minutes}min {timeLeft.seconds}sek
+                        </span>
                       </div>
                       <div className="auction-detail">
                         <span className="left-text"><strong>Høyeste Bud:</strong></span>
@@ -437,6 +442,7 @@ function LiveAuctions() {
                     </div>
                   </div>
                 );
+                
               })
             )}
            
