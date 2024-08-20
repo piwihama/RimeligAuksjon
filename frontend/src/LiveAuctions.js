@@ -111,7 +111,7 @@ function LiveAuctions() {
       setError('Kunne ikke hente filtertellerne. Prøv igjen senere.');
     }
   };
-
+//mora di
   const sortAuctions = (auctions, option) => {
     switch (option) {
       case 'avsluttes-forst':
