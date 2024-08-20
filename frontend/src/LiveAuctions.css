@@ -49,10 +49,12 @@ body {
 
 .filter-group label {
     margin-left: 5px;
-    margin-bottom: 10px;
 }
 .kategoribiltitle{
     font-weight: bold;
+    
+    margin-bottom: 10px;
+
 }
 
 .filter-group input[type="text"],
