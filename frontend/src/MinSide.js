@@ -101,8 +101,8 @@ function MinSide() {
                       {auctions.map(auction => (
                         <div className="myside-auction-card" key={auction._id}>
                           <h6>{auction.title}</h6>
-                          {auction.images && auction.images.length > 0 && (
-                            <img src={auction.images[0]} alt={auction.title} className="myside-auction-image" />
+                          {auction.imageUrls && auction.imageUrls.length > 0 && (
+                            <img src={auction.imageUrls[0]} alt={auction.title} className="myside-auction-image" />
                           )}
                           <p><strong>Merke:</strong> {auction.brand}</p>
                           <p><strong>Modell:</strong> {auction.model}</p>
@@ -134,8 +134,8 @@ function MinSide() {
                       {liveAuctions.map(auction => (
                         <div className="myside-auction-card" key={auction._id}>
                           <h6>{auction.title}</h6>
-                          {auction.images && auction.images.length > 0 && (
-                            <img src={auction.images[0]} alt={auction.title} className="myside-auction-image" />
+                          {auction.imageUrls && auction.imageUrls.length > 0 && (
+                            <img src={auction.imageUrls[0]} alt={auction.title} className="myside-auction-image" />
                           )}
                           <p><strong>Merke:</strong> {auction.brand}</p>
                           <p><strong>Modell:</strong> {auction.model}</p>
