@@ -9,56 +9,13 @@ const Summary = ({ formData, prevStep }) => {
   let timeout = null; // For debounce
 
   const handleSubmit = async () => {
-    if (isLoading) return; 
-    setIsLoading(true); 
+    if (isLoading) return;
+    setIsLoading(true);
 
-    console.log("Submitting form with XMLHttpRequest...");
+    console.log("Submitting form with fetch...");
 
     try {
       const token = localStorage.getItem('token');
-      const xhr = new XMLHttpRequest();
-
-      xhr.open('POST', 'https://rimelig-auksjon-backend.vercel.app/api/auctions', true);
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-          console.log("XHR response status:", xhr.status);
-          if (xhr.status === 200) {
-            console.log("Auction created successfully:", xhr.responseText);
-            setIsSubmitted(true);
-
-            // Parse the response to get the auction ID
-            const response = JSON.parse(xhr.responseText);
-            const documentId = response.insertedId; // Assuming MongoDB returns the inserted ID in this field
-
-            // Call the send-image endpoint to trigger the email
-            fetch('https://rimelig-auksjon-backend.vercel.app/send-image', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-              },
-              body: JSON.stringify({ documentId: documentId })
-            })
-            .then(response => {
-              if (response.ok) {
-                console.log("Email sent successfully.");
-              } else {
-                console.error("Error sending email:", response.statusText);
-              }
-            })
-            .catch(error => {
-              console.error("Error sending email:", error);
-            });
-          } else {
-            console.error("Error creating auction:", xhr.responseText);
-          }
-          setIsLoading(false);
-        }
-      };
-
       const images = formData.images || [];
       const base64Images = images.map(img => {
         if (typeof img === 'string' && img.startsWith('data:image/')) {
@@ -70,9 +27,38 @@ const Summary = ({ formData, prevStep }) => {
       }).filter(img => img !== null);
 
       const submissionData = { ...formData, images: base64Images };
-      xhr.send(JSON.stringify(submissionData));
+
+      const response = await fetch('https://rimelig-auksjon-backend.vercel.app/api/auctions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(submissionData)
+      });
+
+      if (response.ok) {
+        console.log("Auction created successfully");
+        const data = await response.json();
+        setIsSubmitted(true);
+
+        // Trigger email sending
+        await fetch('https://rimelig-auksjon-backend.vercel.app/send-image', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ documentId: data.insertedId })
+        });
+
+        console.log("Email sent successfully.");
+      } else {
+        console.error("Error creating auction:", response.statusText);
+      }
     } catch (error) {
       console.error('Error submitting form:', error);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -80,7 +66,7 @@ const Summary = ({ formData, prevStep }) => {
   const handleClick = () => {
     if (timeout) return;
     handleSubmit();
-    timeout = setTimeout(() => { timeout = null; }, 1000); 
+    timeout = setTimeout(() => { timeout = null; }, 1000);
   };
 
   if (isSubmitted) {

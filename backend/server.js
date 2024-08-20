@@ -26,13 +26,21 @@ const app = express();
 // CORS mellomvare skal komme først
 const corsOptions = {
   origin: 'https://www.rimeligauksjon.no',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-  allowedHeaders: 'Content-Type, Authorization',
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+
+// Plasser dette før andre ruter og mellomvarer
+app.options('*', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', 'https://www.rimeligauksjon.no');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.sendStatus(204); // Returner "No Content"
+});
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
