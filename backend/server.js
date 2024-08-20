@@ -334,7 +334,8 @@ async function connectDB() {
         };
     
         delete newAuction.images; // Remove the base64 images before saving
-    
+        delete newAuction.previewImages; // Remove the base64 images before saving
+
         const result = await auctionCollection.insertOne(newAuction);
         res.json(result);
       } catch (err) {
@@ -917,15 +918,11 @@ async function connectDB() {
           return res.status(404).json({ error: 'User not found' });
         }
     
-        const { brand, model, year, images } = document;
+        const { brand, model, year, imageUrls } = document;
     
-        if (images.length === 0) {
+        if (!imageUrls || imageUrls.length === 0) {
           return res.status(400).json({ error: 'No images found in the document' });
         }
-    
-        const imageUrls = await Promise.all(images.map((base64Image) => {
-          return uploadImageToS3(base64Image, user.email, brand, model, year);
-        }));
     
         let transporter = nodemailer.createTransport({
           service: 'gmail',
@@ -995,7 +992,6 @@ async function connectDB() {
       }
     });
     
-
     const PORT = process.env.PORT || 8082;
     app.listen(PORT, () => {
       console.log(`Listening on port ${PORT}`);
