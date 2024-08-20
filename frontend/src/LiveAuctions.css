@@ -50,6 +50,9 @@ body {
 .filter-group label {
     margin-left: 5px;
 }
+.kategoribiltitle{
+    font-weight: bold;
+}
 
 .filter-group input[type="text"],
 .filter-group input[type="number"],
