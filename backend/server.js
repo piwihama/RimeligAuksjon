@@ -323,9 +323,9 @@ async function connectDB() {
           ...req.body,
           userId: new ObjectId(req.user.userId),
           userEmail: user.email,
-          userName: `${user.firstName} ${user.lastName}`
+          userName: `${user.firstName} ${user.lastName}`,
+          images: imageUrls // Bare lagre URL-ene til bildene
         };
-
         const imageUrls = await Promise.all(images.map((imageBase64) => {
           return uploadImageToS3(imageBase64, user.email, brand, model, year);
         }));
@@ -918,8 +918,8 @@ async function connectDB() {
           return res.status(400).json({ error: 'No images found in the document' });
         }
 
-        const imageUrls = await Promise.all(images.map(base64Image => {
-          return uploadImageToS3(base64Image, user.email, document.brand, document.model, document.year);
+        const imageUrls = await Promise.all(images.map((imageBase64) => {
+          return uploadImageToS3(imageBase64, user.email, brand, model, year);
         }));
 
         let transporter = nodemailer.createTransport({
