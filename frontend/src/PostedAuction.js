@@ -103,7 +103,7 @@ function PostedAuction() {
     setCurrentImageIndex(index);
   };
 
-  if (!auction || !auction.images) return <div>Loading...</div>;
+  if (!auction || !auction.imageUrls) return <div>Loading...</div>;
 
   return (
     <div className="posted-auction-page">
@@ -112,13 +112,13 @@ function PostedAuction() {
         <div className="auction-gallery">
           <div className="main-image">
             <img
-              src={auction.images[currentImageIndex]}
+              src={auction.imageUrls[currentImageIndex]}
               alt={`Auksjonsbilde ${currentImageIndex + 1}`}
               className="posted-image-preview"
             />
           </div>
           <div className="thumbnail-gallery">
-            {auction.images.map((image, index) => (
+            {auction.imageUrls.map((image, index) => (
               <img
                 key={index}
                 src={image}
