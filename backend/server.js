@@ -312,26 +312,26 @@ async function connectDB() {
     app.post('/api/auctions', authenticateToken, async (req, res) => {
       try {
         const user = await loginCollection.findOne({ _id: new ObjectId(req.user.userId) });
-
+    
         if (!user) {
           return res.status(404).json({ message: 'User not found' });
         }
-
+    
         const { brand, model, year, images } = req.body;
-
+    
+        // Generer URL-er for bilder
+        const imageUrls = await Promise.all(images.map((imageBase64) => {
+          return uploadImageToS3(imageBase64, user.email, brand, model, year);
+        }));
+    
         const newAuction = {
           ...req.body,
           userId: new ObjectId(req.user.userId),
           userEmail: user.email,
           userName: `${user.firstName} ${user.lastName}`,
-          images: imageUrls // Bare lagre URL-ene til bildene
+          imageUrls: imageUrls // Bare lagre URL-ene til bildene
         };
-        const imageUrls = await Promise.all(images.map((imageBase64) => {
-          return uploadImageToS3(imageBase64, user.email, brand, model, year);
-        }));
-
-        newAuction.imageUrls = imageUrls;
-
+    
         const result = await auctionCollection.insertOne(newAuction);
         res.json(result);
       } catch (err) {
@@ -339,7 +339,6 @@ async function connectDB() {
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
-
     // Endepunkt for å fornye tokenet
     app.post('/api/refresh-token', authenticateToken, (req, res) => {
       const userId = req.user.userId;
@@ -901,27 +900,28 @@ async function connectDB() {
 
     app.post('/send-image', authenticateToken, async (req, res) => {
       const { documentId } = req.body;
-
+    
       try {
         const document = await auctionCollection.findOne({ _id: new ObjectId(documentId) });
         if (!document) {
           return res.status(404).json({ error: 'Document not found' });
         }
-
+    
         const user = await loginCollection.findOne({ _id: new ObjectId(req.user.userId) });
         if (!user) {
           return res.status(404).json({ error: 'User not found' });
         }
-
-        const images = document.images || [];
+    
+        const { brand, model, year, images } = document;
+    
         if (images.length === 0) {
           return res.status(400).json({ error: 'No images found in the document' });
         }
-
-        const imageUrls = await Promise.all(images.map((imageBase64) => {
-          return uploadImageToS3(imageBase64, user.email, brand, model, year);
+    
+        const imageUrls = await Promise.all(images.map((base64Image) => {
+          return uploadImageToS3(base64Image, user.email, brand, model, year);
         }));
-
+    
         let transporter = nodemailer.createTransport({
           service: 'gmail',
           auth: {
@@ -929,7 +929,7 @@ async function connectDB() {
             pass: 'eysj jfoz ahcj qqzo'
           }
         });
-
+    
         let emailContent = `
           <p>Hei,</p>
           <p>Her er informasjonen om din auksjonsforespørsel:</p>
@@ -956,31 +956,31 @@ async function connectDB() {
             <li><strong>Sist EU-godkjent:</strong> ${document.lastEUApproval}</li>
             <li><strong>Neste frist for EU-kontroll:</strong> ${document.nextEUControl}</li>
           </ul>
-
+    
           <h3>Beskrivelse:</h3>
           <p><strong>Beskrivelse:</strong> ${document.description}</p>
           <p><strong>Beskrivelse av tilstand:</strong> ${document.conditionDescription}</p>
-
+    
           <h3>Utstyr:</h3>
           <ul>
             ${document.equipment.map(item => `<li>${item}</li>`).join('')}
           </ul>
-
+    
           <h3>Bilder:</h3>
           <div>
             ${imageUrls.map((url, index) => `<img src="${url}" alt="Bilde ${index + 1}" style="width: 100px; height: auto; margin-right: 10px;"/>`).join('')}
           </div>
-
+    
           <p>Med vennlig hilsen,<br/>RimeligAuksjon.no</p>
         `;
-
+    
         let mailOptions = {
           from: '"RimeligAuksjon.no" <peiwast124@gmail.com>',
           to: `${user.email}, peiwast124@gmail.com`,
           subject: 'Her er informasjonen om din auksjonsforespørsel fra RimeligAuksjon.no',
           html: emailContent,
         };
-
+    
         let info = await transporter.sendMail(mailOptions);
         console.log('E-post sendt: %s', info.messageId);
         res.status(200).send('E-post sendt med bildet.');
@@ -989,6 +989,7 @@ async function connectDB() {
         res.status(500).send('Feil under sending av e-post.');
       }
     });
+    
 
     const PORT = process.env.PORT || 8082;
     app.listen(PORT, () => {
