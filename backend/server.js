@@ -319,17 +319,18 @@ async function connectDB() {
     
         const { brand, model, year, images } = req.body;
     
-        // Generer URL-er for bilder
+        // Last opp bilder til S3 og få tilbake URL-er
         const imageUrls = await Promise.all(images.map((imageBase64) => {
           return uploadImageToS3(imageBase64, user.email, brand, model, year);
         }));
     
+        // Lagre auksjonen med URL-ene til bildene i stedet for base64-strenger
         const newAuction = {
           ...req.body,
           userId: new ObjectId(req.user.userId),
           userEmail: user.email,
           userName: `${user.firstName} ${user.lastName}`,
-          imageUrls: imageUrls // Bare lagre URL-ene til bildene
+          imageUrls // Lagre URL-ene til bildene i stedet for selve bildedataene
         };
     
         const result = await auctionCollection.insertOne(newAuction);
@@ -339,6 +340,7 @@ async function connectDB() {
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
     // Endepunkt for å fornye tokenet
     app.post('/api/refresh-token', authenticateToken, (req, res) => {
       const userId = req.user.userId;
