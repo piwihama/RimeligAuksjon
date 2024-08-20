@@ -15,6 +15,7 @@ const Summary = ({ formData, prevStep }) => {
     console.log("Submitting form with fetch...");
 
     try {
+      const token = localStorage.getItem('token');
       const images = formData.images || [];
       const base64Images = images.map(img => {
         if (typeof img === 'string' && img.startsWith('data:image/')) {
@@ -31,6 +32,7 @@ const Summary = ({ formData, prevStep }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(submissionData)
       });
@@ -40,11 +42,12 @@ const Summary = ({ formData, prevStep }) => {
         const data = await response.json();
         setIsSubmitted(true);
 
-        // Trigger email sending without Authorization header
+        // Trigger email sending
         await fetch('https://rimelig-auksjon-backend.vercel.app/send-image', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
           },
           body: JSON.stringify({ documentId: data.insertedId })
         });

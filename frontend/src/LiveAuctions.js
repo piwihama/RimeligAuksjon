@@ -204,6 +204,7 @@ function LiveAuctions() {
       <div className='whole-container'>
         <div className="live-auctions-container">
           <aside className="filters-section">
+            <h1>Kategori / Bil</h1>
             <h2>Filtrer auksjoner</h2>
             <button
               type="button"
