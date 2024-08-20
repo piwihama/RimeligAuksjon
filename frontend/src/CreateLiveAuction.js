@@ -38,7 +38,7 @@ function CreateLiveAuction() {
     bidderCount: '',
     location: '',
     endDate: '',
-    images: [],
+    imageUrls: [],
     userId: '',
     userEmail: '',
     userName: '',
@@ -92,7 +92,7 @@ function CreateLiveAuction() {
           bidderCount: response.data.bidderCount || '',
           location: response.data.location || '',
           endDate: response.data.endDate ? new Date(response.data.endDate).toISOString().substring(0, 16) : '',
-          images: response.data.images || [],
+          imageUrls: response.data.imageUrls || [],
           userId: response.data.userId || '',
           userEmail: response.data.userEmail || '',
           userName: response.data.userName || '',
@@ -131,8 +131,8 @@ function CreateLiveAuction() {
       });
     });
 
-    Promise.all(imagePromises).then(images => {
-      setFormData(prevState => ({ ...prevState, images: [...prevState.images, ...images] }));
+    Promise.all(imagePromises).then(imageUrls => {
+      setFormData(prevState => ({ ...prevState, imageUrls: [...prevState.imageUrls, ...imageUrls] }));
     });
   };
 
@@ -285,10 +285,10 @@ function CreateLiveAuction() {
           <input type="datetime-local" id="endDate" name="endDate" value={formData.endDate} onChange={handleChange} />
         </div>
         <div className="form-group">
-          <label htmlFor="images">Bilder</label>
-          <input type="file" id="images" multiple accept="image/*" onChange={handleImageChange} />
+          <label htmlFor="imageUrls">Bilder</label>
+          <input type="file" id="imageUrls" multiple accept="image/*" onChange={handleImageChange} />
           <div className="image-preview">
-            {formData.images.map((image, index) => (
+            {formData.imageUrls.map((image, index) => (
               <div key={index} className="image-container">
                 <img src={image} alt={`Auction Image ${index + 1}`} />
               </div>
