@@ -203,7 +203,7 @@ function LiveAuctions() {
       <Header />
       <div className='whole-container'>
         <div className="live-auctions-container">
-        <h1>Kategori / Bil</h1>
+        <h1 className="filters-section">Kategori / Bil</h1>
 
           <aside className="filters-section">
             <h2>Filtrer auksjoner</h2>
