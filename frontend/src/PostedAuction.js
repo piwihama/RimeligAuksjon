@@ -141,8 +141,11 @@ function PostedAuction() {
                 <span className="detail-title">Avsluttes om:</span>
                 <span className="top-value">{timeLeft.days}d {timeLeft.hours}t {timeLeft.minutes}min {timeLeft.seconds}sek</span>
               </div>
-               {/* New fields added below */}
-          <div className="additional-info">
+           
+            </div>
+          </div>
+              {/* New fields added below */}
+              <div className="additional-info">
             <div className="posted-detail-item">
               <span className="detail-title">Avsluttes:</span>
               <span className="detail-value">{new Date(auction.endDate).toLocaleString()}</span>
@@ -165,8 +168,6 @@ function PostedAuction() {
             </div>
           </div>
           {/* End of new fields */}
-            </div>
-          </div>
           {auction.status !== 'Utgått' && (
             <div className="bid-section">
               <form onSubmit={handleBidSubmit}>
