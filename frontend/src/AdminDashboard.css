@@ -8,43 +8,43 @@
 }
 
 .admin-dashboard-container {
-  max-width: 1200px;
-  margin: 40px auto;
-  padding: 10px;
+  max-width: 1000px; /* Redusert bredde */
+  margin: 20px auto; /* Redusert margin */
+  padding: 5px; /* Redusert padding */
   background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px; /* Redusert border-radius */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Redusert skygge */
 }
 
 .admin-dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 10px; /* Redusert margin */
 }
 
 .admin-dashboard-header h1 {
   margin: 0;
-  font-size: 24px;
+  font-size: 20px; /* Redusert skriftstørrelse */
   color: #333;
 }
 
 .admin-dashboard-sections {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 5px; /* Redusert gap */
 }
 
 .admin-dashboard-section {
   border: 1px solid #ddd;
-  padding: 10px;
-  border-radius: 8px;
+  padding: 8px; /* Redusert padding */
+  border-radius: 6px; /* Redusert border-radius */
   background-color: #fafafa;
   transition: box-shadow 0.3s ease-in-out;
 }
 
 .admin-dashboard-section:hover {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
 }
 
 .admin-auction-list, .admin-live-auction-list {
@@ -55,9 +55,9 @@
 
 .admin-auction-item, .admin-live-auction-item {
   border: 1px solid #ddd;
-  padding: 8px;
-  border-radius: 5px;
-  margin-bottom: 8px;
+  padding: 6px; /* Redusert padding */
+  border-radius: 4px; /* Redusert border-radius */
+  margin-bottom: 6px; /* Redusert margin */
   display: flex;
   flex-direction: column;
   background-color: #fff;
@@ -65,17 +65,17 @@
 }
 
 .admin-auction-item:hover, .admin-live-auction-item:hover {
-  transform: scale(1.02);
+  transform: scale(1.01); /* Redusert scale-effekt */
 }
 
 .admin-auction-details, .admin-live-auction-details {
-  margin-bottom: 8px;
+  margin-bottom: 6px; /* Redusert margin */
 }
 
 .admin-auction-actions, .admin-live-auction-actions {
   display: flex;
   justify-content: space-between;
-  gap: 5px;
+  gap: 3px; /* Redusert gap */
 }
 
 .admin-auction-carousel {
@@ -88,10 +88,10 @@
 
 .admin-auction-image, .admin-live-auction-image {
   width: 100%;
-  max-width: 400px;
+  max-width: 300px; /* Redusert bredde */
   height: auto;
-  border-radius: 5px;
-  margin-bottom: 8px;
+  border-radius: 4px; /* Redusert border-radius */
+  margin-bottom: 6px; /* Redusert margin */
   object-fit: cover;
 }
 
@@ -102,18 +102,18 @@
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
   border: none;
-  padding: 8px;
+  padding: 6px; /* Redusert padding */
   cursor: pointer;
   border-radius: 50%;
-  font-size: 18px;
+  font-size: 16px; /* Redusert skriftstørrelse */
 }
 
 .carousel-control.prev {
-  left: 10px;
+  left: 5px; /* Redusert posisjonering */
 }
 
 .carousel-control.next {
-  right: 10px;
+  right: 5px; /* Redusert posisjonering */
 }
 
 .carousel-control:hover {
@@ -121,9 +121,9 @@
 }
 
 .admin-btn {
-  padding: 4px 8px;
+  padding: 2px 6px; /* Redusert padding */
   border: none;
-  border-radius: 5px;
+  border-radius: 4px; /* Redusert border-radius */
   background-color: #007bff;
   color: white;
   cursor: pointer;
@@ -168,10 +168,10 @@
 }
 
 .admin-dashboard-header h2 {
-  border-bottom: 2px solid #ddd;
-  padding-bottom: 8px;
-  margin-bottom: 16px;
-  font-size: 18px;
+  border-bottom: 1px solid #ddd; /* Redusert border */
+  padding-bottom: 6px; /* Redusert padding */
+  margin-bottom: 12px; /* Redusert margin */
+  font-size: 16px; /* Redusert skriftstørrelse */
   color: #333;
 }
 
