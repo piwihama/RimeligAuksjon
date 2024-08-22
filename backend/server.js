@@ -532,17 +532,7 @@ async function connectDB() {
     });
     
 
-    app.delete('/api/liveauctions/:id', authenticateToken, async (req, res) => {
-      try {
-        const liveAuctionId = req.params.id;
-        const result = await liveAuctionCollection.deleteOne({ _id: new ObjectId(liveAuctionId) });
-        if (result.deletedCount === 0) return res.status(404).json({ message: 'Live auction not found' });
-        res.json({ message: 'Live auction deleted successfully' });
-      } catch (err) {
-        console.error('Error deleting live auction:', err);
-        res.status(500).json({ error: 'Internal Server Error' });
-      }
-    });
+   
 
     app.get('/api/auctions/:id', authenticateToken, async (req, res) => {
       try {
@@ -690,6 +680,18 @@ async function connectDB() {
       }
     });
 
+    app.delete('/api/auctions/:id', authenticateToken, async (req, res) => {
+      try {
+        const auctionId = req.params.id;
+        const result = await auctionCollection.deleteOne({ _id: new ObjectId(auctionId) });
+        if (result.deletedCount === 0) return res.status(404).json({ message: 'Auction not found' });
+        res.json({ message: 'Auction deleted successfully' });
+      } catch (err) {
+        console.error('Error deleting auction:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    });
+    
     app.put('/api/liveauctions/:id', authenticateToken, async (req, res) => {
       try {
         const liveAuctionId = req.params.id;
