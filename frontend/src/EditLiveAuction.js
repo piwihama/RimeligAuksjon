@@ -162,8 +162,8 @@ function EditLiveAuction() {
           <input type="number" id="minBidIncrement" name="minBidIncrement" value={liveAuction.minBidIncrement} onChange={handleChange} />
         </div>
         <div className="form-group">
-          <label htmlFor="auksjongebyr">Auction Fee</label>
-          <input type="number" id="auksjongebyr" name="auksjongebyr" value={liveAuction.auksjonsgebyr} onChange={handleChange} />
+          <label htmlFor="auctionFee">Auction Fee</label>
+          <input type="number" id="auctionFee" name="auctionFee" value={liveAuction.auctionFee} onChange={handleChange} />
         </div>
         <div className="form-group">
           <label htmlFor="vat">VAT</label>

@@ -156,7 +156,7 @@ function PostedAuction() {
             </div>
             <div className="posted-detail-item">
               <span className="detail-title">Auksjonsgebyr:</span>
-              <span className="detail-value">{auction.auksjonsgebyr} %</span>
+              <span className="detail-value">{auction.auctionFee} ,-</span>
             </div>
             <div className="posted-detail-item">
               <span className="detail-title">MVA:</span>
