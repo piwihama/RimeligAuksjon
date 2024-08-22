@@ -143,12 +143,12 @@ function PostedAuction() {
               </div>
            
             </div>
-          </div>
+          </div > 
               {/* New fields added below */}
               <div className="additional-info">
             <div className="posted-detail-item">
               <span className="detail-title">Avsluttes:</span>
-              <span className="detail-value">{new Date(auction.endDate).toLocaleString()}</span>
+              <span className="detail-value" id='enddate'>{new Date(auction.endDate).toLocaleString()}</span>
             </div>
             <div className="posted-detail-item">
               <span className="detail-title">Selges av:</span>

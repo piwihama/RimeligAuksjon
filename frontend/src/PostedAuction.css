@@ -14,7 +14,9 @@
   max-width: 900px;
   margin: 0 auto;
 }
-
+.additional-info{
+  padding-top: 20px;
+}
 .auction-gallery {
   flex: 2;
   display: flex;
@@ -255,7 +257,11 @@
   text-align: right;
   flex: 1; /* Tilpasser seg bredden */
 }
+#enddate{
+  color: rgb(211, 13, 13);
+  font-weight: bold;
 
+}
 
 .posted-column{
   font-size: 11px;
