@@ -141,6 +141,30 @@ function PostedAuction() {
                 <span className="detail-title">Avsluttes om:</span>
                 <span className="top-value">{timeLeft.days}d {timeLeft.hours}t {timeLeft.minutes}min {timeLeft.seconds}sek</span>
               </div>
+               {/* New fields added below */}
+          <div className="additional-info">
+            <div className="posted-detail-item">
+              <span className="detail-title">Avsluttes:</span>
+              <span className="detail-value">{new Date(auction.endDate).toLocaleString()}</span>
+            </div>
+            <div className="posted-detail-item">
+              <span className="detail-title">Selges av:</span>
+              <span className="detail-value">{auction.selger}</span>
+            </div>
+            <div className="posted-detail-item">
+              <span className="detail-title">Auksjonsgebyr:</span>
+              <span className="detail-value">{auction.auksjonsgebyr} %</span>
+            </div>
+            <div className="posted-detail-item">
+              <span className="detail-title">MVA:</span>
+              <span className="detail-value">{auction.vatRate} %</span>
+            </div>
+            <div className="posted-detail-item">
+              <span className="detail-title">Sted:</span>
+              <span className="detail-value">{auction.location}</span>
+            </div>
+          </div>
+          {/* End of new fields */}
             </div>
           </div>
           {auction.status !== 'Utgått' && (
@@ -184,30 +208,7 @@ function PostedAuction() {
             )}
           </div>
 
-          {/* New fields added below */}
-          <div className="additional-info">
-            <div className="posted-detail-item">
-              <span className="detail-title">Avsluttes:</span>
-              <span className="detail-value">{new Date(auction.endDate).toLocaleString()}</span>
-            </div>
-            <div className="posted-detail-item">
-              <span className="detail-title">Selges av:</span>
-              <span className="detail-value">{auction.selger}</span>
-            </div>
-            <div className="posted-detail-item">
-              <span className="detail-title">Auksjonsgebyr:</span>
-              <span className="detail-value">{auction.auksjonsgebyr} %</span>
-            </div>
-            <div className="posted-detail-item">
-              <span className="detail-title">MVA:</span>
-              <span className="detail-value">{auction.vatRate} %</span>
-            </div>
-            <div className="posted-detail-item">
-              <span className="detail-title">Sted:</span>
-              <span className="detail-value">{auction.location}</span>
-            </div>
-          </div>
-          {/* End of new fields */}
+         
         </div>
 
         <div className="posted-auction-details">
