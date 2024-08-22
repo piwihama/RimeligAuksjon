@@ -15,10 +15,10 @@ function Footer() {
         <div className="footer-section links">
           <h3>Lenker</h3>
           <ul>
-            <li><a href="/about">Om oss</a></li>
-            <li><a href="/contact">Kontakt oss</a></li>
-            <li><a href="/privacy">Personvern</a></li>
-            <li><a href="/terms">Vilkår</a></li>
+            <li><a href="/info">Om oss</a></li>
+            <li><a href="/info">Kontakt oss</a></li>
+            <li><a href="/info">Personvern</a></li>
+            <li><a href="/info">Vilkår</a></li>
           </ul>
         </div>
 

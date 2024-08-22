@@ -127,25 +127,21 @@ function PostedAuction() {
                 onClick={() => handleThumbnailClick(index)}
               />
             ))}
-            
           </div>
           <h1 className='posted-title'>{auction.brand} {auction.model} {auction.year} - {auction.mileage}KM</h1>
-
         </div>
         <div className="auction-info">
-
           <div className='info-top'>
             <div className='bid-and-finish'>
-          <div className="posted-detail-item-top">
+              <div className="posted-detail-item-top">
                 <span className="detail-title">Høyeste bud:</span>
                 <span className="top-value">{auction.highestBid},-</span>
-            </div>
-            <div className="posted-detail-item-top">
+              </div>
+              <div className="posted-detail-item-top">
                 <span className="detail-title">Avsluttes om:</span>
                 <span className="top-value">{timeLeft.days}d {timeLeft.hours}t {timeLeft.minutes}min {timeLeft.seconds}sek</span>
+              </div>
             </div>
-           
-          </div>
           </div>
           {auction.status !== 'Utgått' && (
             <div className="bid-section">
@@ -173,38 +169,60 @@ function PostedAuction() {
             </div>
           )}
 
-<div className="bid-list">
-  <h3>Budhistorikk</h3>
-  {auction.bids && auction.bids.length > 0 ? (
-    <ul>
-      {auction.bids.map((bid, index) => (
-        <li key={index}>
-          {bid.bidder} - {bid.amount},-
-        </li>
-      ))}
-    </ul>
-  ) : (
-    <p>Ingen bud er gitt enda</p>
-  )}
-</div>
+          <div className="bid-list">
+            <h3>Budhistorikk</h3>
+            {auction.bids && auction.bids.length > 0 ? (
+              <ul>
+                {auction.bids.map((bid, index) => (
+                  <li key={index}>
+                    {bid.bidder} - {bid.amount},-
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>Ingen bud er gitt enda</p>
+            )}
+          </div>
 
+          {/* New fields added below */}
+          <div className="additional-info">
+            <div className="posted-detail-item">
+              <span className="detail-title">Avsluttes:</span>
+              <span className="detail-value">{new Date(auction.endDate).toLocaleString()}</span>
+            </div>
+            <div className="posted-detail-item">
+              <span className="detail-title">Selges av:</span>
+              <span className="detail-value">{auction.selger}</span>
+            </div>
+            <div className="posted-detail-item">
+              <span className="detail-title">Auksjonsgebyr:</span>
+              <span className="detail-value">{auction.auksjonsgebyr} %</span>
+            </div>
+            <div className="posted-detail-item">
+              <span className="detail-title">MVA:</span>
+              <span className="detail-value">{auction.vatRate} %</span>
+            </div>
+            <div className="posted-detail-item">
+              <span className="detail-title">Sted:</span>
+              <span className="detail-value">{auction.location}</span>
+            </div>
+          </div>
+          {/* End of new fields */}
         </div>
-        
+
         <div className="posted-auction-details">
           <div className='top-small-details'>
-          <div className="posted-detail-item-bottom">
-                <span className="detail-info-below">Beskrivelse</span>
-                <span className="">{auction.description}</span>
-                <span className="detail-info-below">Tilstand</span>
-                <span className="">{auction.conditionDescription}</span>          
-                <span className="detail-info-below">Utstyr</span>
-                {auction.equipment && (Array.isArray(auction.equipment) ? auction.equipment : auction.equipment.split(', ')).map((item, index) => (
-    <span key={index} className="equipment-item">- {item}</span>
-))}
-    </div>
-
-
-                </div>  
+            <div className="posted-detail-item-bottom">
+              <span className="detail-info-below">Beskrivelse</span>
+              <span className="">{auction.description}</span>
+              <span className="detail-info-below">Tilstand</span>
+              <span className="">{auction.conditionDescription}</span>
+              <span className="detail-info-below">Utstyr</span>
+              {auction.equipment && (Array.isArray(auction.equipment) ? auction.equipment : auction.equipment.split(', ')).map((item, index) => (
+                <span key={index} className="equipment-item">- {item}</span>
+              ))}
+            </div>
+          </div>  
           <div className='posted-small-details'>
             <div className='posted-column'>
               <div className="posted-detail-item">
