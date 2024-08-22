@@ -69,7 +69,7 @@ function Signup() {
 
   const handleOtpSubmit = (event) => {
     event.preventDefault();
-    axios.post('hhttps://rimelig-auksjon-backend.vercel.app/verify-otp', { email: values.email, otp })
+    axios.post('https://rimelig-auksjon-backend.vercel.app/verify-otp', { email: values.email, otp })
       .then(res => {
         console.log('OTP verified:', res);
         setSuccessMessage('Email verified successfully. Redirecting to login page.');
