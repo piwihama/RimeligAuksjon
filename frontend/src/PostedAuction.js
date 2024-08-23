@@ -24,6 +24,10 @@ function PostedAuction() {
         setAuction(response.data);
         setEndDate(new Date(response.data.endDate));
         calculateTimeLeft(new Date(response.data.endDate));
+
+        // Foreslå budbeløp basert på minsteBudøkning
+        const minimumBid = response.data.highestBid + response.data.minsteBudøkning;
+        setBidAmount(minimumBid);
       } catch (error) {
         console.error('Error fetching auction details:', error);
       }
@@ -73,6 +77,14 @@ function PostedAuction() {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
+
+    const minimumRequiredBid = auction.highestBid + auction.minsteBudøkning;
+    
+    if (parseFloat(bidAmount) < minimumRequiredBid) {
+      setError(`Bud må være minst ${minimumRequiredBid},-`);
+      return;
+    }
+
     try {
       const token = localStorage.getItem('token');
       await axios.post(
@@ -91,6 +103,10 @@ function PostedAuction() {
       });
       setAuction(response.data);
       setEndDate(new Date(response.data.endDate));
+
+      // Oppdater foreslått budbeløp etter at et bud er lagt inn
+      const newMinimumBid = response.data.highestBid + response.data.minsteBudøkning;
+      setBidAmount(newMinimumBid);
 
     } catch (error) {
       const message = error.response && error.response.data ? error.response.data.message : 'Feil ved innlegging av bud. Prøv igjen.';
@@ -180,6 +196,7 @@ function PostedAuction() {
                     value={bidAmount}
                     onChange={(e) => setBidAmount(e.target.value)}
                     required
+                    min={auction.highestBid + auction.minsteBudøkning}
                   />
                 </div>
                 <button type="submit" className="btn btn-primary">Legg inn bud</button>

@@ -767,8 +767,10 @@ async function connectDB() {
         const liveAuction = await liveAuctionCollection.findOne({ _id: new ObjectId(liveAuctionId) });
         if (!liveAuction) return res.status(404).json({ message: 'Auksjonen ble ikke funnet' });
     
-        if (bidAmount <= liveAuction.highestBid) {
-          return res.status(400).json({ message: 'Bud må være høyere enn nåværende høyeste bud' });
+        const minimumRequiredBid = liveAuction.highestBid + liveAuction.minsteBudøkning;
+    
+        if (bidAmount < minimumRequiredBid) {
+          return res.status(400).json({ message: `Bud må være høyere enn ${minimumRequiredBid},-` });
         }
     
         const reservePriceMet = bidAmount >= liveAuction.reservePrice;
@@ -850,6 +852,7 @@ async function connectDB() {
         res.status(500).json({ error: 'Intern serverfeil' });
       }
     });
+    
     app.get('/api/myliveauctions', authenticateToken, async (req, res) => {
       console.log('Request received at /api/myliveauctions');
       try {
