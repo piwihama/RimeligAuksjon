@@ -157,7 +157,7 @@ const handleBidSubmit = async (e) => {
               <form onSubmit={handleBidSubmit}>
                 <div className="form-group">
                   <label htmlFor="bidAmount">Budbeløp</label>
-                  <small  style={{ fontSize: '5px' }} className="form-text text-muted">
+                  <small  style={{ fontSize: '15px'  , marginTop: '1px'}} className="form-text text-muted">
           Beløpet som foreslås her er minimumsbudet. Du kan by mer om ønskelig.
         </small>
                   <input
