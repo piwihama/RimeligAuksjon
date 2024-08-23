@@ -190,6 +190,9 @@ setBidAmount(minimumBid.toString()); // Konverterer tallet tilbake til en streng
               <form onSubmit={handleBidSubmit}>
                 <div className="form-group">
                   <label htmlFor="bidAmount">Budbeløp</label>
+                  <small className="form-text text-muted">
+          Beløpet som foreslås her er minimumsbudet. Du kan by mer om ønskelig.
+        </small>
                   <input
                     type="number"
                     id="bidAmount"
@@ -202,7 +205,7 @@ setBidAmount(minimumBid.toString()); // Konverterer tallet tilbake til en streng
                 </div>
                 <div className="posted-detail-item">
               <span className="detail-title">Minste budøkning:</span>
-              <span className="detail-value">{auction.minsteBudøkning}</span>
+              <span className="detail-value" style={"color: red; fontWeight: bold"}>{auction.minsteBudøkning},-</span>
             </div>
                 <button type="submit" className="btn btn-primary">Legg inn bud</button>
                 {error && <p className="error-message">{error}</p>}
