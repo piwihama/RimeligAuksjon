@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import validation from './LoginValidation';
 import axios from 'axios';
 import './Login.css';
-import Header from './Header'; // Make sure this points to your Header component
+import Header from './Header';
 
 function Login() {
   const [values, setValues] = useState({
@@ -107,7 +107,6 @@ function Login() {
         });
     }
   };
-  
 
   const handleOtpSubmit = (event) => {
     event.preventDefault();
@@ -125,7 +124,7 @@ function Login() {
         setErrors({ otp: 'Ugyldig engangskode. Vennligst prøv igjen.' });
       });
   };
- 
+
   return (
     <>
       <Header />

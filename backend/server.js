@@ -199,24 +199,46 @@ async function connectDB() {
     app.post('/verify-otp', async (req, res) => {
       try {
         const { email, otp } = req.body;
+    
+        // Log input data for debugging
+        console.log(`Verifying OTP for email: ${email} with OTP: ${otp}`);
+    
+        // Finn brukeren basert på e-posten
         const user = await loginCollection.findOne({ email });
-        if (!user) return res.status(400).json({ message: 'User not found' });
-        
+        if (!user) {
+          console.error('User not found for email:', email);
+          return res.status(400).json({ message: 'User not found' });
+        }
+    
+        // Verifiser OTP med speakeasy
         const verified = speakeasy.totp.verify({
           secret: user.otpSecret,
           encoding: 'base32',
-          token: otp
+          token: otp,
+          window: 2 // Utvider tidsvinduet for å tillate mer fleksibilitet
         });
-        
-        if (!verified) return res.status(400).json({ message: 'Invalid OTP' });
     
-        await loginCollection.updateOne({ email }, { $set: { verified: true }, $unset: { otpSecret: "" } });
+        // Hvis OTP ikke stemmer
+        if (!verified) {
+          console.error('Invalid OTP:', otp, 'for email:', email, 'with secret:', user.otpSecret);
+          return res.status(400).json({ message: 'Invalid OTP' });
+        }
+    
+        // Oppdater brukeren som verifisert og fjern OTP-secret
+        await loginCollection.updateOne(
+          { email },
+          { $set: { verified: true }, $unset: { otpSecret: "" } }
+        );
+    
+        console.log(`Email verified successfully for email: ${email}`);
         res.status(200).json({ message: 'Email verified successfully' });
+    
       } catch (err) {
         console.error('Error during OTP verification:', err);
         res.status(500).json({ message: 'Internal Server Error' });
       }
     });
+    
     
     app.post('/forgot-password', async (req, res) => {
       try {
