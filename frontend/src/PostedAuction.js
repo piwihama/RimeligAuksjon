@@ -14,7 +14,33 @@ function PostedAuction() {
   const [timeLeft, setTimeLeft] = useState({});
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [endDate, setEndDate] = useState(null);
-
+  function calculateTimeLeft(endDate) {
+    const difference = endDate - new Date();
+    let timeLeft = {};
+  
+    if (difference > 0) {
+      timeLeft = {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
+      };
+    } else {
+      timeLeft = {
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+      };
+      setAuction(prevState => ({
+        ...prevState,
+        status: 'Utgått'
+      }));
+    }
+  
+    setTimeLeft(timeLeft);
+  }
+  
   useEffect(() => {
     const fetchAuction = async () => {
       try {
@@ -168,7 +194,7 @@ const handleBidSubmit = async (e) => {
             </div>
             <div className="posted-detail-item">
               <span className="detail-title">Selges av:</span>
-              <span className="detail-value">{auction.selger}</span>
+              <span className="detail-value">{auction.seller}</span>
             </div>
             <div className="posted-detail-item">
               <span className="detail-title">Auksjonsgebyr:</span>
