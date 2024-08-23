@@ -200,6 +200,10 @@ setBidAmount(minimumBid.toString()); // Konverterer tallet tilbake til en streng
                     min={auction.highestBid + auction.minsteBudøkning}
                   />
                 </div>
+                <div className="posted-detail-item">
+              <span className="detail-title">Minste budøkning:</span>
+              <span className="detail-value">{auction.minsteBudøkning}</span>
+            </div>
                 <button type="submit" className="btn btn-primary">Legg inn bud</button>
                 {error && <p className="error-message">{error}</p>}
                 {successMessage && <p className="success-message">{successMessage}</p>}
