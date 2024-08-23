@@ -24,66 +24,65 @@ function PostedAuction() {
         setAuction(response.data);
         setEndDate(new Date(response.data.endDate));
         calculateTimeLeft(new Date(response.data.endDate));
-
-        // Foreslå budbeløp basert på minsteBudøkning
-        const minimumBid = parseInt(response.data.highestBid) + parseInt(response.data.minsteBudøkning);
-        setBidAmount(minimumBid.toString()); // Konverterer tallet tilbake til en streng uten ledende nuller
-
       } catch (error) {
         console.error('Error fetching auction details:', error);
       }
     };
   
     fetchAuction();
-}, [id]);
+  }, [id]);
 
+  useEffect(() => {
+    if (auction) {
+      const minimumBid = parseInt(auction.highestBid) + parseInt(auction.minsteBudøkning);
+      setBidAmount(minimumBid.toString());
+    }
+  }, [auction]);
 
-useEffect(() => {
-  if (endDate) {
-    const interval = setInterval(() => {
-      calculateTimeLeft(endDate);
-    }, 1000);
+  useEffect(() => {
+    if (endDate) {
+      const interval = setInterval(() => {
+        calculateTimeLeft(endDate);
+      }, 1000);
 
-    return () => clearInterval(interval);
-  }
-}, [endDate]);
+      return () => clearInterval(interval);
+    }
+  }, [endDate]);
 
-const calculateTimeLeft = (endDate) => {
-  const difference = endDate - new Date();
-  let timeLeft = {};
+  const calculateTimeLeft = (endDate) => {
+    const difference = endDate - new Date();
+    let timeLeft = {};
 
-  if (difference > 0) {
-    timeLeft = {
-      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-      minutes: Math.floor((difference / 1000 / 60) % 60),
-      seconds: Math.floor((difference / 1000) % 60),
-    };
-  } else {
-    timeLeft = {
-      days: 0,
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
-    };
-    setAuction(prevState => ({
-      ...prevState,
-      status: 'Utgått'
-    }));
-  }
+    if (difference > 0) {
+      timeLeft = {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
+      };
+    } else {
+      timeLeft = {
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+      };
+      setAuction(prevState => ({
+        ...prevState,
+        status: 'Utgått'
+      }));
+    }
 
-  setTimeLeft(timeLeft);
-};
+    setTimeLeft(timeLeft);
+  };
 
-
-
-const handleBidSubmit = async (e) => {
+  const handleBidSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
 
     const minimumRequiredBid = parseInt(auction.highestBid) + parseInt(auction.minsteBudøkning);
-    
+
     if (parseFloat(bidAmount) < minimumRequiredBid) {
       setError(`Bud må være minst ${minimumRequiredBid},-`);
       return;
@@ -99,26 +98,17 @@ const handleBidSubmit = async (e) => {
         }
       );
       setSuccessMessage('Bud lagt inn vellykket!');
-      setBidAmount('');
-
       // Re-fetch auction details after placing a bid
       const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAuction(response.data);
-      setEndDate(new Date(response.data.endDate));
-
-      // Oppdater foreslått budbeløp etter at et bud er lagt inn
-      const newMinimumBid = parseInt(response.data.highestBid) + parseInt(response.data.minsteBudøkning);
-      setBidAmount(newMinimumBid.toString());
-
     } catch (error) {
       const message = error.response && error.response.data ? error.response.data.message : 'Feil ved innlegging av bud. Prøv igjen.';
       setError(message);
       console.error('Error placing bid:', error);
     }
-};
-
+  };
 
   const handleThumbnailClick = (index) => {
     setCurrentImageIndex(index);
@@ -162,7 +152,6 @@ const handleBidSubmit = async (e) => {
                 <span className="detail-title">Avsluttes om:</span>
                 <span className="top-value">{timeLeft.days}d {timeLeft.hours}t {timeLeft.minutes}min {timeLeft.seconds}sek</span>
               </div>
-           
             </div>
           </div > 
             
@@ -171,9 +160,9 @@ const handleBidSubmit = async (e) => {
               <form onSubmit={handleBidSubmit}>
                 <div className="form-group">
                   <label htmlFor="bidAmount">Budbeløp</label>
-                  <small  style={{ fontSize: '5px' }} className="form-text text-muted">
-          Beløpet som foreslås her er minimumsbudet. Du kan by mer om ønskelig.
-        </small>
+                  <small className="form-text text-muted">
+                    Beløpet som foreslås her er minimumsbudet. Du kan by mer om ønskelig.
+                  </small>
                   <input
                     type="number"
                     id="bidAmount"
@@ -185,10 +174,11 @@ const handleBidSubmit = async (e) => {
                   />
                 </div>
                 <div className="posted-detail-item">
-              <span className="detail-title">Minste budøkning:</span>
-              <span className="detail-value" style={{ color: 'red', fontWeight: 'bold' }}>
-{auction.minsteBudøkning},-</span>
-            </div>
+                  <span className="detail-title">Minste budøkning:</span>
+                  <span className="detail-value" style={{ color: 'red', fontWeight: 'bold' }}>
+                    {auction.minsteBudøkning},-
+                  </span>
+                </div>
                 <button type="submit" className="btn btn-primary">Legg inn bud</button>
                 {error && <p className="error-message">{error}</p>}
                 {successMessage && <p className="success-message">{successMessage}</p>}
@@ -200,11 +190,10 @@ const handleBidSubmit = async (e) => {
               <p>Auksjonen er avsluttet</p>
             </div>
           )}
-            {/* New fields added below */}
-            <div className="additional-info">
+          <div className="additional-info">
             <div className="posted-detail-item">
               <span className="detail-title">Avsluttes:</span>
-              <span className="detail-value" id='enddate'>{new Date(auction.endDate).toLocaleString()}</span>
+              <span className="detail-value">{new Date(auction.endDate).toLocaleString()}</span>
             </div>
             <div className="posted-detail-item">
               <span className="detail-title">Selges av:</span>
@@ -212,19 +201,17 @@ const handleBidSubmit = async (e) => {
             </div>
             <div className="posted-detail-item">
               <span className="detail-title">Auksjonsgebyr:</span>
-              <span className="detail-value">{auction.auctionFee} ,-</span>
+              <span className="detail-value">{auction.auctionFee},-</span>
             </div>
             <div className="posted-detail-item">
               <span className="detail-title">MVA:</span>
-              <span className="detail-value">{auction.vatRate} %</span>
+              <span className="detail-value">{auction.vatRate}%</span>
             </div>
             <div className="posted-detail-item">
               <span className="detail-title">Sted:</span>
               <span className="detail-value">{auction.location}</span>
             </div>
           </div>
-          {/* End of new fields */}
-
           <div className="bid-list">
             <h3>Budhistorikk</h3>
             {auction.bids && auction.bids.length > 0 ? (
@@ -239,8 +226,6 @@ const handleBidSubmit = async (e) => {
               <p>Ingen bud er gitt enda</p>
             )}
           </div>
-
-         
         </div>
 
         <div className="posted-auction-details">
