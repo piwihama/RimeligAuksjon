@@ -14,33 +14,7 @@ function PostedAuction() {
   const [timeLeft, setTimeLeft] = useState({});
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [endDate, setEndDate] = useState(null);
-  function calculateTimeLeft(endDate) {
-    const difference = endDate - new Date();
-    let timeLeft = {};
-  
-    if (difference > 0) {
-      timeLeft = {
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-      };
-    } else {
-      timeLeft = {
-        days: 0,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-      };
-      setAuction(prevState => ({
-        ...prevState,
-        status: 'Utgått'
-      }));
-    }
-  
-    setTimeLeft(timeLeft);
-  }
-  
+
   useEffect(() => {
     const fetchAuction = async () => {
       try {
@@ -62,6 +36,46 @@ function PostedAuction() {
   
     fetchAuction();
 }, [id]);
+
+
+useEffect(() => {
+  if (endDate) {
+    const interval = setInterval(() => {
+      calculateTimeLeft(endDate);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }
+}, [endDate]);
+
+const calculateTimeLeft = (endDate) => {
+  const difference = endDate - new Date();
+  let timeLeft = {};
+
+  if (difference > 0) {
+    timeLeft = {
+      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+      minutes: Math.floor((difference / 1000 / 60) % 60),
+      seconds: Math.floor((difference / 1000) % 60),
+    };
+  } else {
+    timeLeft = {
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    };
+    setAuction(prevState => ({
+      ...prevState,
+      status: 'Utgått'
+    }));
+  }
+
+  setTimeLeft(timeLeft);
+};
+
+
 
 const handleBidSubmit = async (e) => {
     e.preventDefault();
@@ -157,7 +171,7 @@ const handleBidSubmit = async (e) => {
               <form onSubmit={handleBidSubmit}>
                 <div className="form-group">
                   <label htmlFor="bidAmount">Budbeløp</label>
-                  <small  style={{ fontSize: '15px'  , marginTop: '1px'}} className="form-text text-muted">
+                  <small  style={{ fontSize: '5px' }} className="form-text text-muted">
           Beløpet som foreslås her er minimumsbudet. Du kan by mer om ønskelig.
         </small>
                   <input
