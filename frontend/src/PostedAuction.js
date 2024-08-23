@@ -125,36 +125,13 @@ const handleBidSubmit = async (e) => {
            
             </div>
           </div > 
-              {/* New fields added below */}
-              <div className="additional-info">
-            <div className="posted-detail-item">
-              <span className="detail-title">Avsluttes:</span>
-              <span className="detail-value" id='enddate'>{new Date(auction.endDate).toLocaleString()}</span>
-            </div>
-            <div className="posted-detail-item">
-              <span className="detail-title">Selges av:</span>
-              <span className="detail-value">{auction.selger}</span>
-            </div>
-            <div className="posted-detail-item">
-              <span className="detail-title">Auksjonsgebyr:</span>
-              <span className="detail-value">{auction.auctionFee} ,-</span>
-            </div>
-            <div className="posted-detail-item">
-              <span className="detail-title">MVA:</span>
-              <span className="detail-value">{auction.vatRate} %</span>
-            </div>
-            <div className="posted-detail-item">
-              <span className="detail-title">Sted:</span>
-              <span className="detail-value">{auction.location}</span>
-            </div>
-          </div>
-          {/* End of new fields */}
+            
           {auction.status !== 'Utgått' && (
             <div className="bid-section">
               <form onSubmit={handleBidSubmit}>
                 <div className="form-group">
                   <label htmlFor="bidAmount">Budbeløp</label>
-                  <small className="form-text text-muted">
+                  <small  style={{ fontSize: '5px' }} className="form-text text-muted">
           Beløpet som foreslås her er minimumsbudet. Du kan by mer om ønskelig.
         </small>
                   <input
@@ -183,6 +160,30 @@ const handleBidSubmit = async (e) => {
               <p>Auksjonen er avsluttet</p>
             </div>
           )}
+            {/* New fields added below */}
+            <div className="additional-info">
+            <div className="posted-detail-item">
+              <span className="detail-title">Avsluttes:</span>
+              <span className="detail-value" id='enddate'>{new Date(auction.endDate).toLocaleString()}</span>
+            </div>
+            <div className="posted-detail-item">
+              <span className="detail-title">Selges av:</span>
+              <span className="detail-value">{auction.selger}</span>
+            </div>
+            <div className="posted-detail-item">
+              <span className="detail-title">Auksjonsgebyr:</span>
+              <span className="detail-value">{auction.auctionFee} ,-</span>
+            </div>
+            <div className="posted-detail-item">
+              <span className="detail-title">MVA:</span>
+              <span className="detail-value">{auction.vatRate} %</span>
+            </div>
+            <div className="posted-detail-item">
+              <span className="detail-title">Sted:</span>
+              <span className="detail-value">{auction.location}</span>
+            </div>
+          </div>
+          {/* End of new fields */}
 
           <div className="bid-list">
             <h3>Budhistorikk</h3>
