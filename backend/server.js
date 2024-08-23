@@ -697,24 +697,39 @@ async function connectDB() {
       try {
         const liveAuctionId = req.params.id;
         const result = await liveAuctionCollection.deleteOne({ _id: new ObjectId(liveAuctionId) });
-
+    
         if (result.deletedCount === 0) return res.status(404).json({ message: 'Live auction not found' });
-
-        await redis.del("allLiveAuctions");
-
+    
+        const cacheKey = `liveAuction-${liveAuctionId}`;
+        await redis.del(cacheKey);  // Slett spesifikke auksjonsdata fra cachen
+    
+        const countsCacheKey = 'liveAuctionsCounts';
+        await redis.del(countsCacheKey);  // Slett cache for liveAuctionsCounts
+    
+        // Finn og slett alle cache-nøkler som matcher "allLiveAuctions-*" mønsteret
+        const allLiveAuctionsKeys = await redis.keys('allLiveAuctions-*');
+        if (allLiveAuctionsKeys.length > 0) {
+          await redis.del(allLiveAuctionsKeys);
+        }
+    
         res.json({ message: 'Live auction deleted successfully' });
       } catch (err) {
         console.error('Error deleting live auction:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
+    
 
     app.delete('/api/auctions/:id', authenticateToken, async (req, res) => {
       try {
         const auctionId = req.params.id;
         const result = await auctionCollection.deleteOne({ _id: new ObjectId(auctionId) });
+
         if (result.deletedCount === 0) return res.status(404).json({ message: 'Auction not found' });
+
         res.json({ message: 'Auction deleted successfully' });
+
       } catch (err) {
         console.error('Error deleting auction:', err);
         res.status(500).json({ error: 'Internal Server Error' });
