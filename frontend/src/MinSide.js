@@ -23,43 +23,60 @@ function MinSide() {
           navigate('/');
           return;
         }
-  
-        // Gjør alle API-kall parallelt for å optimalisere lastetiden
+
+        // Sett opp en tom array for feil
+        let errors = [];
+
+        // Gjør alle API-kall parallelt, men med individuell feilhåndtering
         const [auctionResponse, liveAuctionResponse, messageResponse, userResponse] = await Promise.all([
           axios.get('https://rimelig-auksjon-backend.vercel.app/api/myauctions', {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
+            headers: { 'Authorization': `Bearer ${token}` }
+          }).catch(error => { 
+            errors.push('myauctions'); 
+            console.error('Error fetching myauctions:', error); 
           }),
-          axios.get('https://rimelig-auksjon-backend.vercel.app/api/myliveauctions', { // Legg til et nytt endepunkt for live auksjoner
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
+          axios.get('https://rimelig-auksjon-backend.vercel.app/api/myliveauctions', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          }).catch(error => { 
+            errors.push('myliveauctions'); 
+            console.error('Error fetching myliveauctions:', error); 
           }),
           axios.get('https://rimelig-auksjon-backend.vercel.app/api/mymessages', {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
+            headers: { 'Authorization': `Bearer ${token}` }
+          }).catch(error => { 
+            errors.push('mymessages'); 
+            console.error('Error fetching mymessages:', error); 
           }),
           axios.get('https://rimelig-auksjon-backend.vercel.app/api/userdetails', {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
+            headers: { 'Authorization': `Bearer ${token}` }
+          }).catch(error => { 
+            errors.push('userdetails'); 
+            console.error('Error fetching userdetails:', error); 
           })
         ]);
-  
-        setAuctions(auctionResponse.data);
-        setLiveAuctions(liveAuctionResponse.data); // Sett live auksjoner tilstanden
-        setMessages(messageResponse.data);
-        setUserDetails(userResponse.data);
+
+        // Sjekk for gyldige svar og oppdater tilstand hvis API-kallene lykkes
+        if (!errors.includes('myauctions') && auctionResponse) {
+          setAuctions(auctionResponse.data);
+        }
+        if (!errors.includes('myliveauctions') && liveAuctionResponse) {
+          setLiveAuctions(liveAuctionResponse.data);
+        }
+        if (!errors.includes('mymessages') && messageResponse) {
+          setMessages(messageResponse.data);
+        }
+        if (!errors.includes('userdetails') && userResponse) {
+          setUserDetails(userResponse.data);
+        }
+
         setLoading(false);
-  
+
       } catch (error) {
-        console.error('Error fetching data:', error.response ? error.response.data : error.message);
+        console.error('Error fetching data:', error);
         setLoading(false);
       }
     };
-  
+
     fetchData();
   }, [navigate]);
 
