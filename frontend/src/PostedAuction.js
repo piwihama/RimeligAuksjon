@@ -26,8 +26,9 @@ function PostedAuction() {
         calculateTimeLeft(new Date(response.data.endDate));
 
         // Foreslå budbeløp basert på minsteBudøkning
-        const minimumBid = response.data.highestBid + response.data.minsteBudøkning;
-        setBidAmount(minimumBid);
+        const minimumBid = parseInt(response.data.highestBid) + parseInt(response.data.minsteBudøkning);
+setBidAmount(minimumBid.toString()); // Konverterer tallet tilbake til en streng uten ledende nuller
+
       } catch (error) {
         console.error('Error fetching auction details:', error);
       }
