@@ -27,7 +27,7 @@ function PostedAuction() {
 
         // Foreslå budbeløp basert på minsteBudøkning
         const minimumBid = parseInt(response.data.highestBid) + parseInt(response.data.minsteBudøkning);
-setBidAmount(minimumBid.toString()); // Konverterer tallet tilbake til en streng uten ledende nuller
+        setBidAmount(minimumBid.toString()); // Konverterer tallet tilbake til en streng uten ledende nuller
 
       } catch (error) {
         console.error('Error fetching auction details:', error);
@@ -35,51 +35,14 @@ setBidAmount(minimumBid.toString()); // Konverterer tallet tilbake til en streng
     };
   
     fetchAuction();
-  }, [id]);
+}, [id]);
 
-  useEffect(() => {
-    if (endDate) {
-      const interval = setInterval(() => {
-        calculateTimeLeft(endDate);
-      }, 1000);
-  
-      return () => clearInterval(interval);
-    }
-  }, [endDate]);
-
-  const calculateTimeLeft = (endDate) => {
-    const difference = endDate - new Date();
-    let timeLeft = {};
-
-    if (difference > 0) {
-      timeLeft = {
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-      };
-    } else {
-      timeLeft = {
-        days: 0,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-      };
-      setAuction(prevState => ({
-        ...prevState,
-        status: 'Utgått'
-      }));
-    }
-
-    setTimeLeft(timeLeft);
-  };
-
-  const handleBidSubmit = async (e) => {
+const handleBidSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
 
-    const minimumRequiredBid = auction.highestBid + auction.minsteBudøkning;
+    const minimumRequiredBid = parseInt(auction.highestBid) + parseInt(auction.minsteBudøkning);
     
     if (parseFloat(bidAmount) < minimumRequiredBid) {
       setError(`Bud må være minst ${minimumRequiredBid},-`);
@@ -106,15 +69,16 @@ setBidAmount(minimumBid.toString()); // Konverterer tallet tilbake til en streng
       setEndDate(new Date(response.data.endDate));
 
       // Oppdater foreslått budbeløp etter at et bud er lagt inn
-      const newMinimumBid = response.data.highestBid + response.data.minsteBudøkning;
-      setBidAmount(newMinimumBid);
+      const newMinimumBid = parseInt(response.data.highestBid) + parseInt(response.data.minsteBudøkning);
+      setBidAmount(newMinimumBid.toString());
 
     } catch (error) {
       const message = error.response && error.response.data ? error.response.data.message : 'Feil ved innlegging av bud. Prøv igjen.';
       setError(message);
       console.error('Error placing bid:', error);
     }
-  };
+};
+
 
   const handleThumbnailClick = (index) => {
     setCurrentImageIndex(index);
