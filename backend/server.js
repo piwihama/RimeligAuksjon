@@ -653,10 +653,22 @@ async function connectDB() {
           userEmail: user.email,
           userName: `${user.firstName} ${user.lastName}`
         };
+      
 
         const result = await liveAuctionCollection.insertOne(newLiveAuction);
 
         await redis.del("allLiveAuctions");
+        const cacheKey = `liveAuction-${liveAuctionId}`;
+        await redis.del(cacheKey);  // Slett spesifikke auksjonsdata fra cachen
+    
+        const countsCacheKey = 'liveAuctionsCounts';
+        await redis.del(countsCacheKey);  // Slett cache for liveAuctionsCounts
+    
+        // Finn og slett alle cache-nøkler som matcher "allLiveAuctions-*" mønsteret
+        const allLiveAuctionsKeys = await redis.keys('allLiveAuctions-*');
+        if (allLiveAuctionsKeys.length > 0) {
+          await redis.del(allLiveAuctionsKeys);
+        }
 
         res.status(201).json({ message: 'Live auction created successfully', result });
       } catch (err) {
