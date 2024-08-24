@@ -159,8 +159,8 @@ function PostedAuction() {
             <div className="bid-section">
               <form onSubmit={handleBidSubmit}>
                 <div className="form-group">
-                  <label htmlFor="bidAmount">Budbeløp</label>
-                  <small style={{ fontSize: '10px' }} className="form-text text-muted">
+                  <label style={{ marginBottom: '3px'}} htmlFor="bidAmount">Budbeløp</label>
+                  <small style={{ fontSize: '10px', marginBottom: '1px'}} className="form-text text-muted">
                     Beløpet som foreslås her er minimumsbudet. Du kan by mer om ønskelig.
                   </small>
                  
@@ -174,7 +174,7 @@ function PostedAuction() {
                     min={parseFloat(auction.highestBid) + parseFloat(auction.minsteBudøkning)}
                   />
                 </div>
-                <div className="posted-detail-item">
+                <div className="posted-detail-item" >
                   <span className="detail-title">Minste budøkning:</span>
                   <span className="detail-value" style={{ color: 'red', fontWeight: 'bold' }}>
                     {auction.minsteBudøkning},-
