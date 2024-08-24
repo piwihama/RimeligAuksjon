@@ -528,6 +528,8 @@ async function connectDB() {
             brand: 1,
             model: 1,
             year: 1,
+            mileage: 1, // Legg til mileage her
+
             endDate: 1,
             highestBid: 1,
             bidCount: 1,
