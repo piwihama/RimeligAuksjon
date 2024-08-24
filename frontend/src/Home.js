@@ -126,7 +126,7 @@ function Home() {
                     />
                     <div className="home-auction-details">
                       <h3>{auction.brand} {auction.model} {auction.year} </h3>
-                      <p >{auction.mileage} KM</p>
+                      <span>{auction.mileage} KM</span>
                       <div className='home-auction-smalldetails'>
                         <div className='home-title-value-auction'>
                           <span className="home-auction-title"><strong>Gjenstår:</strong></span>
