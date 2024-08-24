@@ -68,27 +68,3 @@
   background-color: #0056b3;
 }
 
-.create-live-auction-container .image-preview {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.create-live-auction-container .image-container {
-  width: 80px;
-  height: 80px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  overflow: hidden;
-  background-color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.create-live-auction-container .image-container img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: cover;
-}
