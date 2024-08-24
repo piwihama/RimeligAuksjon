@@ -81,6 +81,8 @@ function Home() {
   const fetchAuctions = async () => {
     try {
       const response = await axios.get('https://rimelig-auksjon-backend.vercel.app/api/liveauctions');
+      console.log(response.data);  // Legg til denne linjen for å se hele responsen
+
       const auctionsWithTimeLeft = response.data.map((auction) => ({
         ...auction,
         timeLeft: calculateTimeLeft(auction.endDate),
