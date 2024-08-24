@@ -640,7 +640,7 @@ async function connectDB() {
       try {
         const user = await loginCollection.findOne({ _id: new ObjectId(req.user.userId) });
         const { startDate, endDate, ...auctionData } = req.body;
-
+    
         const newLiveAuction = {
           ...auctionData,
           startDate: new Date(startDate),
@@ -653,10 +653,14 @@ async function connectDB() {
           userEmail: user.email,
           userName: `${user.firstName} ${user.lastName}`
         };
-      
-
+    
+        // Sett inn den nye auksjonen i databasen
         const result = await liveAuctionCollection.insertOne(newLiveAuction);
-
+    
+        // Hent den nye auksjonens ID
+        const liveAuctionId = result.insertedId.toString();
+    
+        // Oppdater cache for live auksjoner
         await redis.del("allLiveAuctions");
         const cacheKey = `liveAuction-${liveAuctionId}`;
         await redis.del(cacheKey);  // Slett spesifikke auksjonsdata fra cachen
@@ -669,14 +673,15 @@ async function connectDB() {
         if (allLiveAuctionsKeys.length > 0) {
           await redis.del(allLiveAuctionsKeys);
         }
-
+    
+        // Send en suksessmelding tilbake til klienten
         res.status(201).json({ message: 'Live auction created successfully', result });
       } catch (err) {
         console.error('Error creating live auction:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
-
+    
     app.get('/api/liveauctions/:id', async (req, res) => {
       try {
         const liveAuctionId = req.params.id;
@@ -719,7 +724,7 @@ async function connectDB() {
         await redis.del(countsCacheKey);  // Slett cache for liveAuctionsCounts
         const filterCacheKey = 'liveAuctionsFilter-{"page":"1","limit":"10"}';
         await redis.del(filterCacheKey); 
-        
+
         // Finn og slett alle cache-nøkler som matcher "allLiveAuctions-*" mønsteret
         const allLiveAuctionsKeys = await redis.keys('allLiveAuctions-*');
         if (allLiveAuctionsKeys.length > 0) {
