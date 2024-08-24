@@ -34,7 +34,7 @@ function PostedAuction() {
 
   useEffect(() => {
     if (auction) {
-      const minimumBid = parseInt(auction.highestBid) + parseInt(auction.minsteBudøkning);
+      const minimumBid = parseFloat(auction.highestBid) + parseFloat(auction.minsteBudøkning);
       setBidAmount(minimumBid.toString());
     }
   }, [auction]);
@@ -81,7 +81,7 @@ function PostedAuction() {
     setError('');
     setSuccessMessage('');
 
-    const minimumRequiredBid = parseInt(auction.highestBid) + parseInt(auction.minsteBudøkning);
+    const minimumRequiredBid = parseFloat(auction.highestBid) + parseFloat(auction.minsteBudøkning);
 
     if (parseFloat(bidAmount) < minimumRequiredBid) {
       setError(`Bud må være minst ${minimumRequiredBid},-`);
@@ -171,7 +171,7 @@ function PostedAuction() {
                     value={bidAmount}
                     onChange={(e) => setBidAmount(e.target.value)}
                     required
-                    min={auction.highestBid + auction.minsteBudøkning}
+                    min={parseFloat(auction.highestBid) + parseFloat(auction.minsteBudøkning)}
                   />
                 </div>
                 <div className="posted-detail-item">
