@@ -602,6 +602,8 @@ async function connectDB() {
             .project({
               brand: 1,
               model: 1,
+              mileage: 1, // Legg til mileage her
+
               year: 1,
               endDate: 1,
               highestBid: 1,
