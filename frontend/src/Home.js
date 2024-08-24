@@ -126,7 +126,7 @@ function Home() {
                     />
                     <div className="home-auction-details">
                       <h3>{auction.brand} {auction.model} {auction.year} </h3>
-                      <p style={{ fontWeight: '', fontSize: '17px' }}>{auction.mileage} KM</p>
+                      <p style={{  fontSize: '17px' }}>{auction.mileage} KM</p>
                       <div className='home-auction-smalldetails'>
                         <div className='home-title-value-auction'>
                           <span className="home-auction-title"><strong>Gjenstår:</strong></span>
