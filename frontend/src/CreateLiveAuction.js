@@ -6,6 +6,7 @@ import './CreateLiveAuction.css';
 function CreateLiveAuction() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [auction, setAuction] = useState(null);
   const [formData, setFormData] = useState({
     brand: '',
     mileage: '',
@@ -59,6 +60,66 @@ function CreateLiveAuction() {
     vat: '',
   });
 
+  useEffect(() => {
+    const fetchAuction = async () => {
+      try {
+        const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/auctions/${id}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+        setAuction(response.data);
+        setFormData({
+          brand: response.data.brand || '',
+          mileage: response.data.mileage || '',
+          model: response.data.model || '',
+          year: response.data.year || '',
+          reservePrice: response.data.reservePrice || '',
+          auctionWithoutReserve: response.data.auctionWithoutReserve || false,
+          regNumber: response.data.regNumber || '',
+          chassisNumber: response.data.chassisNumber || '',
+          taxClass: response.data.taxClass || '',
+          fuel: response.data.fuel || '',
+          gearType: response.data.gearType || '',
+          driveType: response.data.driveType || '',
+          mainColor: response.data.mainColor || '',
+          power: response.data.power || '',
+          seats: response.data.seats || '',
+          owners: response.data.owners || '',
+          firstRegistration: response.data.firstRegistration ? new Date(response.data.firstRegistration).toISOString().substring(0, 10) : '',
+          doors: response.data.doors || '',
+          weight: response.data.weight || '',
+          co2: response.data.co2 || '',
+          omregistreringsavgift: response.data.omregistreringsavgift || '',
+          lastEUApproval: response.data.lastEUApproval ? new Date(response.data.lastEUApproval).toISOString().substring(0, 10) : '',
+          nextEUControl: response.data.nextEUControl ? new Date(response.data.nextEUControl).toISOString().substring(0, 10) : '',
+          description: response.data.description || '',
+          conditionDescription: response.data.conditionDescription || '',
+          equipment: response.data.equipment.join(', ') || '',
+          highestBid: response.data.highestBid || '',
+          bidCount: response.data.bidCount || '',
+          bidderCount: response.data.bidderCount || '',
+          location: response.data.location || '',
+          endDate: response.data.endDate ? new Date(response.data.endDate).toISOString().substring(0, 16) : '',
+          imageUrls: response.data.imageUrls || [],
+          userId: response.data.userId || '',
+          userEmail: response.data.userEmail || '',
+          userName: response.data.userName || '',
+          auksjonsNummer: response.data.auksjonsNummer || '',
+          auksjonsgebyr: response.data.auksjonsgebyr || '',
+          avsluttesDato: response.data.avsluttesDato ? new Date(response.data.avsluttesDato).toISOString().substring(0, 16) : '',
+          by: response.data.by || '',
+          minsteBudøkning: response.data.minsteBudøkning || '',
+          månedligFinansiering: response.data.månedligFinansiering || '',
+          postkode: response.data.postkode || '',
+          sted: response.data.sted || '',
+          fylke: response.data.fylke || ''
+        });
+      } catch (error) {
+        console.error('Error fetching auction:', error);
+      }
+    };
+    fetchAuction();
+  }, [id]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -84,25 +145,6 @@ function CreateLiveAuction() {
       }));
     });
   };
-  useEffect(() => {
-    const fetchAuctionRequest = async () => {
-      try {
-        // Hent data fra auksjonsforespørselen ved hjelp av ID-en
-        const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/auctionrequests/${id}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        });
-
-        // Sett innhentede data til formData
-        setFormData(response.data);
-      } catch (error) {
-        console.error('Error fetching auction request:', error);
-      }
-    };
-
-    if (id) {
-      fetchAuctionRequest(); // Bare kjør hvis en ID er tilstede
-    }
-  }, [id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -135,7 +177,7 @@ function CreateLiveAuction() {
           <input type="text" id="mileage" name="mileage" value={formData.mileage} onChange={handleChange} />
         </div>
         <div className="form-group">
-          <label htmlFor="karrosseri">Karosseri</label>
+          <label htmlFor="karosseri">Karosseri</label>
           <input type="text" id="karosseri" name="karosseri" value={formData.karosseri} onChange={handleChange} />
         </div>
         <div className="form-group">
@@ -324,7 +366,8 @@ function CreateLiveAuction() {
         <div className="form-group">
           <label htmlFor="vat">MVA</label>
           <select id="vat" name="vat" value={formData.vat} onChange={handleChange}>
-          <input type="text" id="vat" name="vat" value={formData.vat} onChange={handleChange} />
+            <option value="mva-fritt">MVA-fritt</option>
+            <option value="inkl. mva">Inkl. MVA</option>
           </select>
         </div>
         <button type="submit">Create Live Auction</button>
