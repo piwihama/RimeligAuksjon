@@ -829,14 +829,84 @@ async function connectDB() {
         }
     
         const reservePriceMet = bidAmount >= liveAuction.reservePrice;
-    
-        // ... (resten av koden din for å håndtere budgivning)
-      } catch (err) {
-        console.error('Feil ved innlegging av bud:', err);
-        res.status(500).json({ error: 'Intern serverfeil' });
-      }
-    });
-    
+        
+            let userBidderNumber = liveAuction.bidders && liveAuction.bidders[req.user.userId];
+        
+            if (!userBidderNumber) {
+              userBidderNumber = Object.keys(liveAuction.bidders || {}).length + 1;
+              await liveAuctionCollection.updateOne(
+                { _id: new ObjectId(liveAuctionId) },
+                { $set: { [`bidders.${req.user.userId}`]: userBidderNumber } }
+              );
+            }
+        
+            const newBid = {
+              bidder: `Budgiver ${userBidderNumber}`,
+              amount: bidAmount,
+              time: new Date()
+            };
+        
+            await liveAuctionCollection.updateOne(
+              { _id: new ObjectId(liveAuctionId) },
+              {
+                $set: {
+                  highestBid: bidAmount,
+                  highestBidder: req.user.userId,
+                  reservePriceMet
+                },
+                $push: {
+                  bids: newBid
+                },
+                $inc: {
+                  bidCount: 1,
+                }
+              }
+            );
+        
+            const highestBidder = await loginCollection.findOne({ _id: new ObjectId(req.user.userId) });
+        
+            let transporter = nodemailer.createTransport({
+              service: 'gmail',
+              auth: {
+                user: 'peiwast124@gmail.com',
+                pass: 'eysj jfoz ahcj qqzo'
+              }
+            });
+        
+            let mailOptions = {
+              from: '"RimeligAuksjon.no" <dinemail@gmail.com>',
+              to: highestBidder.email,
+              subject: 'Du er den høyeste budgiveren!',
+              text: `Gratulerer! Du er for øyeblikket den høyeste budgiveren for auksjonen ${liveAuction.brand} ${liveAuction.model} med et bud på ${bidAmount}.`
+            };
+        
+            await transporter.sendMail(mailOptions);
+        
+            if (reservePriceMet) {
+              const auctionOwner = await loginCollection.findOne({ _id: new ObjectId(liveAuction.userId) });
+        
+              if (auctionOwner) {
+                let ownerMailOptions = {
+                  from: '"RimeligAuksjon.no" <dinemail@gmail.com>',
+                  to: auctionOwner.email,
+                  subject: 'Nytt bud på din auksjon!',
+                  text: `Din auksjon for ${liveAuction.brand} ${liveAuction.model} har mottatt et nytt bud på ${bidAmount} fra ${highestBidder.email}. Minsteprisen er nådd!`
+                };
+        
+                await transporter.sendMail(ownerMailOptions);
+              }
+            }
+        
+            // (Optional) Repopulate cache with updated auction data
+            const updatedAuction = await liveAuctionCollection.findOne({ _id: new ObjectId(liveAuctionId) });
+            await redis.set(cacheKey, JSON.stringify(updatedAuction), 'EX', 600); // Cache for 10 minutes
+        
+            res.json({ message: 'Bud lagt inn vellykket' });
+          } catch (err) {
+            console.error('Feil ved innlegging av bud:', err);
+            res.status(500).json({ error: 'Intern serverfeil' });
+          }
+        });
     
     app.get('/api/myliveauctions', authenticateToken, async (req, res) => {
       console.log('Request received at /api/myliveauctions');
