@@ -447,14 +447,32 @@ async function connectDB() {
       try {
         const liveAuctionId = req.params.id;
         const updateData = { ...req.body };
-        const result = await liveAuctionCollection.updateOne({ _id: new ObjectId(liveAuctionId) }, { $set: updateData });
-        if (result.matchedCount === 0) return res.status(404).json({ message: 'Live auction not found' });
+    
+        const result = await liveAuctionCollection.updateOne(
+          { _id: new ObjectId(liveAuctionId) },
+          { $set: updateData }
+        );
+    
+        if (result.matchedCount === 0) {
+          return res.status(404).json({ message: 'Live auction not found' });
+        }
+    
+        // Slett cache relatert til denne auksjonen
+        const cacheKey = `liveAuction-${liveAuctionId}`;
+        await redis.del(cacheKey);  // Slett spesifikk auksjonsdata fra cachen
+        
+        const allLiveAuctionsKeys = await redis.keys('allLiveAuctions-*');
+        if (allLiveAuctionsKeys.length > 0) {
+          await redis.del(allLiveAuctionsKeys);  // Slett alle cache-nøkler relatert til lister av auksjoner
+        }
+    
         res.json({ message: 'Live auction updated successfully' });
       } catch (err) {
         console.error('Error updating live auction:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
 
     app.get('/api/liveauctions/filter', async (req, res) => {
       const startTime = Date.now();
