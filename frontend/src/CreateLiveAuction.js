@@ -370,12 +370,16 @@ function CreateLiveAuction() {
             </select>
           </div>
           <div className="form-group">
-            <label htmlFor="vat">MVA</label>
-            <select id="vat" name="vat" value={formData.vat} onChange={handleChange}>
-              <option value="mva-fritt">MVA-fritt</option>
-              <option value="inkl. mva">Inkl. MVA</option>
-            </select>
-          </div>
+  <label htmlFor="vat">MVA</label>
+  <input 
+    type="text" 
+    id="vat" 
+    name="vat" 
+    value={formData.vat} 
+    onChange={handleChange} 
+    placeholder="Skriv inn MVA-status (f.eks. 'mva-fritt' eller 'inkl. mva')"
+  />
+</div>
           <button type="submit">Create Live Auction</button>
         </form>
       </div>
