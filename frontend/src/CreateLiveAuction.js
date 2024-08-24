@@ -149,19 +149,24 @@ function CreateLiveAuction() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(
+      const response = await axios.post(
         'https://rimelig-auksjon-backend.vercel.app/api/liveauctions',
         formData,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         }
       );
-      alert('Live auction created successfully');
-      navigate('/admin/dashboard');
+      if (response.status === 201) {
+        alert('Live auction created successfully');
+        navigate('/admin/dashboard');
+      }
     } catch (error) {
       console.error('Error creating live auction:', error);
+      alert('Failed to create live auction');
     }
   };
+
+  
 
   return (
     <div className="create-live-auction-container">
