@@ -717,7 +717,9 @@ async function connectDB() {
     
         const countsCacheKey = 'liveAuctionsCounts';
         await redis.del(countsCacheKey);  // Slett cache for liveAuctionsCounts
-    
+        const filterCacheKey = 'liveAuctionsFilter-{"page":"1","limit":"10"}';
+        await redis.del(filterCacheKey); 
+        
         // Finn og slett alle cache-nøkler som matcher "allLiveAuctions-*" mønsteret
         const allLiveAuctionsKeys = await redis.keys('allLiveAuctions-*');
         if (allLiveAuctionsKeys.length > 0) {
