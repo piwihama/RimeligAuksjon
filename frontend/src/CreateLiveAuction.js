@@ -84,6 +84,25 @@ function CreateLiveAuction() {
       }));
     });
   };
+  useEffect(() => {
+    const fetchAuctionRequest = async () => {
+      try {
+        // Hent data fra auksjonsforespørselen ved hjelp av ID-en
+        const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/auctionrequests/${id}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+
+        // Sett innhentede data til formData
+        setFormData(response.data);
+      } catch (error) {
+        console.error('Error fetching auction request:', error);
+      }
+    };
+
+    if (id) {
+      fetchAuctionRequest(); // Bare kjør hvis en ID er tilstede
+    }
+  }, [id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
