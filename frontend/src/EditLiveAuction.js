@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import './EditLiveAuction.css';
 
 function EditLiveAuction() {
   const { id } = useParams();
@@ -162,8 +163,8 @@ function EditLiveAuction() {
           <input type="number" id="minsteBudøkning" name="minsteBudøkning" value={liveAuction.minsteBudøkning} onChange={handleChange} />
         </div>
         <div className="form-group">
-          <label htmlFor="auctionFee">Auction Fee</label>
-          <input type="number" id="auctionFee" name="auctionFee" value={liveAuction.auctionFee} onChange={handleChange} />
+          <label htmlFor="auksjonsgebyr">Auction Fee</label>
+          <input type="number" id="auksjonsgebyr" name="auksjonsgebyr" value={liveAuction.auksjonsgebyr} onChange={handleChange} />
         </div>
         <div className="form-group">
           <label htmlFor="vat">VAT</label>

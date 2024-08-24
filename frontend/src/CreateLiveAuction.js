@@ -6,9 +6,10 @@ import './CreateLiveAuction.css';
 function CreateLiveAuction() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [auction, setAuction] = useState(null);
   const [formData, setFormData] = useState({
     brand: '',
+    mileage: '',
+    karosseri: '',
     model: '',
     year: '',
     reservePrice: '',
@@ -49,69 +50,14 @@ function CreateLiveAuction() {
     minsteBudøkning: '',
     månedligFinansiering: '',
     postkode: '',
-    sted: ''
+    sted: '',
+    fylke: '',
+    status: '',
+    extensionAfterLastBid: '',
+    seller: '',
+    businessSale: false,
+    vat: '',
   });
-
-  useEffect(() => {
-    const fetchAuction = async () => {
-      try {
-        const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/auctions/${id}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        });
-        setAuction(response.data);
-        setFormData({
-          brand: response.data.brand || '',
-          mileage: response.data.mileage || '',
-
-          model: response.data.model || '',
-          year: response.data.year || '',
-          reservePrice: response.data.reservePrice || '',
-          auctionWithoutReserve: response.data.auctionWithoutReserve || false,
-          regNumber: response.data.regNumber || '',
-          chassisNumber: response.data.chassisNumber || '',
-          taxClass: response.data.taxClass || '',
-          fuel: response.data.fuel || '',
-          gearType: response.data.gearType || '',
-          driveType: response.data.driveType || '',
-          mainColor: response.data.mainColor || '',
-          power: response.data.power || '',
-          seats: response.data.seats || '',
-          owners: response.data.owners || '',
-          firstRegistration: response.data.firstRegistration ? new Date(response.data.firstRegistration).toISOString().substring(0, 10) : '',
-          doors: response.data.doors || '',
-          weight: response.data.weight || '',
-          co2: response.data.co2 || '',
-          omregistreringsavgift: response.data.omregistreringsavgift || '',
-          lastEUApproval: response.data.lastEUApproval ? new Date(response.data.lastEUApproval).toISOString().substring(0, 10) : '',
-          nextEUControl: response.data.nextEUControl ? new Date(response.data.nextEUControl).toISOString().substring(0, 10) : '',
-          description: response.data.description || '',
-          conditionDescription: response.data.conditionDescription || '',
-          equipment: response.data.equipment.join(', ') || '',
-          highestBid: response.data.highestBid || '',
-          bidCount: response.data.bidCount || '',
-          bidderCount: response.data.bidderCount || '',
-          location: response.data.location || '',
-          endDate: response.data.endDate ? new Date(response.data.endDate).toISOString().substring(0, 16) : '',
-          imageUrls: response.data.imageUrls || [],
-          userId: response.data.userId || '',
-          userEmail: response.data.userEmail || '',
-          userName: response.data.userName || '',
-          auksjonsNummer: response.data.auksjonsNummer || '',
-          auksjonsgebyr: response.data.auksjonsgebyr || '',
-          avsluttesDato: response.data.avsluttesDato ? new Date(response.data.avsluttesDato).toISOString().substring(0, 16) : '',
-          by: response.data.by || '',
-          minsteBudøkning: response.data.minsteBudøkning || '',
-          månedligFinansiering: response.data.månedligFinansiering || '',
-          postkode: response.data.postkode || '',
-          sted: response.data.sted || '',
-          fylke: response.data.fylke || ''
-        });
-      } catch (error) {
-        console.error('Error fetching auction:', error);
-      }
-    };
-    fetchAuction();
-  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -120,7 +66,7 @@ function CreateLiveAuction() {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    const imagePromises = files.map(file => {
+    const imagePromises = files.map((file) => {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -131,17 +77,24 @@ function CreateLiveAuction() {
       });
     });
 
-    Promise.all(imagePromises).then(imageUrls => {
-      setFormData(prevState => ({ ...prevState, imageUrls: [...prevState.imageUrls, ...imageUrls] }));
+    Promise.all(imagePromises).then((imageUrls) => {
+      setFormData((prevState) => ({
+        ...prevState,
+        imageUrls: [...prevState.imageUrls, ...imageUrls],
+      }));
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('https://rimelig-auksjon-backend.vercel.app/api/liveauctions', formData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
+      await axios.post(
+        'https://rimelig-auksjon-backend.vercel.app/api/liveauctions',
+        formData,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        }
+      );
       alert('Live auction created successfully');
       navigate('/admin/dashboard');
     } catch (error) {
@@ -149,12 +102,11 @@ function CreateLiveAuction() {
     }
   };
 
-  if (!auction) return <div>Loading...</div>;
-
   return (
     <div className="create-live-auction">
-      <h1>Create Live Auction for {auction.brand} {auction.model}</h1>
+      <h1>Create Live Auction</h1>
       <form onSubmit={handleSubmit}>
+        {/* Existing fields */}
         <div className="form-group">
           <label htmlFor="brand">Merke</label>
           <input type="text" id="brand" name="brand" value={formData.brand} onChange={handleChange} />
@@ -164,8 +116,8 @@ function CreateLiveAuction() {
           <input type="text" id="mileage" name="mileage" value={formData.mileage} onChange={handleChange} />
         </div>
         <div className="form-group">
-          <label htmlFor="karroseri">Karroseri</label>
-          <input type="text" id="karrosseri" name="karosseri" value={formData.karosseri} onChange={handleChange} />
+          <label htmlFor="karrosseri">Karosseri</label>
+          <input type="text" id="karosseri" name="karosseri" value={formData.karosseri} onChange={handleChange} />
         </div>
         <div className="form-group">
           <label htmlFor="model">Modell</label>
@@ -181,7 +133,7 @@ function CreateLiveAuction() {
         </div>
         <div className="form-group">
           <label htmlFor="auctionWithoutReserve">Uten Minstepris</label>
-          <input type="checkbox" id="auctionWithoutReserve" name="auctionWithoutReserve" checked={formData.auctionWithoutReserve} onChange={handleChange} />
+          <input type="checkbox" id="auctionWithoutReserve" name="auctionWithoutReserve" checked={formData.auctionWithoutReserve} onChange={(e) => setFormData({ ...formData, auctionWithoutReserve: e.target.checked })} />
         </div>
         <div className="form-group">
           <label htmlFor="regNumber">Registreringsnummer</label>
@@ -213,8 +165,7 @@ function CreateLiveAuction() {
         </div>
         <div className="form-group">
           <label htmlFor="power">Effekt</label>
-          <input type="text" id="power" name="power"
-          value={formData.power} onChange={handleChange} />
+          <input type="text" id="power" name="power" value={formData.power} onChange={handleChange} />
         </div>
         <div className="form-group">
           <label htmlFor="seats">Seter</label>
@@ -295,6 +246,11 @@ function CreateLiveAuction() {
             ))}
           </div>
         </div>
+        {/* New fields from EditLiveAuction */}
+        <div className="form-group">
+          <label htmlFor="status">Status</label>
+          <input type="text" id="status" name="status" value={formData.status} onChange={handleChange} />
+        </div>
         <div className="form-group">
           <label htmlFor="auksjonsNummer">Auksjonsnummer</label>
           <input type="text" id="auksjonsNummer" name="auksjonsNummer" value={formData.auksjonsNummer} onChange={handleChange} />
@@ -328,8 +284,29 @@ function CreateLiveAuction() {
           <input type="text" id="sted" name="sted" value={formData.sted} onChange={handleChange} />
         </div>
         <div className="form-group">
-          <label htmlFor="fylke">fylke</label>
+          <label htmlFor="fylke">Fylke</label>
           <input type="text" id="fylke" name="fylke" value={formData.fylke} onChange={handleChange} />
+        </div>
+        <div className="form-group">
+          <label htmlFor="extensionAfterLastBid">Forlengelse etter siste bud (minutter)</label>
+          <input type="number" id="extensionAfterLastBid" name="extensionAfterLastBid" value={formData.extensionAfterLastBid} onChange={handleChange} />
+        </div>
+        <div className="form-group">
+          <label htmlFor="seller">Selger</label>
+          <input type="text" id="seller" name="seller" value={formData.seller} onChange={handleChange} />
+        </div>
+        <div className="form-group">
+          <label htmlFor="businessSale">Er dette et firmasalget?</label>
+          <select id="businessSale" name="businessSale" value={formData.businessSale} onChange={handleChange}>
+            <option value={false}>Nei</option>
+            <option value={true}>Ja</option>
+          </select>
+        </div>
+        <div className="form-group">
+          <label htmlFor="vat">MVA</label>
+          <select id="vat" name="vat" value={formData.vat} onChange={handleChange}>
+          <input type="text" id="vat" name="vat" value={formData.vat} onChange={handleChange} />
+          </select>
         </div>
         <button type="submit">Create Live Auction</button>
       </form>

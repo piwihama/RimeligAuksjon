@@ -160,9 +160,10 @@ function PostedAuction() {
               <form onSubmit={handleBidSubmit}>
                 <div className="form-group">
                   <label htmlFor="bidAmount">Budbeløp</label>
-                  <small className="form-text text-muted">
+                  <small style={{ fontSize: '10px' }} className="form-text text-muted">
                     Beløpet som foreslås her er minimumsbudet. Du kan by mer om ønskelig.
                   </small>
+                 
                   <input
                     type="number"
                     id="bidAmount"
@@ -205,7 +206,7 @@ function PostedAuction() {
             </div>
             <div className="posted-detail-item">
               <span className="detail-title">MVA:</span>
-              <span className="detail-value">{auction.vatRate}%</span>
+              <span className="detail-value">{auction.vat}</span>
             </div>
             <div className="posted-detail-item">
               <span className="detail-title">Sted:</span>
