@@ -125,8 +125,10 @@ function Home() {
                       className="home-auction-image" 
                     />
                     <div className="home-auction-details">
-                      <h3>{auction.brand} {auction.model} {auction.year} </h3>
+                      <h3>{auction.brand} {auction.model} {auction.year}  {auction.mileage}</h3>
                       <span>{auction.mileage} KM</span>
+                      {console.log(auction.mileage)} {/* Legg til denne linjen for debugging */}
+
                       <div className='home-auction-smalldetails'>
                         <div className='home-title-value-auction'>
                           <span className="home-auction-title"><strong>Gjenstår:</strong></span>
