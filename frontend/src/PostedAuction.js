@@ -210,7 +210,7 @@ function PostedAuction() {
             </div>
             <div className="posted-detail-item">
               <span className="detail-title">Sted:</span>
-              <span className="detail-value">{auction.location}</span>
+              <span className="detail-value">{auction.location} {auction.postkode}</span>
             </div>
           </div>
           <div className="bid-list">
