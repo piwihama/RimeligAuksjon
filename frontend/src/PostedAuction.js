@@ -56,7 +56,8 @@ function PostedAuction() {
 
   useEffect(() => {
     if (auction) {
-      const minimumBid = parseFloat(auction.highestBid) + parseFloat(auction.minsteBudøkning) + 1;
+      const minsteBudøkning = parseFloat(auction.minsteBudøkning) || 100; // fallback på 100 hvis tom
+      const minimumBid = parseFloat(auction.highestBid) + minsteBudøkning;
       setBidAmount(minimumBid.toString());
     }
   }, [auction]);
@@ -104,7 +105,8 @@ function PostedAuction() {
     setSuccessMessage('');
 
     const parsedBidAmount = parseFloat(bidAmount);
-    const minimumBid = parseFloat(auction.highestBid) + parseFloat(auction.minsteBudøkning);
+    const minsteBudøkning = parseFloat(auction.minsteBudøkning) || 100; // fallback på 100 hvis tom
+    const minimumBid = parseFloat(auction.highestBid) + minsteBudøkning;
 
     // Log bid validation details
     console.log(`Parsed bid amount: ${parsedBidAmount}`);
@@ -217,7 +219,7 @@ function PostedAuction() {
                     value={bidAmount}
                     onChange={(e) => setBidAmount(e.target.value)}
                     required
-                    min={parseFloat(auction.highestBid) + parseFloat(auction.minsteBudøkning)}
+                    min={parseFloat(auction.highestBid) + minsteBudøkning}
                   />
                 </div>
                 <div className="posted-detail-item" >

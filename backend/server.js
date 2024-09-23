@@ -836,8 +836,15 @@ async function connectDB() {
         const minsteBudøkning = parseFloat(liveAuction.minsteBudøkning) || 100;
         const minimumRequiredBid = parseFloat(liveAuction.highestBid) + minsteBudøkning;
     
+        // Log validation check
+        console.log(`Minimum required bid: ${minimumRequiredBid}`);
+    
+        if (parseFloat(bidAmount) <= parseFloat(liveAuction.highestBid)) {
+          return res.status(400).json({ message: `Bud må være høyere enn nåværende bud på ${liveAuction.highestBid},-` });
+        }
+    
         if (parseFloat(bidAmount) < minimumRequiredBid) {
-          return res.status(400).json({ message: `Bud må være høyere enn ${minimumRequiredBid},-` });
+          return res.status(400).json({ message: `Bud må være høyere enn minste budøkning på ${minimumRequiredBid},-` });
         }
     
         const reservePriceMet = bidAmount >= liveAuction.reservePrice;
@@ -955,6 +962,7 @@ async function connectDB() {
         res.status(500).json({ error: 'Intern serverfeil' });
       }
     });
+    
     
     
     
