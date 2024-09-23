@@ -816,6 +816,7 @@ async function connectDB() {
         const liveAuctionId = req.params.id;
         const { bidAmount } = req.body;
     
+        // Fjern cache før du oppdaterer dataene
         const cacheKey = `liveAuction-${liveAuctionId}`;
         await redis.del(cacheKey);  // Invalidate the cache for this auction
     
@@ -836,7 +837,7 @@ async function connectDB() {
         const reservePriceMet = bidAmount >= liveAuction.reservePrice;
     
         const newBid = {
-          bidder: `Budgiver ${req.user.userId}`,
+          bidder: req.user.userId,
           amount: bidAmount,
           time: new Date()
         };
@@ -857,7 +858,7 @@ async function connectDB() {
               bids: newBid
             },
             $inc: {
-              bidCount: 1,
+              bidCount: 1
             }
           },
           { returnDocument: 'after', returnOriginal: false }
@@ -885,7 +886,7 @@ async function connectDB() {
           from: '"RimeligAuksjon.no" <dinemail@gmail.com>',
           to: highestBidder.email,
           subject: 'Du er den høyeste budgiveren!',
-          text: `Gratulerer! Du er for øyeblikket den høyeste budgiveren for auksjonen ${updatedAuction.brand} ${updatedAuction.model} med et bud på ${bidAmount}.`
+          text: `Gratulerer! Du er for øyeblikket den høyeste budgiveren for auksjonen ${updatedAuction.brand} ${updatedAuction.model} med et bud på ${bidAmount},-.`
         };
     
         await transporter.sendMail(mailOptions);
@@ -899,7 +900,7 @@ async function connectDB() {
               from: '"RimeligAuksjon.no" <dinemail@gmail.com>',
               to: auctionOwner.email,
               subject: 'Nytt bud på din auksjon!',
-              text: `Din auksjon for ${updatedAuction.brand} ${updatedAuction.model} har mottatt et nytt bud på ${bidAmount} fra ${highestBidder.email}. Minsteprisen er nådd!`
+              text: `Din auksjon for ${updatedAuction.brand} ${updatedAuction.model} har mottatt et nytt bud på ${bidAmount},- fra ${highestBidder.email}. Minsteprisen er nådd!`
             };
     
             await transporter.sendMail(ownerMailOptions);
@@ -915,14 +916,14 @@ async function connectDB() {
               from: '"RimeligAuksjon.no" <dinemail@gmail.com>',
               to: previousHighestBidder.email,
               subject: 'Du har blitt overbydd!',
-              text: `Noen har overbydd deg på auksjonen ${liveAuction.brand} ${liveAuction.model}. Nåværende høyeste bud er ${bidAmount}.`
+              text: `Noen har overbydd deg på auksjonen ${liveAuction.brand} ${liveAuction.model}. Nåværende høyeste bud er ${bidAmount},-.`
             };
     
             await transporter.sendMail(previousBidderMailOptions);
           }
         }
     
-        // (Optional) Tidlig avslutning av auksjonen
+        // Oppdater sluttid hvis det er kort tid igjen
         const timeLeft = new Date(updatedAuction.endDate) - new Date();
         const minimumTimeLeft = 5 * 60 * 1000; // 5 minutter
     
@@ -947,6 +948,7 @@ async function connectDB() {
         res.status(500).json({ error: 'Intern serverfeil' });
       }
     });
+    
     
     
     app.get('/api/myliveauctions', authenticateToken, async (req, res) => {

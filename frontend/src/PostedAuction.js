@@ -102,13 +102,6 @@ function PostedAuction() {
     setError('');
     setSuccessMessage('');
 
-    const minimumRequiredBid = parseFloat(auction.highestBid) + parseFloat(auction.minsteBudøkning);
-
-    if (parseFloat(bidAmount) < minimumRequiredBid) {
-      setError(`Bud må være minst ${minimumRequiredBid},-`);
-      return;
-    }
-
     try {
       const token = localStorage.getItem('token');
       await axios.post(
@@ -119,7 +112,8 @@ function PostedAuction() {
         }
       );
       setSuccessMessage('Bud lagt inn vellykket!');
-      // Re-fetch auction details after placing a bid
+      
+      // Hent auksjonsdata på nytt
       const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -129,7 +123,8 @@ function PostedAuction() {
       setError(message);
       console.error('Error placing bid:', error);
     }
-  };
+};
+
 
   const handleThumbnailClick = (index) => {
     setCurrentImageIndex(index);
