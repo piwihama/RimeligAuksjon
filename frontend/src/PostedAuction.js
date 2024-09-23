@@ -4,7 +4,20 @@ import axios from 'axios';
 import './PostedAuction.css';
 import Header from './Header';
 import Footer from './Footer';
+const mapBidders = (bids) => {
+  let bidderMap = {};
+  let bidderCounter = 1;
 
+  // Iterate over all bids to map each unique userId to a "Budgiver X"
+  bids.forEach(bid => {
+    if (!bidderMap[bid.bidder]) {
+      bidderMap[bid.bidder] = `Budgiver ${bidderCounter}`;
+      bidderCounter++;
+    }
+  });
+
+  return bidderMap;
+};
 function PostedAuction() {
   const { id } = useParams();
   const [auction, setAuction] = useState(null);
@@ -14,6 +27,14 @@ function PostedAuction() {
   const [timeLeft, setTimeLeft] = useState({});
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [endDate, setEndDate] = useState(null);
+  const [bidderMap, setBidderMap] = useState({});
+
+  useEffect(() => {
+    if (auction && auction.bids) {
+      const mappedBidders = mapBidders(auction.bids);
+      setBidderMap(mappedBidders);
+    }
+  }, [auction]);
 
   useEffect(() => {
     const fetchAuction = async () => {
@@ -214,19 +235,19 @@ function PostedAuction() {
             </div>
           </div>
           <div className="bid-list">
-            <h3>Budhistorikk</h3>
-            {auction.bids && auction.bids.length > 0 ? (
-              <ul>
-                {auction.bids.map((bid, index) => (
-                  <li key={index}>
-                    {bid.bidder} - {bid.amount},-
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>Ingen bud er gitt enda</p>
-            )}
-          </div>
+      <h3>Budhistorikk</h3>
+      {auction.bids && auction.bids.length > 0 ? (
+        <ul>
+          {auction.bids.map((bid, index) => (
+            <li key={index}>
+              {bidderMap[bid.bidder]} - {bid.amount},-
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>Ingen bud er gitt enda</p>
+      )}
+    </div>
         </div>
 
         <div className="posted-auction-details">
