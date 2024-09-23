@@ -9,7 +9,6 @@ const mapBidders = (bids) => {
   let bidderMap = {};
   let bidderCounter = 1;
 
-  // Iterate over all bids to map each unique userId to a "Budgiver X"
   bids.forEach(bid => {
     if (!bidderMap[bid.bidder]) {
       bidderMap[bid.bidder] = `Budgiver ${bidderCounter}`;
@@ -107,6 +106,10 @@ function PostedAuction() {
     const parsedBidAmount = parseFloat(bidAmount);
     const minimumBid = parseFloat(auction.highestBid) + parseFloat(auction.minsteBudøkning);
 
+    // Log bid validation details
+    console.log(`Parsed bid amount: ${parsedBidAmount}`);
+    console.log(`Minimum bid required: ${minimumBid}`);
+
     if (!bidAmount || isNaN(parsedBidAmount)) {
       setError('Ugyldig budbeløp');
       return;
@@ -124,14 +127,20 @@ function PostedAuction() {
         return;
       }
 
+      // Log token and bid amount before making the request
+      console.log(`Submitting bid: ${parsedBidAmount}`);
+      console.log(`Using token: ${token}`);
+
       await axios.post(
         `https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}/bid`,
-        { bidAmount: parsedBidAmount }, // Sørg for at dette er et tall
+        { bidAmount: parsedBidAmount }, 
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       setSuccessMessage('Bud lagt inn vellykket!');
+      
       // Hent auksjonen på nytt for å oppdatere buddet
       const auctionResponse = await axios.get(
         `https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`,
@@ -143,7 +152,7 @@ function PostedAuction() {
     } catch (error) {
       const message = error.response?.data?.message || 'Feil ved innlegging av bud. Prøv igjen.';
       setError(message);
-      console.error('Error placing bid:', error);
+      console.error('Error placing bid:', error.response?.data || error);
     }
   };
 
