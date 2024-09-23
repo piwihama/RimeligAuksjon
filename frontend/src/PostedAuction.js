@@ -4,6 +4,7 @@ import axios from 'axios';
 import './PostedAuction.css';
 import Header from './Header';
 import Footer from './Footer';
+
 const mapBidders = (bids) => {
   let bidderMap = {};
   let bidderCounter = 1;
@@ -18,6 +19,7 @@ const mapBidders = (bids) => {
 
   return bidderMap;
 };
+
 function PostedAuction() {
   const { id } = useParams();
   const [auction, setAuction] = useState(null);
@@ -49,7 +51,7 @@ function PostedAuction() {
         console.error('Error fetching auction details:', error);
       }
     };
-  
+
     fetchAuction();
   }, [id]);
 
@@ -101,17 +103,30 @@ function PostedAuction() {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
-  
-    if (!bidAmount || isNaN(parseFloat(bidAmount))) {
+
+    const parsedBidAmount = parseFloat(bidAmount);
+    const minimumBid = parseFloat(auction.highestBid) + parseFloat(auction.minsteBudøkning);
+
+    if (!bidAmount || isNaN(parsedBidAmount)) {
       setError('Ugyldig budbeløp');
       return;
     }
-  
+
+    if (parsedBidAmount < minimumBid) {
+      setError(`Bud må være større enn minimumsbudet på ${minimumBid},-`);
+      return;
+    }
+
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        setError('Du må være innlogget for å legge inn bud.');
+        return;
+      }
+
       await axios.post(
         `https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}/bid`,
-        { bidAmount: parseFloat(bidAmount) }, // Sørg for at dette er et tall
+        { bidAmount: parsedBidAmount }, // Sørg for at dette er et tall
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -131,8 +146,6 @@ function PostedAuction() {
       console.error('Error placing bid:', error);
     }
   };
-  
-
 
   const handleThumbnailClick = (index) => {
     setCurrentImageIndex(index);
@@ -238,19 +251,19 @@ function PostedAuction() {
             </div>
           </div>
           <div className="bid-list">
-      <h3>Budhistorikk</h3>
-      {auction.bids && auction.bids.length > 0 ? (
-        <ul>
-          {auction.bids.map((bid, index) => (
-            <li key={index}>
-              {bidderMap[bid.bidder]} - {bid.amount},-
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>Ingen bud er gitt enda</p>
-      )}
-    </div>
+            <h3>Budhistorikk</h3>
+            {auction.bids && auction.bids.length > 0 ? (
+              <ul>
+                {auction.bids.map((bid, index) => (
+                  <li key={index}>
+                    {bidderMap[bid.bidder]} - {bid.amount},-
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>Ingen bud er gitt enda</p>
+            )}
+          </div>
         </div>
 
         <div className="posted-auction-details">
