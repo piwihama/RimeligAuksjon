@@ -101,29 +101,37 @@ function PostedAuction() {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
-
+  
+    if (!bidAmount || isNaN(parseFloat(bidAmount))) {
+      setError('Ugyldig budbeløp');
+      return;
+    }
+  
     try {
       const token = localStorage.getItem('token');
       await axios.post(
         `https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}/bid`,
-        { bidAmount: parseFloat(bidAmount) },
+        { bidAmount: parseFloat(bidAmount) }, // Sørg for at dette er et tall
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       setSuccessMessage('Bud lagt inn vellykket!');
-      
-      // Hent auksjonsdata på nytt
-      const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setAuction(response.data);
+      // Hent auksjonen på nytt for å oppdatere buddet
+      const auctionResponse = await axios.get(
+        `https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setAuction(auctionResponse.data);
     } catch (error) {
-      const message = error.response && error.response.data ? error.response.data.message : 'Feil ved innlegging av bud. Prøv igjen.';
+      const message = error.response?.data?.message || 'Feil ved innlegging av bud. Prøv igjen.';
       setError(message);
       console.error('Error placing bid:', error);
     }
-};
+  };
+  
 
 
   const handleThumbnailClick = (index) => {

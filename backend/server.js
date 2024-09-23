@@ -815,6 +815,15 @@ async function connectDB() {
       try {
         const liveAuctionId = req.params.id;
         const { bidAmount } = req.body;
+        
+        // Legg til logging
+        console.log('Received bid for auction:', liveAuctionId);
+        console.log('Bid amount:', bidAmount);
+        
+        if (!bidAmount || isNaN(parseFloat(bidAmount))) {
+          console.log('Invalid bid amount:', bidAmount);
+          return res.status(400).json({ message: 'Ugyldig budbeløp' });
+        }
     
         // Fjern cache før du oppdaterer dataene
         const cacheKey = `liveAuction-${liveAuctionId}`;
