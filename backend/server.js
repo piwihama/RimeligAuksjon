@@ -815,15 +815,6 @@ async function connectDB() {
       try {
         const liveAuctionId = req.params.id;
         const { bidAmount } = req.body;
-        
-        // Legg til logging
-        console.log('Received bid for auction:', liveAuctionId);
-        console.log('Bid amount:', bidAmount);
-        
-        if (!bidAmount || isNaN(parseFloat(bidAmount))) {
-          console.log('Invalid bid amount:', bidAmount);
-          return res.status(400).json({ message: 'Ugyldig budbeløp' });
-        }
     
         // Fjern cache før du oppdaterer dataene
         const cacheKey = `liveAuction-${liveAuctionId}`;
@@ -832,12 +823,18 @@ async function connectDB() {
         const liveAuction = await liveAuctionCollection.findOne({ _id: new ObjectId(liveAuctionId) });
         if (!liveAuction) return res.status(404).json({ message: 'Auksjonen ble ikke funnet' });
     
+        // Legg til feilsøking ved logging av viktige felter
+        console.log(`Received bid for auction: ${liveAuctionId}. Bid amount: ${bidAmount}`);
+        console.log(`Current highest bid: ${liveAuction.highestBid}, Minste budøkning: ${liveAuction.minsteBudøkning || 'Ikke satt'}`);
+    
         // Sjekk om brukeren allerede har høyeste bud
         if (liveAuction.highestBidder === req.user.userId) {
           return res.status(400).json({ message: 'Du har allerede det høyeste budet. Vent til noen andre byr før du byr igjen.' });
         }
     
-        const minimumRequiredBid = parseFloat(liveAuction.highestBid) + parseFloat(liveAuction.minsteBudøkning);
+        // Sjekk at minsteBudøkning har en gyldig verdi, bruk 100 som fallback hvis tom
+        const minsteBudøkning = parseFloat(liveAuction.minsteBudøkning) || 100;
+        const minimumRequiredBid = parseFloat(liveAuction.highestBid) + minsteBudøkning;
     
         if (parseFloat(bidAmount) < minimumRequiredBid) {
           return res.status(400).json({ message: `Bud må være høyere enn ${minimumRequiredBid},-` });
@@ -853,7 +850,7 @@ async function connectDB() {
     
         // Oppdater auksjonen med det nye budet atomisk
         const result = await liveAuctionCollection.findOneAndUpdate(
-          { 
+          {
             _id: new ObjectId(liveAuctionId),
             highestBid: { $lt: bidAmount } // Bare oppdater hvis det nye budet er høyere enn nåværende høyeste bud
           },
@@ -880,8 +877,10 @@ async function connectDB() {
     
         const updatedAuction = result.value;
     
+        // Hent budgiverens e-post
         const highestBidder = await loginCollection.findOne({ _id: new ObjectId(req.user.userId) });
     
+        // Send e-post til den nye høyeste budgiveren
         let transporter = nodemailer.createTransport({
           service: 'gmail',
           auth: {
@@ -890,7 +889,6 @@ async function connectDB() {
           }
         });
     
-        // Send e-post til den nye høyeste budgiveren
         let mailOptions = {
           from: '"RimeligAuksjon.no" <dinemail@gmail.com>',
           to: highestBidder.email,
