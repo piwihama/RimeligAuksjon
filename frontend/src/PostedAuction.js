@@ -56,7 +56,7 @@ function PostedAuction() {
 
   useEffect(() => {
     if (auction) {
-      const minimumBid = parseFloat(auction.highestBid) + parseFloat(auction.minsteBudøkning);
+      const minimumBid = parseFloat(auction.highestBid) + parseFloat(auction.minsteBudøkning) + 1;
       setBidAmount(minimumBid.toString());
     }
   }, [auction]);
