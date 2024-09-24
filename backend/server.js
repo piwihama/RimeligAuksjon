@@ -891,7 +891,7 @@ async function connectDB() {
         );
 
         // Send oppdateringer til alle tilkoblede klienter via WebSockets
-        io.emit('bidPlaced', { auctionId: liveAuctionId, highestBid: bidAmount });
+        //io.emit('bidPlaced', { auctionId: liveAuctionId, highestBid: bidAmount });
     
         const highestBidder = await loginCollection.findOne({ _id: new ObjectId(req.user.userId) });
     
