@@ -1151,7 +1151,7 @@ async function connectDB() {
     });
     
     const PORT = process.env.PORT || 8082;
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`Listening on port ${PORT}`);
     });
   } catch (err) {
