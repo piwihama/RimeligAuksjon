@@ -316,6 +316,8 @@ async function connectDB() {
 
     
     app.post('/login', async (req, res) => {
+      console.log('Login request received', req.body);
+
       try {
         const { email, password } = req.body;
         const user = await loginCollection.findOne({ email, password });
