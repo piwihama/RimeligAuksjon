@@ -822,6 +822,12 @@ async function connectDB() {
         const liveAuction = await liveAuctionCollection.findOne({ _id: new ObjectId(liveAuctionId) });
         if (!liveAuction) return res.status(404).json({ message: 'Auksjonen ble ikke funnet' });
     
+        // Sjekk om brukeren allerede har høyeste bud, og hindre at samme bruker gir to bud på rad
+        if (liveAuction.highestBidder === req.user.userId) {
+          return res.status(400).json({ message: 'Du kan ikke legge inn to bud på rad. Vent til noen andre byr før du kan by igjen.' });
+        }
+    
+        // Sjekk om budet er høyere enn det nåværende høyeste budet
         if (bidAmount <= liveAuction.highestBid) {
           return res.status(400).json({ message: 'Bud må være høyere enn nåværende høyeste bud' });
         }
@@ -905,6 +911,7 @@ async function connectDB() {
         res.status(500).json({ error: 'Intern serverfeil' });
       }
     });
+    
     app.get('/api/myliveauctions', authenticateToken, async (req, res) => {
       console.log('Request received at /api/myliveauctions');
       try {
