@@ -5,6 +5,8 @@ const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const speakeasy = require('speakeasy');
 const cron = require('node-cron');
+const socketIo = require('socket.io'); // Import Socket.IO
+const http = require('http'); // For server
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require('uuid');
 const Redis = require('ioredis');
@@ -23,6 +25,19 @@ const s3 = new S3Client({
 });
 
 const app = express();
+
+const server = http.createServer(app); // Lag HTTP-server
+const io = socketIo(server, {
+  cors: {
+    origin: "https://www.rimeligauksjon.no", // Din frontend URL
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+}); // 
+
+app.use(cors());
+app.use(express.json());
+
 // CORS mellomvare skal komme først
 const corsOptions = {
   origin: 'https://www.rimeligauksjon.no',
@@ -64,6 +79,14 @@ async function connectDB() {
     const auctionCollection = db.collection("auctions");
     const messageCollection = db.collection("messages");
     const liveAuctionCollection = db.collection('liveauctions');
+
+    io.on("connection", (socket) => {
+      console.log('A user connected:', socket.id);
+
+      socket.on("disconnect", () => {
+        console.log('A user disconnected:', socket.id);
+      });
+    });
 
     await loginCollection.createIndex({ email: 1 }, { unique: true });
     await auctionCollection.createIndex({ userId: 1 });
@@ -811,7 +834,7 @@ async function connectDB() {
       }
     });
 
-    app.post('/api/liveauctions/:id/bid', authenticateToken, async (req, res) => {
+     app.post('/api/liveauctions/:id/bid', authenticateToken, async (req, res) => {
       try {
         const liveAuctionId = req.params.id;
         const { bidAmount } = req.body;
@@ -866,6 +889,9 @@ async function connectDB() {
             }
           }
         );
+
+        // Send oppdateringer til alle tilkoblede klienter via WebSockets
+        io.emit('bidPlaced', { auctionId: liveAuctionId, highestBid: bidAmount });
     
         const highestBidder = await loginCollection.findOne({ _id: new ObjectId(req.user.userId) });
     
@@ -901,7 +927,6 @@ async function connectDB() {
           }
         }
     
-        // (Optional) Repopulate cache with updated auction data
         const updatedAuction = await liveAuctionCollection.findOne({ _id: new ObjectId(liveAuctionId) });
         await redis.set(cacheKey, JSON.stringify(updatedAuction), 'EX', 600); // Cache for 10 minutes
     
@@ -911,7 +936,8 @@ async function connectDB() {
         res.status(500).json({ error: 'Intern serverfeil' });
       }
     });
-    
+  
+
     app.get('/api/myliveauctions', authenticateToken, async (req, res) => {
       console.log('Request received at /api/myliveauctions');
       try {

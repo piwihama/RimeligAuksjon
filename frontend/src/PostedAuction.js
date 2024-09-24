@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { io } from 'socket.io-client'; // Import socket.io client
 import './PostedAuction.css';
 import Header from './Header';
 import Footer from './Footer';
@@ -29,28 +30,42 @@ function PostedAuction() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [endDate, setEndDate] = useState(null);
   const [bidderMap, setBidderMap] = useState({});
+  const [socket, setSocket] = useState(null); // Legg til en socket state
+
+  // Koble til WebSocket-serveren når komponenten mountes
+  useEffect(() => {
+    const newSocket = io('https://rimelig-auksjon-backend.vercel.app'); // Sett opp WebSocket-tilkoblingen
+    setSocket(newSocket);
+
+    // Koble fra WebSocket når komponenten unmountes
+    return () => newSocket.disconnect();
+  }, []);
 
   useEffect(() => {
-    if (auction && auction.bids) {
-      const mappedBidders = mapBidders(auction.bids);
-      setBidderMap(mappedBidders);
+    if (socket) {
+      socket.on('bidPlaced', (data) => {
+        if (data.auctionId === id) {
+          // Oppdater auksjonsdata når nytt bud mottas
+          fetchAuction();
+        }
+      });
     }
-  }, [auction]);
+  }, [socket, id]);
+
+  const fetchAuction = async () => {
+    try {
+      const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      setAuction(response.data);
+      setEndDate(new Date(response.data.endDate));
+      calculateTimeLeft(new Date(response.data.endDate));
+    } catch (error) {
+      console.error('Error fetching auction details:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchAuction = async () => {
-      try {
-        const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        });
-        setAuction(response.data);
-        setEndDate(new Date(response.data.endDate));
-        calculateTimeLeft(new Date(response.data.endDate));
-      } catch (error) {
-        console.error('Error fetching auction details:', error);
-      }
-    };
-
     fetchAuction();
   }, [id]);
 
@@ -108,10 +123,6 @@ function PostedAuction() {
     const minsteBudøkning = parseFloat(auction.minsteBudøkning) || 100; // fallback på 100 hvis tom
     const minimumBid = parseFloat(auction.highestBid) + minsteBudøkning;
 
-    // Log bid validation details
-    console.log(`Parsed bid amount: ${parsedBidAmount}`);
-    console.log(`Minimum bid required: ${minimumBid}`);
-
     if (!bidAmount || isNaN(parsedBidAmount)) {
       setError('Ugyldig budbeløp');
       return;
@@ -129,10 +140,6 @@ function PostedAuction() {
         return;
       }
 
-      // Log token and bid amount before making the request
-      console.log(`Submitting bid: ${parsedBidAmount}`);
-      console.log(`Using token: ${token}`);
-
       await axios.post(
         `https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}/bid`,
         { bidAmount: parsedBidAmount }, 
@@ -143,14 +150,7 @@ function PostedAuction() {
 
       setSuccessMessage('Bud lagt inn vellykket!');
       
-      // Hent auksjonen på nytt for å oppdatere buddet
-      const auctionResponse = await axios.get(
-        `https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setAuction(auctionResponse.data);
+      fetchAuction(); // Oppdater auksjonen etter at bud er lagt inn
     } catch (error) {
       const message = error.response?.data?.message || 'Feil ved innlegging av bud. Prøv igjen.';
       setError(message);
