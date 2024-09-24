@@ -219,7 +219,7 @@ function PostedAuction() {
                     value={bidAmount}
                     onChange={(e) => setBidAmount(e.target.value)}
                     required
-                    min={parseFloat(auction.highestBid) + minsteBudøkning}
+                    min={parseFloat(auction.highestBid) + (parseFloat(auction.minsteBudøkning) || 100)}
                   />
                 </div>
                 <div className="posted-detail-item" >
