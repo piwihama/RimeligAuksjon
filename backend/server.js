@@ -80,13 +80,13 @@ async function connectDB() {
     const messageCollection = db.collection("messages");
     const liveAuctionCollection = db.collection('liveauctions');
 
-    io.on("connection", (socket) => {
+   /**  io.on("connection", (socket) => {
       console.log('A user connected:', socket.id);
 
       socket.on("disconnect", () => {
         console.log('A user disconnected:', socket.id);
       });
-    });
+    });*/
 
     await loginCollection.createIndex({ email: 1 }, { unique: true });
     await auctionCollection.createIndex({ userId: 1 });
