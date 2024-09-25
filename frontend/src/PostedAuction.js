@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import io from 'socket.io-client'; // Import Socket.IO
 import './PostedAuction.css';
 import Header from './Header';
 import Footer from './Footer';
@@ -29,6 +30,25 @@ function PostedAuction() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [endDate, setEndDate] = useState(null);
   const [bidderMap, setBidderMap] = useState({});
+  
+  useEffect(() => {
+    const socket = io('https://rimelig-auksjon-backend.vercel.app'); // Sett opp websocket tilkobling
+
+    // Lytt etter sanntidsoppdateringer av bud
+    socket.on('bidUpdated', (updatedAuction) => {
+      if (updatedAuction.auctionId === id) {
+        setAuction(prevState => ({
+          ...prevState,
+          highestBid: updatedAuction.bidAmount,
+          bids: [...prevState.bids, { amount: updatedAuction.bidAmount, bidder: 'Budgiver' }]
+        }));
+      }
+    });
+
+    return () => {
+      socket.disconnect(); // Koble fra websockets ved unmount
+    };
+  }, [id]);
 
   useEffect(() => {
     if (auction && auction.bids) {
@@ -56,7 +76,7 @@ function PostedAuction() {
 
   useEffect(() => {
     if (auction) {
-      const minsteBudøkning = parseFloat(auction.minsteBudøkning) || 100; // fallback på 100 hvis tom
+      const minsteBudøkning = parseFloat(auction.minsteBudøkning) || 100;
       const minimumBid = parseFloat(auction.highestBid) + minsteBudøkning;
       setBidAmount(minimumBid.toString());
     }
@@ -105,12 +125,8 @@ function PostedAuction() {
     setSuccessMessage('');
 
     const parsedBidAmount = parseFloat(bidAmount);
-    const minsteBudøkning = parseFloat(auction.minsteBudøkning) || 100; // fallback på 100 hvis tom
+    const minsteBudøkning = parseFloat(auction.minsteBudøkning) || 100;
     const minimumBid = parseFloat(auction.highestBid) + minsteBudøkning;
-
-    // Log bid validation details
-    console.log(`Parsed bid amount: ${parsedBidAmount}`);
-    console.log(`Minimum bid required: ${minimumBid}`);
 
     if (!bidAmount || isNaN(parsedBidAmount)) {
       setError('Ugyldig budbeløp');
@@ -129,13 +145,9 @@ function PostedAuction() {
         return;
       }
 
-      // Log token and bid amount before making the request
-      console.log(`Submitting bid: ${parsedBidAmount}`);
-      console.log(`Using token: ${token}`);
-
       await axios.post(
         `https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}/bid`,
-        { bidAmount: parsedBidAmount }, 
+        { bidAmount: parsedBidAmount },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -143,7 +155,6 @@ function PostedAuction() {
 
       setSuccessMessage('Bud lagt inn vellykket!');
       
-      // Hent auksjonen på nytt for å oppdatere buddet
       const auctionResponse = await axios.get(
         `https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`,
         {
