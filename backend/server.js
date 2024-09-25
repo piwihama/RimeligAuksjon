@@ -10,9 +10,8 @@ const cron = require('node-cron');
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require('uuid');
 const Redis = require('ioredis');
+
 const MAX_CACHE_SIZE = 100000; // 100 KB
-
-
 
 // Initialiser Redis-klienten
 const redis = new Redis(process.env.REDIS_URL);
@@ -20,14 +19,14 @@ const redis = new Redis(process.env.REDIS_URL);
 const s3 = new S3Client({
   region: 'eu-north-1',
   credentials: {
-    accessKeyId: 'AKIAR4M65FGP76COT3D6',
-    secretAccessKey: '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'
-  }
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_KEY,
+  },
 });
 
 const app = express();
 
-// CORS mellomvare skal komme først
+// CORS mellomvare
 const corsOptions = {
   origin: 'https://www.rimeligauksjon.no',
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
@@ -46,8 +45,10 @@ app.options('*', (req, res) => {
   res.sendStatus(204); // Returner "No Content"
 });
 
+// Opprett HTTP-serveren
+const server = http.createServer(app);
 
-const server = http.createServer(app); // Opprett HTTP-serveren
+// Opprett WebSocket-server med riktig CORS-konfigurasjon
 const io = socketIo(server, {
   cors: {
     origin: 'https://www.rimeligauksjon.no',
@@ -56,78 +57,63 @@ const io = socketIo(server, {
   },
 });
 
-app.use(cors({
-  origin: 'https://www.rimeligauksjon.no',
-  credentials: true,
-}));
-
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-const uri = "mongodb+srv://peiwast124:Heipiwi18.@cluster0.xfxhgbf.mongodb.net/";
+const uri = process.env.MONGO_URI; // Gjør det mer sikkert med miljøvariabler
 const client = new MongoClient(uri, {
   serverApi: ServerApiVersion.v1,
-  connectTimeoutMS: 60000, // Øk tilkoblingstiden til 60 sekunder
-  socketTimeoutMS: 60000,  // Øk socket t
+  connectTimeoutMS: 60000,
+  socketTimeoutMS: 60000,
   tls: true,
   tlsAllowInvalidCertificates: false,
-  tlsAllowInvalidHostnames: false
+  tlsAllowInvalidHostnames: false,
 });
-
 
 async function connectDB() {
   try {
     await client.connect();
-    console.log('Connected to the MongoDB database');
-    const db = client.db("signup");
-    const loginCollection = db.collection("login");
-    const auctionCollection = db.collection("auctions");
-    const messageCollection = db.collection("messages");
+    console.log('Connected to MongoDB');
+    const db = client.db('signup');
+    const loginCollection = db.collection('login');
     const liveAuctionCollection = db.collection('liveauctions');
 
-    await loginCollection.createIndex({ email: 1 }, { unique: true });
-    await auctionCollection.createIndex({ userId: 1 });
-    await auctionCollection.createIndex({ status: 1 });
-    await liveAuctionCollection.createIndex({ status: 1 });
-    await liveAuctionCollection.createIndex({ userId: 1 });
-      console.log(`User connected: ${socket.id}`);
+    // WebSocket-handling: Lytt til når brukere legger inn bud
+    io.on('connection', (socket) => {
+      console.log('User connected: ', socket.id);
 
-      // Lytt til når brukeren legger inn bud
-      io.on('connection', (socket) => {
-        console.log('User connected: ', socket.id);
-  
-        // Lytt etter bud og oppdater auksjonen
-        socket.on('placeBid', async (data) => {
-          const { auctionId, bidAmount } = data;
-  
-          try {
-            const auction = await liveAuctionCollection.findOne({ _id: new ObjectId(auctionId) });
-            if (!auction) {
-              socket.emit('error', { message: 'Auksjon ikke funnet' });
-              return;
-            }
-  
-            // Oppdater bud
-            await liveAuctionCollection.updateOne(
-              { _id: new ObjectId(auctionId) },
-              {
-                $set: { highestBid: bidAmount },
-                $push: { bids: { amount: bidAmount, bidder: socket.id, time: new Date() } },
-              }
-            );
-  
-            // Send oppdatert bud til alle klienter
-            io.emit('bidUpdated', { auctionId, bidAmount });
-          } catch (error) {
-            console.error('Error placing bid:', error);
-            socket.emit('error', { message: 'Feil ved budinnlegging' });
+      // Lytt etter bud og oppdater auksjonen
+      socket.on('placeBid', async (data) => {
+        const { auctionId, bidAmount } = data;
+        try {
+          const auction = await liveAuctionCollection.findOne({ _id: new ObjectId(auctionId) });
+          if (!auction) {
+            socket.emit('error', { message: 'Auksjon ikke funnet' });
+            return;
           }
-        });
-  
-        socket.on('disconnect', () => {
-          console.log('User disconnected: ', socket.id);
-        });
+
+          // Oppdater bud i databasen
+          await liveAuctionCollection.updateOne(
+            { _id: new ObjectId(auctionId) },
+            {
+              $set: { highestBid: bidAmount },
+              $push: { bids: { amount: bidAmount, bidder: socket.id, time: new Date() } },
+            }
+          );
+
+          // Send oppdatert bud til alle tilkoblede klienter
+          io.emit('bidUpdated', { auctionId, bidAmount });
+        } catch (error) {
+          console.error('Error placing bid:', error);
+          socket.emit('error', { message: 'Feil ved budinnlegging' });
+        }
       });
+
+      // Lytt til frakobling
+      socket.on('disconnect', () => {
+        console.log('User disconnected: ', socket.id);
+      });
+    });
       
     async function uploadImageToS3(imageBase64, userEmail, carBrand, carModel, carYear) {
       if (typeof imageBase64 !== 'string') {
