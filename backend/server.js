@@ -90,41 +90,45 @@ async function connectDB() {
     await auctionCollection.createIndex({ status: 1 });
     await liveAuctionCollection.createIndex({ status: 1 });
     await liveAuctionCollection.createIndex({ userId: 1 });
-    await liveAuctionCollection.createIndex({ endDate: 1 });  io.on('connection', (socket) => {
       console.log(`User connected: ${socket.id}`);
 
       // Lytt til når brukeren legger inn bud
-      socket.on('placeBid', async (data) => {
-        const { auctionId, bidAmount } = data;
-        try {
-          const auction = await liveAuctionCollection.findOne({ _id: new ObjectId(auctionId) });
-
-          if (!auction) {
-            return socket.emit('error', { message: 'Auction not found' });
-          }
-
-          // Oppdater auksjonen med det nye budet
-          await liveAuctionCollection.updateOne(
-            { _id: new ObjectId(auctionId) },
-            {
-              $set: { highestBid: bidAmount },
-              $push: { bids: { amount: bidAmount, bidder: socket.id, time: new Date() } },
+      io.on('connection', (socket) => {
+        console.log('User connected: ', socket.id);
+  
+        // Lytt etter bud og oppdater auksjonen
+        socket.on('placeBid', async (data) => {
+          const { auctionId, bidAmount } = data;
+  
+          try {
+            const auction = await liveAuctionCollection.findOne({ _id: new ObjectId(auctionId) });
+            if (!auction) {
+              socket.emit('error', { message: 'Auksjon ikke funnet' });
+              return;
             }
-          );
-
-          // Emit oppdatert bud til alle tilkoblede klienter
-          io.emit('bidUpdated', { auctionId, bidAmount });
-        } catch (error) {
-          console.error('Error placing bid:', error);
-          socket.emit('error', { message: 'Failed to place bid' });
-        }
+  
+            // Oppdater bud
+            await liveAuctionCollection.updateOne(
+              { _id: new ObjectId(auctionId) },
+              {
+                $set: { highestBid: bidAmount },
+                $push: { bids: { amount: bidAmount, bidder: socket.id, time: new Date() } },
+              }
+            );
+  
+            // Send oppdatert bud til alle klienter
+            io.emit('bidUpdated', { auctionId, bidAmount });
+          } catch (error) {
+            console.error('Error placing bid:', error);
+            socket.emit('error', { message: 'Feil ved budinnlegging' });
+          }
+        });
+  
+        socket.on('disconnect', () => {
+          console.log('User disconnected: ', socket.id);
+        });
       });
-
-      socket.on('disconnect', () => {
-        console.log(`User disconnected: ${socket.id}`);
-      });
-    });
-
+      
     async function uploadImageToS3(imageBase64, userEmail, carBrand, carModel, carYear) {
       if (typeof imageBase64 !== 'string') {
         throw new Error('imageBase64 is not a string');
