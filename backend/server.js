@@ -11,8 +11,6 @@ const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require('uuid');
 const Redis = require('ioredis');
 
-const MAX_CACHE_SIZE = 100000; // 100 KB
-
 // Initialiser Redis-klienten
 const redis = new Redis(process.env.REDIS_URL);
 
@@ -37,7 +35,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.options('*', cors(corsOptions));
-
 
 // Plasser dette før andre ruter og mellomvarer
 app.options('*', (req, res) => {
@@ -82,48 +79,47 @@ async function connectDB() {
     const liveAuctionCollection = db.collection('liveauctions');
 
     // WebSocket-handling: Lytt til når brukere legger inn bud
-    // WebSocket-handling: Lytt til når brukere legger inn bud
-io.on('connection', (socket) => {
-  console.log(`[${new Date().toISOString()}] User connected: `, socket.id);
+    io.on('connection', (socket) => {
+      console.log(`[${new Date().toISOString()}] User connected: `, socket.id);
 
-  // Lytt etter bud og oppdater auksjonen
-  socket.on('placeBid', async (data) => {
-    const { auctionId, bidAmount } = data;
-    console.log(`[${new Date().toISOString()}] Received bid from ${socket.id} for auctionId: ${auctionId}, bidAmount: ${bidAmount}`);
+      // Lytt etter bud og oppdater auksjonen
+      socket.on('placeBid', async (data) => {
+        const { auctionId, bidAmount } = data;
+        console.log(`[${new Date().toISOString()}] Received bid from ${socket.id} for auctionId: ${auctionId}, bidAmount: ${bidAmount}`);
 
-    try {
-      const auction = await liveAuctionCollection.findOne({ _id: new ObjectId(auctionId) });
-      if (!auction) {
-        console.error(`[${new Date().toISOString()}] Auction not found: ${auctionId}`);
-        socket.emit('error', { message: 'Auksjon ikke funnet' });
-        return;
-      }
+        try {
+          const auction = await liveAuctionCollection.findOne({ _id: new ObjectId(auctionId) });
+          if (!auction) {
+            console.error(`[${new Date().toISOString()}] Auction not found: ${auctionId}`);
+            socket.emit('error', { message: 'Auksjon ikke funnet' });
+            return;
+          }
 
-      // Oppdater bud i databasen
-      const updateResult = await liveAuctionCollection.updateOne(
-        { _id: new ObjectId(auctionId) },
-        {
-          $set: { highestBid: bidAmount },
-          $push: { bids: { amount: bidAmount, bidder: socket.id, time: new Date() } },
+          // Oppdater bud i databasen
+          const updateResult = await liveAuctionCollection.updateOne(
+            { _id: new ObjectId(auctionId) },
+            {
+              $set: { highestBid: bidAmount },
+              $push: { bids: { amount: bidAmount, bidder: socket.id, time: new Date() } },
+            }
+          );
+
+          console.log(`[${new Date().toISOString()}] Updated auction ${auctionId} with new bid from ${socket.id}. Update result: `, updateResult);
+
+          // Send oppdatert bud til alle tilkoblede klienter
+          io.emit('bidUpdated', { auctionId, bidAmount });
+          console.log(`[${new Date().toISOString()}] Bid update emitted to all clients for auctionId: ${auctionId}`);
+        } catch (error) {
+          console.error(`[${new Date().toISOString()}] Error placing bid for auctionId: ${auctionId} from ${socket.id}`, error);
+          socket.emit('error', { message: 'Feil ved budinnlegging' });
         }
-      );
+      });
 
-      console.log(`[${new Date().toISOString()}] Updated auction ${auctionId} with new bid from ${socket.id}. Update result: `, updateResult);
-
-      // Send oppdatert bud til alle tilkoblede klienter
-      io.emit('bidUpdated', { auctionId, bidAmount });
-      console.log(`[${new Date().toISOString()}] Bid update emitted to all clients for auctionId: ${auctionId}`);
-    } catch (error) {
-      console.error(`[${new Date().toISOString()}] Error placing bid for auctionId: ${auctionId} from ${socket.id}`, error);
-      socket.emit('error', { message: 'Feil ved budinnlegging' });
-    }
-  });
-
-  // Lytt til frakobling
-  socket.on('disconnect', () => {
-    console.log(`[${new Date().toISOString()}] User disconnected: `, socket.id);
-  });
-});
+      // Lytt til frakobling
+      socket.on('disconnect', () => {
+        console.log(`[${new Date().toISOString()}] User disconnected: `, socket.id);
+      });
+    });
 
     async function uploadImageToS3(imageBase64, userEmail, carBrand, carModel, carYear) {
       if (typeof imageBase64 !== 'string') {
@@ -1179,12 +1175,12 @@ io.on('connection', (socket) => {
     
     const PORT = process.env.PORT || 8082;
     server.listen(PORT, () => {
-      console.log(`Listening on port ${PORT}`);
+      console.log(`Server is running on port ${PORT}`);
     });
+
   } catch (err) {
     console.error('Failed to connect to MongoDB', err);
   }
 }
-
 
 connectDB();
