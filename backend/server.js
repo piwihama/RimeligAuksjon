@@ -55,19 +55,7 @@ const io = socketIo(server, {
     credentials: true,
   },
 });
-useEffect(() => {
-  const socket = io('https://rimelig-auksjon-backend.vercel.app', {
-    transports: ['websocket'],
-  });
 
-  socket.on('connect', () => {
-    console.log('Connected to WebSocket server');
-  });
-
-  return () => {
-    socket.disconnect();
-  };
-}, []);
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 

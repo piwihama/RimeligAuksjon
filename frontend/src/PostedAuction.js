@@ -30,11 +30,14 @@ function PostedAuction() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [endDate, setEndDate] = useState(null);
   const [bidderMap, setBidderMap] = useState({});
-  
-  useEffect(() => {
-    const socket = io('https://rimelig-auksjon-backend.vercel.app'); // Sett opp websocket tilkobling
 
-    // Lytt etter sanntidsoppdateringer av bud
+  useEffect(() => {
+    // Initialize WebSocket connection
+    const socket = io('https://rimelig-auksjon-backend.vercel.app', {
+      transports: ['websocket'],  // Force WebSocket transport
+    });
+
+    // Listen for real-time bid updates
     socket.on('bidUpdated', (updatedAuction) => {
       if (updatedAuction.auctionId === id) {
         setAuction(prevState => ({
@@ -45,8 +48,9 @@ function PostedAuction() {
       }
     });
 
+    // Cleanup the WebSocket connection on component unmount
     return () => {
-      socket.disconnect(); // Koble fra websockets ved unmount
+      socket.disconnect();
     };
   }, [id]);
 
