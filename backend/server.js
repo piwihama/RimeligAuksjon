@@ -70,6 +70,10 @@ const client = new MongoClient(uri, {
   tlsAllowInvalidHostnames: false,
 });
 
+let auctionCollection; // Declare auctionCollection globally
+let liveAuctionCollection; // Declare liveAuctionCollection globally
+let loginCollection; // Declare 
+
 async function connectDB() {
   try {
     await client.connect();
@@ -77,6 +81,8 @@ async function connectDB() {
     const db = client.db('signup');
     const loginCollection = db.collection('login');
     const liveAuctionCollection = db.collection('liveauctions');
+    const auctionCollection = db.collection('auctions');
+
 
     // WebSocket-handling: Lytt til når brukere legger inn bud
     io.on('connection', (socket) => {
