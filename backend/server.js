@@ -17,11 +17,10 @@ const redis = new Redis(process.env.REDIS_URL);
 const s3 = new S3Client({
   region: 'eu-north-1',
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY,
-    secretAccessKey: process.env.AWS_SECRET_KEY,
+    accessKeyId: 'AKIAR4M65FGP76COT3D6',  // Replace this with your actual access key
+    secretAccessKey: 'lk86nZYLS3iNAbgH3OnQfju+kw6cvTdtC8k/+q7I',  // Replace this with your actual secret key
   },
 });
-
 const app = express();
 
 // CORS mellomvare
