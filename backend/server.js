@@ -60,7 +60,7 @@ const io = socketIo(server, {
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-const uri = process.env.MONGO_URI; // Gjør det mer sikkert med miljøvariabler
+const uri = 'mongodb+srv://peiwast124:Heipiwi18.@cluster0.xfxhgbf.mongodb.net/'; // Gjør det mer sikkert med miljøvariabler
 const client = new MongoClient(uri, {
   serverApi: ServerApiVersion.v1,
   connectTimeoutMS: 60000,
