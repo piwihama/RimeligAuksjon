@@ -37,6 +37,20 @@ function PostedAuction() {
       transports: ['websocket'],
     });
     
+    // Log connection status
+    socket.on('connect', () => {
+      console.log('WebSocket connection established');
+    });
+    
+    socket.on('connect_error', (error) => {
+      console.error('WebSocket connection error:', error);
+    });
+    
+    socket.on('disconnect', () => {
+      console.log('WebSocket disconnected');
+    });
+    
+    
 
     // Listen for real-time bid updates
     socket.on('bidUpdated', (updatedAuction) => {
