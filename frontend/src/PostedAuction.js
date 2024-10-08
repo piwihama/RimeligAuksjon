@@ -33,9 +33,10 @@ function PostedAuction() {
 
   useEffect(() => {
     // Initialize WebSocket connection
-    const socket = io('https://rimelig-auksjon-backend.vercel.app', {
-      transports: ['websocket'],  // Force WebSocket transport
+    const socket = io('http://16.170.205.213:4000', {
+      transports: ['websocket'],
     });
+    
 
     // Listen for real-time bid updates
     socket.on('bidUpdated', (updatedAuction) => {
