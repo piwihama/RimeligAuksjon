@@ -33,7 +33,7 @@ function PostedAuction() {
 
   useEffect(() => {
     // Initialize WebSocket connection
-    const socket = io('http://16.170.205.213:4000', {
+    const socket = io('wss://ws.rimeligauksjon.no', {
       transports: ['websocket'],
     });
     
