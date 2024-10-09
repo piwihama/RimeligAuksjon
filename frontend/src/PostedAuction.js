@@ -13,8 +13,8 @@ const mapBidders = (bids) => {
 
   bids.forEach(bid => {
     // Hvis budgiveren ikke finnes i bidderMap, legg den til
-    if (!bidderMap[bid.bidderId]) {
-      bidderMap[bid.bidderId] = `Budgiver ${uniqueBidderCounter}`;
+    if (!bidderMap[bid.bidder]) {
+      bidderMap[bid.bidder] = `Budgiver ${uniqueBidderCounter}`;
       uniqueBidderCounter++;
     }
   });
@@ -334,19 +334,20 @@ function PostedAuction() {
             </div>
           </div>
           <div className="bid-list">
-            <h3>Budhistorikk</h3>
-            {auction.bids && auction.bids.length > 0 ? (
-              <ul>
-                {auction.bids.map((bid, index) => (
-                  <li key={index}>
-                    {bidderMap[bid.bidder]} - {bid.amount},-
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>Ingen bud er gitt enda</p>
-            )}
-          </div>
+  <h3>Budhistorikk</h3>
+  {auction.bids && auction.bids.length > 0 ? (
+    <ul>
+      {auction.bids.map((bid, index) => (
+        <li key={index}>
+          {bidderMap[bid.bidder] || `Anonym Budgiver`} - {bid.amount},-
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p>Ingen bud er gitt enda</p>
+  )}
+</div>
+
         </div>
 
         <div className="posted-auction-details">
