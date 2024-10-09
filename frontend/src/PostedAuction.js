@@ -240,7 +240,8 @@ function PostedAuction() {
                 <span className="top-value">{timeLeft.days}d {timeLeft.hours}t {timeLeft.minutes}min {timeLeft.seconds}sek</span>
               </div>
             </div>
-          </div> 
+          </div > 
+            
           {auction.status !== 'Utgått' && (
             <div className="bid-section">
               <form onSubmit={handleBidSubmit}>
@@ -249,6 +250,7 @@ function PostedAuction() {
                   <small style={{ fontSize: '10px', marginBottom: '1px'}} className="form-text text-muted">
                     Beløpet som foreslås her er minimumsbudet. Du kan by mer om ønskelig.
                   </small>
+                 
                   <input
                     type="number"
                     id="bidAmount"
@@ -259,7 +261,7 @@ function PostedAuction() {
                     min={parseFloat(auction.highestBid) + (parseFloat(auction.minsteBudøkning) || 100)}
                   />
                 </div>
-                <div className="posted-detail-item">
+                <div className="posted-detail-item" >
                   <span className="detail-title">Minste budøkning:</span>
                   <span className="detail-value" style={{ color: 'red', fontWeight: 'bold' }}>
                     {auction.minsteBudøkning},-
@@ -276,6 +278,131 @@ function PostedAuction() {
               <p>Auksjonen er avsluttet</p>
             </div>
           )}
+          <div className="additional-info">
+            <div className="posted-detail-item">
+              <span className="detail-title">Avsluttes:</span>
+              <span className="detail-value">{new Date(auction.endDate).toLocaleString()}</span>
+            </div>
+            <div className="posted-detail-item">
+              <span className="detail-title">Selges av:</span>
+              <span className="detail-value">{auction.seller}</span>
+            </div>
+            <div className="posted-detail-item">
+              <span className="detail-title">Auksjonsgebyr:</span>
+              <span className="detail-value">{auction.auksjonsgebyr},-</span>
+            </div>
+            <div className="posted-detail-item">
+              <span className="detail-title">MVA:</span>
+              <span className="detail-value">{auction.vat}</span>
+            </div>
+            <div className="posted-detail-item">
+              <span className="detail-title">Sted:</span>
+              <span className="detail-value">{auction.location} {auction.postkode}</span>
+            </div>
+          </div>
+          <div className="bid-list">
+            <h3>Budhistorikk</h3>
+            {auction.bids && auction.bids.length > 0 ? (
+              <ul>
+                {auction.bids.map((bid, index) => (
+                  <li key={index}>
+                    {bidderMap[bid.bidder]} - {bid.amount},-
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>Ingen bud er gitt enda</p>
+            )}
+          </div>
+        </div>
+
+        <div className="posted-auction-details">
+          <div className='top-small-details'>
+            <div className="posted-detail-item-bottom">
+              <span className="detail-info-below">Beskrivelse</span>
+              <span className="">{auction.description}</span>
+              <span className="detail-info-below">Tilstand</span>
+              <span className="">{auction.conditionDescription}</span>
+              <span className="detail-info-below">Utstyr</span>
+              {auction.equipment && (Array.isArray(auction.equipment) ? auction.equipment : auction.equipment.split(', ')).map((item, index) => (
+                <span key={index} className="equipment-item">- {item}</span>
+              ))}
+            </div>
+          </div>  
+          <div className='posted-small-details'>
+            <div className='posted-column'>
+              <div className="posted-detail-item">
+                <span className="detail-title">Har minstepris:</span>
+                <span className="detail-value">{auction.auctionWithoutReserve ? "Ja" : "Nei"}</span>
+              </div>
+              <div className="posted-detail-item">
+                <span className="detail-title">Drivstoff:</span>
+                <span className="detail-value">{auction.fuel}</span>
+              </div>
+              <div className="posted-detail-item">
+                <span className="detail-title">Girkasse:</span>
+                <span className="detail-value">{auction.gearType}</span>
+              </div>
+              <div className="posted-detail-item">
+                <span className="detail-title">Drivhjul:</span>
+                <span className="detail-value">{auction.driveType}</span>
+              </div>
+              <div className="posted-detail-item">
+                <span className="detail-title">Hovedfarge:</span>
+                <span className="detail-value">{auction.mainColor}</span>
+              </div>
+              <div className="posted-detail-item">
+                <span className="detail-title">Effekt:</span>
+                <span className="detail-value">{auction.power} kW</span>
+              </div>
+              <div className="posted-detail-item">
+                <span className="detail-title">Seter:</span>
+                <span className="detail-value">{auction.seats}</span>
+              </div>
+              <div className="posted-detail-item">
+                <span className="detail-title">Vekt:</span>
+                <span className="detail-value">{auction.weight} kg</span>
+              </div>
+              <div className="posted-detail-item">
+                <span className="detail-title">Dører:</span>
+                <span className="detail-value">{auction.doors}</span>
+              </div>
+            </div>
+            <div className='posted-column'>
+              <div className="posted-detail-item">
+                <span className="detail-title">Antall eiere:</span>
+                <span className="detail-value">{auction.owners}</span>
+              </div>
+              <div className="posted-detail-item">
+                <span className="detail-title">Første registrering:</span>
+                <span className="detail-value">{auction.firstRegistration}</span>
+              </div>
+              <div className="posted-detail-item">
+                <span className="detail-title">Avgiftsklasse:</span>
+                <span className="detail-value">{auction.taxClass}</span>
+              </div>
+              <div className="posted-detail-item">
+                <span className="detail-title">CO2-utslipp:</span>
+                <span className="detail-value">{auction.co2} g/km</span>
+              </div>
+              <div className="posted-detail-item">
+                <span className="detail-title">Omregistreringsavgift:</span>
+                <span className="detail-value">{auction.omregistreringsavgift}</span>
+              </div>
+              <div className="posted-detail-item">
+                <span className="detail-title">Sist godkjent EU-kontroll:</span>
+                <span className="detail-value">{auction.lastEUApproval}</span>
+              </div>
+              <div className="posted-detail-item">
+                <span className="detail-title">Chassisnr:</span>
+                <span className="detail-value">{auction.chassisNumber}</span>
+              </div>
+              <div className="posted-detail-item">
+                <span className="detail-title">Neste EU-kontroll:</span>
+                <span className="detail-value">{auction.nextEUControl}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <Footer />
