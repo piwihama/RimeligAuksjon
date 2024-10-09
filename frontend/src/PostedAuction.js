@@ -53,18 +53,25 @@ function PostedAuction() {
       });
 
       // Listen for real-time bid updates
-     // Listen for real-time bid updates
-socketRef.current.on('bidUpdated', (updatedAuction) => {
-  console.log('Received bid update:', updatedAuction);
-  if (updatedAuction.auctionId === id) {
-    setAuction(prevState => ({
-      ...prevState,
-      highestBid: updatedAuction.bidAmount,
-      bids: [...prevState.bids, { amount: updatedAuction.bidAmount, bidder: updatedAuction.bidder }]
-    }));
-  }
-});
+      socketRef.current.on('bidUpdated', (updatedAuction) => {
+        console.log('Received bid update:', updatedAuction);
+        if (updatedAuction.auctionId === id) {
+          setAuction(prevState => {
+            const updatedBids = [...prevState.bids, { amount: updatedAuction.bidAmount, bidder: updatedAuction.bidder }];
 
+            // Update bidder map with the latest bid information
+            const updatedBidderMap = mapBidders(updatedBids);
+
+            setBidderMap(updatedBidderMap);
+
+            return {
+              ...prevState,
+              highestBid: updatedAuction.bidAmount,
+              bids: updatedBids
+            };
+          });
+        }
+      });
     }
 
     // Cleanup the WebSocket connection on component unmount
@@ -77,13 +84,6 @@ socketRef.current.on('bidUpdated', (updatedAuction) => {
   }, [id]);
 
   useEffect(() => {
-    if (auction && auction.bids) {
-      const mappedBidders = mapBidders(auction.bids);
-      setBidderMap(mappedBidders);
-    }
-  }, [auction]);
-
-  useEffect(() => {
     const fetchAuction = async () => {
       try {
         const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`, {
@@ -92,6 +92,11 @@ socketRef.current.on('bidUpdated', (updatedAuction) => {
         setAuction(response.data);
         setEndDate(new Date(response.data.endDate));
         calculateTimeLeft(new Date(response.data.endDate));
+
+        // Create the initial bidder map based on the fetched auction data
+        if (response.data.bids) {
+          setBidderMap(mapBidders(response.data.bids));
+        }
       } catch (error) {
         console.error('Error fetching auction details:', error);
       }
@@ -184,7 +189,7 @@ socketRef.current.on('bidUpdated', (updatedAuction) => {
 
       if (response.status === 200) {
         // Budet er validert av backend, send gjennom WebSocket
-        socketRef.current.emit('placeBid', { auctionId: id, bidAmount: parsedBidAmount });
+        socketRef.current.emit('placeBid', { auctionId: id, bidAmount: parsedBidAmount, bidder: response.data.bidder });
         setSuccessMessage('Bud lagt inn vellykket!');
       }
 
@@ -202,7 +207,6 @@ socketRef.current.on('bidUpdated', (updatedAuction) => {
       console.error('Error placing bid:', error.response?.data || error);
     }
   };
-
 
   const handleThumbnailClick = (index) => {
     setCurrentImageIndex(index);
