@@ -57,13 +57,13 @@ function PostedAuction() {
         console.log('Received bid update:', updatedAuction);
         if (updatedAuction.auctionId === id) {
           setAuction(prevState => {
-            const updatedBids = [...prevState.bids, { amount: updatedAuction.bidAmount, bidder: updatedAuction.bidder }];
-
-            // Update bidder map with the latest bid information
+            const updatedBids = [...prevState.bids, { amount: updatedAuction.bidAmount, bidder: updatedAuction.bidderId }];
+      
+            // Update bidder map with the actual bidderId information
             const updatedBidderMap = mapBidders(updatedBids);
-
+      
             setBidderMap(updatedBidderMap);
-
+      
             return {
               ...prevState,
               highestBid: updatedAuction.bidAmount,
@@ -72,6 +72,7 @@ function PostedAuction() {
           });
         }
       });
+      
     }
 
     // Cleanup the WebSocket connection on component unmount
