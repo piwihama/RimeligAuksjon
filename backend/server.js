@@ -112,8 +112,10 @@ async function connectDB() {
           console.log(`[${new Date().toISOString()}] Updated auction ${auctionId} with new bid from ${socket.id}. Update result: `, updateResult);
 
           // Send oppdatert bud til alle tilkoblede klienter
-          io.emit('bidUpdated', { auctionId, bidAmount });
-          console.log(`[${new Date().toISOString()}] Bid update emitted to all clients for auctionId: ${auctionId}`);
+         // Send oppdatert bud til alle tilkoblede klienter
+io.emit('bidUpdated', { auctionId, bidAmount, bidder: socket.id });
+console.log(`[${new Date().toISOString()}] Bid update emitted to all clients for auctionId: ${auctionId}`);
+
         } catch (error) {
           console.error(`[${new Date().toISOString()}] Error placing bid for auctionId: ${auctionId} from ${socket.id}`, error);
           socket.emit('error', { message: 'Feil ved budinnlegging' });

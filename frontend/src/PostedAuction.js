@@ -53,16 +53,18 @@ function PostedAuction() {
       });
 
       // Listen for real-time bid updates
-      socketRef.current.on('bidUpdated', (updatedAuction) => {
-        console.log('Received bid update:', updatedAuction);
-        if (updatedAuction.auctionId === id) {
-          setAuction(prevState => ({
-            ...prevState,
-            highestBid: updatedAuction.bidAmount,
-            bids: [...prevState.bids, { amount: updatedAuction.bidAmount, bidder: 'Budgiver' }]
-          }));
-        }
-      });
+     // Listen for real-time bid updates
+socketRef.current.on('bidUpdated', (updatedAuction) => {
+  console.log('Received bid update:', updatedAuction);
+  if (updatedAuction.auctionId === id) {
+    setAuction(prevState => ({
+      ...prevState,
+      highestBid: updatedAuction.bidAmount,
+      bids: [...prevState.bids, { amount: updatedAuction.bidAmount, bidder: updatedAuction.bidder }]
+    }));
+  }
+});
+
     }
 
     // Cleanup the WebSocket connection on component unmount
