@@ -173,11 +173,8 @@ socketRef.current.on('bidUpdated', (updatedAuction) => {
 
       console.log('Sender bud gjennom WebSocket:', parsedBidAmount);
 
-      // Send the bid through WebSocket
-      socketRef.current.emit('placeBid', { auctionId: id, bidAmount: parsedBidAmount });
-
-      // Send the bid via HTTP request as a backup
-      await axios.post(
+      // Send the bid via HTTP request to validate it
+      const response = await axios.post(
         `https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}/bid`,
         { bidAmount: parsedBidAmount },
         {
@@ -185,8 +182,13 @@ socketRef.current.on('bidUpdated', (updatedAuction) => {
         }
       );
 
-      setSuccessMessage('Bud lagt inn vellykket!');
+      if (response.status === 200) {
+        // Budet er validert av backend, send gjennom WebSocket
+        socketRef.current.emit('placeBid', { auctionId: id, bidAmount: parsedBidAmount });
+        setSuccessMessage('Bud lagt inn vellykket!');
+      }
 
+      // Hent den oppdaterte auksjonen for å sikre at dataene er synkronisert
       const auctionResponse = await axios.get(
         `https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`,
         {
@@ -200,6 +202,7 @@ socketRef.current.on('bidUpdated', (updatedAuction) => {
       console.error('Error placing bid:', error.response?.data || error);
     }
   };
+
 
   const handleThumbnailClick = (index) => {
     setCurrentImageIndex(index);
