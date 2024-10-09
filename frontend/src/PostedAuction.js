@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import io from 'socket.io-client'; // Import Socket.IO
+import io from 'socket.io-client';
 import './PostedAuction.css';
 import Header from './Header';
 import Footer from './Footer';
@@ -30,43 +30,46 @@ function PostedAuction() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [endDate, setEndDate] = useState(null);
   const [bidderMap, setBidderMap] = useState({});
-  let socket;
+  const socketRef = useRef(null);
 
   useEffect(() => {
-    // Initialize WebSocket connection
-    socket = io('wss://ws.rimeligauksjon.no', {
-      transports: ['websocket', 'polling', 'flashsocket'],
-    });
+    // Initialize WebSocket connection only once
+    if (!socketRef.current) {
+      socketRef.current = io('wss://ws.rimeligauksjon.no', {
+        transports: ['websocket', 'polling', 'flashsocket'],
+      });
 
-    // Log connection status
-    socket.on('connect', () => {
-      console.log('WebSocket connection established');
-    });
+      // Log connection status
+      socketRef.current.on('connect', () => {
+        console.log('WebSocket connection established');
+      });
 
-    socket.on('connect_error', (error) => {
-      console.error('WebSocket connection error:', error);
-    });
+      socketRef.current.on('connect_error', (error) => {
+        console.error('WebSocket connection error:', error);
+      });
 
-    socket.on('disconnect', () => {
-      console.log('WebSocket disconnected');
-    });
+      socketRef.current.on('disconnect', () => {
+        console.log('WebSocket disconnected');
+      });
 
-    // Listen for real-time bid updates
-    socket.on('bidUpdated', (updatedAuction) => {
-      console.log('Received bid update:', updatedAuction);
-      if (updatedAuction.auctionId === id) {
-        setAuction(prevState => ({
-          ...prevState,
-          highestBid: updatedAuction.bidAmount,
-          bids: [...prevState.bids, { amount: updatedAuction.bidAmount, bidder: 'Budgiver' }]
-        }));
-      }
-    });
+      // Listen for real-time bid updates
+      socketRef.current.on('bidUpdated', (updatedAuction) => {
+        console.log('Received bid update:', updatedAuction);
+        if (updatedAuction.auctionId === id) {
+          setAuction(prevState => ({
+            ...prevState,
+            highestBid: updatedAuction.bidAmount,
+            bids: [...prevState.bids, { amount: updatedAuction.bidAmount, bidder: 'Budgiver' }]
+          }));
+        }
+      });
+    }
 
     // Cleanup the WebSocket connection on component unmount
     return () => {
-      if (socket) {
-        socket.disconnect();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
       }
     };
   }, [id]);
@@ -166,11 +169,10 @@ function PostedAuction() {
         return;
       }
 
-      // Log message before sending the bid through WebSocket
       console.log('Sender bud gjennom WebSocket:', parsedBidAmount);
 
       // Send the bid through WebSocket
-      socket.emit('placeBid', { auctionId: id, bidAmount: parsedBidAmount });
+      socketRef.current.emit('placeBid', { auctionId: id, bidAmount: parsedBidAmount });
 
       // Send the bid via HTTP request as a backup
       await axios.post(
@@ -202,7 +204,6 @@ function PostedAuction() {
   };
 
   if (!auction || !auction.imageUrls) return <div>Loading...</div>;
-
   return (
     <div className="posted-auction-page">
       <Header />
