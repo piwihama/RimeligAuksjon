@@ -34,7 +34,7 @@ function PostedAuction() {
   useEffect(() => {
     // Initialize WebSocket connection
     const socket = io('wss://ws.rimeligauksjon.no', {
-      transports: ['websocket'],
+      transports: ['websocket', 'polling', 'flashsocket'],
     });
     
     // Log connection status
@@ -54,14 +54,17 @@ function PostedAuction() {
 
     // Listen for real-time bid updates
     socket.on('bidUpdated', (updatedAuction) => {
+      console.log('Received bid update:', updatedAuction);
       if (updatedAuction.auctionId === id) {
         setAuction(prevState => ({
-          ...prevState,
-          highestBid: updatedAuction.bidAmount,
-          bids: [...prevState.bids, { amount: updatedAuction.bidAmount, bidder: 'Budgiver' }]
+            ...prevState,
+            highestBid: updatedAuction.bidAmount,
+            bids: [...prevState.bids, { amount: updatedAuction.bidAmount, bidder: 'Budgiver' }]
         }));
-      }
-    });
+    }
+    
+  });
+  
 
     // Cleanup the WebSocket connection on component unmount
     return () => {
