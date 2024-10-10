@@ -66,52 +66,65 @@ function CreateLiveAuction() {
         const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/auctions/${id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
-        setAuction(response.data);
+        
+        const auctionData = response.data;
+
+        // Valider datoene før vi setter dem i state
+        const isValidDate = (date) => {
+          return date && !isNaN(new Date(date));
+        };
+
+        setAuction(auctionData);
         setFormData({
-          brand: response.data.brand || '',
-          mileage: response.data.mileage || '',
-          model: response.data.model || '',
-          year: response.data.year || '',
-          reservePrice: response.data.reservePrice || '',
-          auctionWithoutReserve: response.data.auctionWithoutReserve || false,
-          regNumber: response.data.regNumber || '',
-          chassisNumber: response.data.chassisNumber || '',
-          taxClass: response.data.taxClass || '',
-          fuel: response.data.fuel || '',
-          gearType: response.data.gearType || '',
-          driveType: response.data.driveType || '',
-          mainColor: response.data.mainColor || '',
-          power: response.data.power || '',
-          seats: response.data.seats || '',
-          owners: response.data.owners || '',
-          firstRegistration: response.data.firstRegistration ? new Date(response.data.firstRegistration).toISOString().substring(0, 10) : '',
-          doors: response.data.doors || '',
-          weight: response.data.weight || '',
-          co2: response.data.co2 || '',
-          omregistreringsavgift: response.data.omregistreringsavgift || '',
-          lastEUApproval: response.data.lastEUApproval ? new Date(response.data.lastEUApproval).toISOString().substring(0, 10) : '',
-          nextEUControl: response.data.nextEUControl ? new Date(response.data.nextEUControl).toISOString().substring(0, 10) : '',
-          description: response.data.description || '',
-          conditionDescription: response.data.conditionDescription || '',
-          equipment: response.data.equipment.join(', ') || '',
-          highestBid: response.data.highestBid || '',
-          bidCount: response.data.bidCount || '',
-          bidderCount: response.data.bidderCount || '',
-          location: response.data.location || '',
-          endDate: response.data.endDate ? new Date(response.data.endDate).toISOString().substring(0, 16) : '',
-          imageUrls: response.data.imageUrls || [],
-          userId: response.data.userId || '',
-          userEmail: response.data.userEmail || '',
-          userName: response.data.userName || '',
-          auksjonsNummer: response.data.auksjonsNummer || '',
-          auksjonsgebyr: response.data.auksjonsgebyr || '',
-          avsluttesDato: response.data.avsluttesDato ? new Date(response.data.avsluttesDato).toISOString().substring(0, 16) : '',
-          by: response.data.by || '',
-          minsteBudøkning: response.data.minsteBudøkning || '',
-          månedligFinansiering: response.data.månedligFinansiering || '',
-          postkode: response.data.postkode || '',
-          sted: response.data.sted || '',
-          fylke: response.data.fylke || ''
+          brand: auctionData.brand || '',
+          mileage: auctionData.mileage || '',
+          model: auctionData.model || '',
+          year: auctionData.year || '',
+          reservePrice: auctionData.reservePrice || '',
+          auctionWithoutReserve: auctionData.auctionWithoutReserve || false,
+          regNumber: auctionData.regNumber || '',
+          chassisNumber: auctionData.chassisNumber || '',
+          taxClass: auctionData.taxClass || '',
+          fuel: auctionData.fuel || '',
+          gearType: auctionData.gearType || '',
+          driveType: auctionData.driveType || '',
+          mainColor: auctionData.mainColor || '',
+          power: auctionData.power || '',
+          seats: auctionData.seats || '',
+          owners: auctionData.owners || '',
+          firstRegistration: isValidDate(auctionData.firstRegistration) ? new Date(auctionData.firstRegistration).toISOString().substring(0, 10) : '',
+          doors: auctionData.doors || '',
+          weight: auctionData.weight || '',
+          co2: auctionData.co2 || '',
+          omregistreringsavgift: auctionData.omregistreringsavgift || '',
+          lastEUApproval: isValidDate(auctionData.lastEUApproval) ? new Date(auctionData.lastEUApproval).toISOString().substring(0, 10) : '',
+          nextEUControl: isValidDate(auctionData.nextEUControl) ? new Date(auctionData.nextEUControl).toISOString().substring(0, 10) : '',
+          description: auctionData.description || '',
+          conditionDescription: auctionData.conditionDescription || '',
+          equipment: auctionData.equipment ? auctionData.equipment.join(', ') : '',
+          highestBid: auctionData.highestBid || '',
+          bidCount: auctionData.bidCount || '',
+          bidderCount: auctionData.bidderCount || '',
+          location: auctionData.location || '',
+          endDate: isValidDate(auctionData.endDate) ? new Date(auctionData.endDate).toISOString().substring(0, 16) : '',
+          imageUrls: auctionData.imageUrls || [],
+          userId: auctionData.userId || '',
+          userEmail: auctionData.userEmail || '',
+          userName: auctionData.userName || '',
+          auksjonsNummer: auctionData.auksjonsNummer || '',
+          auksjonsgebyr: auctionData.auksjonsgebyr || '',
+          avsluttesDato: isValidDate(auctionData.avsluttesDato) ? new Date(auctionData.avsluttesDato).toISOString().substring(0, 16) : '',
+          by: auctionData.by || '',
+          minsteBudøkning: auctionData.minsteBudøkning || '',
+          månedligFinansiering: auctionData.månedligFinansiering || '',
+          postkode: auctionData.postkode || '',
+          sted: auctionData.sted || '',
+          fylke: auctionData.fylke || '',
+          status: auctionData.status || '',
+          extensionAfterLastBid: auctionData.extensionAfterLastBid || '',
+          seller: auctionData.seller || '',
+          businessSale: auctionData.businessSale || false,
+          vat: auctionData.vat || ''
         });
       } catch (error) {
         console.error('Error fetching auction:', error);
@@ -124,6 +137,9 @@ function CreateLiveAuction() {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+
+  // Resten av koden din fortsetter uendret...
+
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
