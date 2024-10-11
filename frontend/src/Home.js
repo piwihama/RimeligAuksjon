@@ -100,15 +100,17 @@ function Home() {
       <Header />
       <div className="home-container">
         <div className="home-content">
-          <div className="home-banner">
-            <div className="home-banner-content">
-              <h1>Selg bilen hos oss - Helt enkelt!</h1>
-              <p>Joda! Våre auksjonsrådgivere hjelper deg med bilsalget - fra start til slutt.</p>
-              <strong><p>Helt kostnadsfritt</p></strong>
-              <button className="home-banner-button" onClick={handleButtonClick}>
-              Les mer her</button>
-            </div>
+        <div className="home-banner">
+          <div className="home-banner-content">
+            <h1>Lavere gebyrer. Bedre auksjonsopplevelse.</h1>
+            <p>Våre auksjonsrådgivere støtter deg gjennom hele salgsprosessen.</p>
+            <strong><p>Helt kostnadsfritt</p></strong>
+            <button className="home-banner-button" onClick={handleButtonClick}>
+              Les mer her
+            </button>
           </div>
+        </div>
+
 
           <div className="home-auctions-section">
             <h2>Fremhevede Auksjoner</h2>
