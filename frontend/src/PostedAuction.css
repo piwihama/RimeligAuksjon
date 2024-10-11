@@ -270,12 +270,12 @@
   color: #666;
   text-align: right;
 }
-.bidder-info {
+.bidder-column {
   display: flex;
   align-items: center; /* Vertically aligns the image and text */
 }
 
-.bidder-info .bidder-image {
+.bidder-column .bidder-image {
   margin-right: 10px; /* Space between the image and text */
 }
 .bid-history-table {
@@ -317,7 +317,7 @@
 }
 
 @media (min-width: 769px) {
-  .bidder-info .bidder-image {
+  .bidder-column .bidder-image {
     width: 20px;
     height: 20px;
   }
