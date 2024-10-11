@@ -330,20 +330,42 @@ function PostedAuction() {
           <div className="bid-list">
   <h3>Budhistorikk</h3>
   {auction.bids && auction.bids.length > 0 ? (
-    <ul>
-      {auction.bids.map((bid, index) => (
-        <li key={index}>
-          {bidderMap[bid.bidder] || `Anonym Budgiver`} - {bid.amount},- 
-          <span style={{ marginLeft: '10px', color: '#555' }}>
-            {new Date(bid.time).toLocaleTimeString('no-NO', { hour: '2-digit', minute: '2-digit' })} {new Date(bid.time).toLocaleDateString('no-NO')}
-          </span>
-        </li>
-      ))}
-    </ul>
+    <table className="bid-history-table">
+      <thead>
+        <tr>
+          <th>Budgiver</th>
+          <th>Beløp</th>
+          <th>Tid og Dato</th>
+        </tr>
+      </thead>
+      <tbody>
+        {auction.bids.map((bid, index) => (
+          <tr key={index}>
+            <td className="bidder-column">
+              <img
+                src="Waiving-512-removebg-preview.png"
+                alt="Bidder"
+                className="bidder-image"
+              />
+              <span>{bidderMap[bid.bidder] || 'Anonym Budgiver'}</span>
+            </td>
+            <td>{bid.amount},-</td>
+            <td>
+              {new Date(bid.time).toLocaleTimeString('no-NO', {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}{' '}
+              {new Date(bid.time).toLocaleDateString('no-NO')}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   ) : (
     <p>Ingen bud er gitt enda</p>
   )}
 </div>
+
 
 
         </div>

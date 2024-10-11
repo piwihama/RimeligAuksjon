@@ -300,6 +300,19 @@
     width: 100%;
     font-size: 14px;
   }
+/* Mobile-specific styling for bid history table */
+@media (max-width: 768px) {
+  .bid-history-table th,
+  .bid-history-table td {
+    padding: 10px 8px;
+    font-size: 14px;
+  }
+
+  .bidder-image {
+    width: 20px;
+    height: 20px;
+  }
+}
 
   .info-top {
     display: flex;
