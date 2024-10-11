@@ -6,13 +6,13 @@ import './PostedAuction.css';
 import Header from './Header';
 import Footer from './Footer';
 
-// Funksjon for å lage budgiver-kart basert på budene
+// Function to map bids to bidder labels
 const mapBidders = (bids) => {
   let bidderMap = {};
   let uniqueBidderCounter = 1;
 
   bids.forEach(bid => {
-    // Hvis budgiveren ikke finnes i bidderMap, legg den til
+    // If the bidder is not in the bidderMap, add them
     if (!bidderMap[bid.bidder]) {
       bidderMap[bid.bidder] = `Budgiver ${uniqueBidderCounter}`;
       uniqueBidderCounter++;
@@ -35,13 +35,13 @@ function PostedAuction() {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    // Initialiser WebSocket-tilkoblingen bare én gang
+    // Initialize WebSocket connection
     if (!socketRef.current) {
       socketRef.current = io('wss://ws.rimeligauksjon.no', {
         transports: ['websocket', 'polling', 'flashsocket'],
       });
 
-      // Logg tilkoblingsstatus
+      // Log connection status
       socketRef.current.on('connect', () => {
         console.log('WebSocket connection established');
       });
@@ -54,11 +54,11 @@ function PostedAuction() {
         console.log('WebSocket disconnected');
       });
 
-      // Lytt etter budoppdateringer i sanntid
+      // Listen for real-time bid updates
       socketRef.current.on('bidUpdated', handleBidUpdate);
     }
 
-    // Rydd opp WebSocket-tilkoblingen når komponenten avmonteres
+    // Clean up WebSocket connection when the component unmounts
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
@@ -67,12 +67,12 @@ function PostedAuction() {
     };
   }, [id]);
 
-  // Funksjon for optimistisk oppdatering og backend-synkronisering
+  // Handle bid updates from WebSocket
   const handleBidUpdate = async (updatedAuction) => {
     console.log('Received bid update:', updatedAuction);
 
     if (updatedAuction.auctionId === id) {
-      // Optimistisk oppdatering basert på WebSocket-data
+      // Optimistically update the auction state
       setAuction(prevState => {
         const updatedBids = [...prevState.bids, { amount: updatedAuction.bidAmount, bidder: updatedAuction.bidderId }];
         const updatedBidderMap = mapBidders(updatedBids);
@@ -85,23 +85,22 @@ function PostedAuction() {
         };
       });
 
-      // Bekreft WebSocket-data med backend for å sikre konsistens
+      // Fetch the latest data from the backend to ensure consistency
       try {
         const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
         });
 
-        // Oppdater auksjonsdata med de bekreftede dataene fra backend
+        // Update auction data with the confirmed data from the backend
         setAuction(response.data);
 
-        // Oppdater budgiver-kartet med bekreftede data fra backend
+        // Update the bidder map with the confirmed data from the backend
         if (response.data.bids) {
           const verifiedBidderMap = mapBidders(response.data.bids);
           setBidderMap(verifiedBidderMap);
         }
       } catch (error) {
         console.error('Error syncing with backend:', error);
-        // Eventuell logikk for rollback eller varsling til brukeren kan legges her
       }
     }
   };
@@ -110,13 +109,13 @@ function PostedAuction() {
     const fetchAuction = async () => {
       try {
         const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
         });
         setAuction(response.data);
         setEndDate(new Date(response.data.endDate));
         calculateTimeLeft(new Date(response.data.endDate));
 
-        // Opprett det første budgiver-kartet basert på hentet auksjonsdata
+        // Create the initial bidder map based on the fetched auction data
         if (response.data.bids) {
           setBidderMap(mapBidders(response.data.bids));
         }
@@ -158,16 +157,8 @@ function PostedAuction() {
         seconds: Math.floor((difference / 1000) % 60),
       };
     } else {
-      timeLeft = {
-        days: 0,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-      };
-      setAuction(prevState => ({
-        ...prevState,
-        status: 'Utgått'
-      }));
+      timeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+      setAuction(prevState => ({ ...prevState, status: 'Utgått' }));
     }
 
     setTimeLeft(timeLeft);
@@ -177,46 +168,44 @@ function PostedAuction() {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
-  
+
     const parsedBidAmount = parseFloat(bidAmount);
     const minsteBudøkning = parseFloat(auction.minsteBudøkning) || 100;
     const minimumBid = parseFloat(auction.highestBid) + minsteBudøkning;
-  
+
     if (!bidAmount || isNaN(parsedBidAmount)) {
       setError('Ugyldig budbeløp');
       return;
     }
-  
+
     if (parsedBidAmount < minimumBid) {
       setError(`Bud må være større enn minimumsbudet på ${minimumBid},-`);
       return;
     }
-  
+
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) {
         setError('Du må være innlogget for å legge inn bud.');
         return;
       }
-  
-      // Send budet via HTTP-forespørsel for validering på serveren
+
+      // Send the bid via HTTP request for server validation
       const response = await axios.post(
         `https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}/bid`,
         { bidAmount: parsedBidAmount },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-  
+
       if (response.status === 200) {
         setSuccessMessage('Bud lagt inn vellykket!');
-  
-        // Oppdater klientsiden optimistisk basert på responsen fra serveren
-        setAuction(prevAuction => ({
-          ...prevAuction,
-          highestBid: response.data.highestBid,
-          bids: response.data.bids,
-        }));
+        // Fetch the latest auction data from the backend after placing the bid
+        const auctionResponse = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setAuction(auctionResponse.data);
+        setBidderMap(mapBidders(auctionResponse.data.bids));
+        setBidAmount(auctionResponse.data.highestBid + auctionResponse.data.minsteBudøkning); // Update next bid amount
       } else {
         setError('Kunne ikke legge inn budet, prøv igjen.');
       }
@@ -226,13 +215,13 @@ function PostedAuction() {
       console.error('Error placing bid:', error.response?.data || error);
     }
   };
-  
 
   const handleThumbnailClick = (index) => {
     setCurrentImageIndex(index);
   };
 
   if (!auction || !auction.imageUrls) return <div>Loading...</div>;
+
   return (
     <div className="posted-auction-page">
       <Header />
