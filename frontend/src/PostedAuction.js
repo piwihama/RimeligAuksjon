@@ -199,6 +199,14 @@ function PostedAuction() {
 
       if (response.status === 200) {
         setSuccessMessage('Bud lagt inn vellykket!');
+        
+        // Emit WebSocket event for bid update
+        socketRef.current.emit('placeBid', {
+          auctionId: id,
+          bidAmount: parsedBidAmount,
+          bidderId: localStorage.getItem('userId') // Ensure this value exists in local storage
+        });
+
         // Fetch the latest auction data from the backend after placing the bid
         const auctionResponse = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`, {
           headers: { Authorization: `Bearer ${token}` },

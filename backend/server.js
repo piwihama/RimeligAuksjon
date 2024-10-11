@@ -89,9 +89,9 @@ async function connectDB() {
 
       // Lytt etter bud og oppdater auksjonen
       socket.on('placeBid', async (data) => {
-        const { auctionId, bidAmount } = data;
+        const { auctionId, bidAmount, bidderId } = data; // Make sure bidderId is included in the incoming data
         console.log(`[${new Date().toISOString()}] Received bid from ${socket.id} for auctionId: ${auctionId}, bidAmount: ${bidAmount}`);
-
+      
         try {
           const auction = await liveAuctionCollection.findOne({ _id: new ObjectId(auctionId) });
           if (!auction) {
@@ -99,28 +99,27 @@ async function connectDB() {
             socket.emit('error', { message: 'Auksjon ikke funnet' });
             return;
           }
-
-          // Oppdater bud i databasen
+      
+          // Update the bid in the database
           const updateResult = await liveAuctionCollection.updateOne(
             { _id: new ObjectId(auctionId) },
             {
               $set: { highestBid: bidAmount },
-              $push: { bids: { amount: bidAmount, bidder: socket.id, time: new Date() } },
+              $push: { bids: { amount: bidAmount, bidder: bidderId, time: new Date() } }, // Use bidderId here
             }
           );
-
-          console.log(`[${new Date().toISOString()}] Updated auction ${auctionId} with new bid from ${socket.id}. Update result: `, updateResult);
-
-          // Send oppdatert bud til alle tilkoblede klienter
-         // Send oppdatert bud til alle tilkoblede klienter
-         io.emit('bidUpdated', { auctionId, bidAmount, bidderId });
-         console.log(`[${new Date().toISOString()}] Bid update emitted to all clients for auctionId: ${auctionId}`);
-
+      
+          console.log(`[${new Date().toISOString()}] Updated auction ${auctionId} with new bid from ${bidderId}. Update result: `, updateResult);
+      
+          // Emit the updated bid to all connected clients
+          io.emit('bidUpdated', { auctionId, bidAmount, bidderId }); // Ensure all required fields are correctly emitted
+          console.log(`[${new Date().toISOString()}] Bid update emitted to all clients for auctionId: ${auctionId}`);
         } catch (error) {
-          console.error(`[${new Date().toISOString()}] Error placing bid for auctionId: ${auctionId} from ${socket.id}`, error);
+          console.error(`[${new Date().toISOString()}] Error placing bid for auctionId: ${auctionId} from ${bidderId}`, error);
           socket.emit('error', { message: 'Feil ved budinnlegging' });
         }
       });
+      
 
       // Lytt til frakobling
       socket.on('disconnect', () => {
