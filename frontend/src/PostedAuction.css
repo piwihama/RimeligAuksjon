@@ -300,19 +300,6 @@
     width: 100%;
     font-size: 14px;
   }
-/* Mobile-specific styling for bid history table */
-@media (max-width: 768px) {
-  .bid-history-table th,
-  .bid-history-table td {
-    padding: 10px 8px;
-    font-size: 14px;
-  }
-
-  .bidder-image {
-    width: 20px;
-    height: 20px;
-  }
-}
 
   .info-top {
     display: flex;
@@ -320,6 +307,33 @@
     justify-content: center;
     
   }
+  .bidder-image {
+    width: 50px; /* Endre denne verdien hvis bildet er for stort eller for lite */
+    height: auto; /* Sørger for at bildet beholder proporsjonene */
+    object-fit: contain; /* Hindrer at bildet blir strukket */
+  }
+
+  @media (min-width: 769px) {
+    .bidder-image {
+      width: 30px; /* Juster størrelsen for større skjermer */
+      height: auto;
+      object-fit: contain;
+    }
+  }
+
+  .bid-history-table th,
+  .bid-history-table td {
+    padding: 12px 16px; /* Øker padding for bedre utseende på større skjermer */
+    font-size: 16px; /* Gjør teksten litt større for lesbarhet */
+  }
+  
+  @media (min-width: 769px) {
+    .bid-history-table th,
+    .bid-history-table td {
+      padding: 15px 20px; /* Mer padding for store skjermer */
+    }
+  }
+  
 
   .bid-section h2 {
     font-size: 16px;
