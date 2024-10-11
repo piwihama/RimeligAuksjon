@@ -80,8 +80,7 @@ function Login() {
         .then(res => {
           if (res.data.accessToken) {
             console.log('Login successful, token received:', res.data.accessToken);
-            localStorage.setItem('token', res.data.accessToken);
-            localStorage.setItem('userId', res.data.userId);
+            localStorage.setItem('accessToken', res.data.accessToken); // Store access token in local storage
             localStorage.setItem('role', res.data.role);
             setSuccessMessage('Innlogging vellykket! Du blir sendt til hjemmesiden.');
             setTimeout(() => {
@@ -107,7 +106,37 @@ function Login() {
         });
     }
   };
-
+  
+  const refreshAccessToken = async () => {
+    try {
+      const response = await axios.post('https://rimelig-auksjon-backend.vercel.app/api/refresh-token', {}, { withCredentials: true });
+      if (response.data.accessToken) {
+        localStorage.setItem('accessToken', response.data.accessToken);
+        console.log('Access token renewed successfully');
+        return response.data.accessToken;
+      }
+    } catch (error) {
+      console.error('Error refreshing access token:', error);
+      return null;
+    }
+  };
+  
+  axios.interceptors.response.use(
+    response => response,
+    async error => {
+      const originalRequest = error.config;
+      if (error.response && error.response.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
+        const newAccessToken = await refreshAccessToken();
+        if (newAccessToken) {
+          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+          return axios(originalRequest);
+        }
+      }
+      return Promise.reject(error);
+    }
+  );
+  
   const handleOtpSubmit = (event) => {
     event.preventDefault();
     axios.post('https://rimelig-auksjon-backend.vercel.app/verify-otp', { email: userEmail, otp: values.otp }, { withCredentials: true })
@@ -124,6 +153,7 @@ function Login() {
         setErrors({ otp: 'Ugyldig engangskode. Vennligst prøv igjen.' });
       });
   };
+  
 
   return (
     <>
