@@ -270,6 +270,14 @@
   color: #666;
   text-align: right;
 }
+.bidder-info {
+  display: flex;
+  align-items: center; /* Vertically aligns the image and text */
+}
+
+.bidder-info .bidder-image {
+  margin-right: 10px; /* Space between the image and text */
+}
 .bid-history-table {
   width: 100%;
   border-collapse: collapse;
@@ -309,11 +317,12 @@
 }
 
 @media (min-width: 769px) {
-  .bidder-image {
+  .bidder-info .bidder-image {
     width: 20px;
     height: 20px;
   }
 }
+
 /* Mobile-specific styling */
 @media (max-width: 768px) {
   .auction-page {
