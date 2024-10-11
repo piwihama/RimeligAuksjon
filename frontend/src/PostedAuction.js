@@ -342,11 +342,12 @@ function PostedAuction() {
         {auction.bids.map((bid, index) => (
           <tr key={index}>
             <td className="bidder-column">
-              <img
-                src="https://rimeligauksjon.vercel.app/images/Waiving-512-removebg-preview.png"
-                alt="Bidder"
-                className="bidder-image"
-              />
+            <img
+              src="/images/Waiving-512-removebg-preview.png"
+              alt="Bidder"
+              className="bidder-image"
+            />
+
               <span>{bidderMap[bid.bidder] || 'Anonym Budgiver'}</span>
             </td>
             <td>{bid.amount},-</td>
