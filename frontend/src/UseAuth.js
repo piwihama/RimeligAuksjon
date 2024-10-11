@@ -6,7 +6,7 @@ const UseAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken'); // Bruker 'accessToken' for konsistens
     console.log('Token from local storage:', token);
 
     if (token) {

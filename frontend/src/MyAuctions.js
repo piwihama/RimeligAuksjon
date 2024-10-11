@@ -15,7 +15,7 @@ const MyAuctions = () => {
   useEffect(() => {
     const fetchAuctions = async (page = 1) => {
       try {
-        const token = localStorage.getItem('token'); // Get the token from localStorage
+        const token = localStorage.getItem('accessToken'); // Bruker 'accessToken' for konsistens
         const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/myauctions?page=${page}&limit=10`, {
           headers: {
             'Authorization': `Bearer ${token}` // Include the token in the headers

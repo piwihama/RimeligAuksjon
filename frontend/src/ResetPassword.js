@@ -11,7 +11,7 @@ function ResetPassword() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const token = searchParams.get('token');
+    const token = searchParams.get('accessToken');
     try {
       const response = await axios.post('https://rimelig-auksjon-backend.vercel.app/reset-password', { token, newPassword: password });
       setMessage(response.data.message);

@@ -61,7 +61,7 @@ function LiveAuctions() {
       }
 
       const headers = {};
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken'); // Bruker 'accessToken' for konsistens
       if (token) {
         headers.Authorization = `Bearer ${token}`;
       }

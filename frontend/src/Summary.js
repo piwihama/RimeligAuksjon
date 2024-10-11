@@ -15,7 +15,7 @@ const Summary = ({ formData, prevStep }) => {
     console.log("Submitting form with fetch...");
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken'); // Bruker 'accessToken' for konsistens
       const images = formData.images || [];
       const base64Images = images.map(img => {
         if (typeof img === 'string' && img.startsWith('data:image/')) {

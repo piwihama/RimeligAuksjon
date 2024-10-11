@@ -193,7 +193,7 @@ function PostedAuction() {
     }
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken'); // Bruker 'accessToken' for konsistens
       if (!token) {
         setError('Du må være innlogget for å legge inn bud.');
         return;

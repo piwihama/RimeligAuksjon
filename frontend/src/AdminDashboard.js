@@ -10,7 +10,7 @@ function AdminDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken'); // Bruker 'accessToken' for konsistens
     if (!token) {
       navigate('/');
       return;
@@ -57,7 +57,7 @@ function AdminDashboard() {
   };
 
   const handleDelete = (id) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken'); // Bruker 'accessToken' for konsistens
     axios.delete(`https://rimelig-auksjon-backend.vercel.app/api/auctions/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`
@@ -76,7 +76,7 @@ function AdminDashboard() {
   };
 
   const handleDeleteLive = (id) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken'); // Bruker 'accessToken' for konsistens
     axios.delete(`https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`

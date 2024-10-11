@@ -29,7 +29,7 @@ function CreateAuction() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken'); // Bruker 'accessToken' for konsistens
     const formData = new FormData();
     Object.keys(formValues).forEach(key => {
       formData.append(key, formValues[key]);
