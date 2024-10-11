@@ -3,20 +3,27 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
 import LoginModal from './LoginModal';
 import { isAuthenticated } from './auth';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet'; // Import Helmet
 
 function Header() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalPurpose, setModalPurpose] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [loggedIn, setLoggedIn] = useState(isAuthenticated());
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const navigate = useNavigate();
 
-  // Oppdater loggedIn-tilstanden når localStorage endres
+  useEffect(() => {
+    const loggedInStatus = isAuthenticated();
+    console.log('User authenticated:', loggedInStatus); // Log the authentication status for debugging
+    setLoggedIn(loggedInStatus);
+  }, []);
+
   useEffect(() => {
     const handleStorageChange = () => {
-      setLoggedIn(isAuthenticated());
+      const isUserLoggedIn = isAuthenticated();
+      console.log('Token changed, updating login status:', isUserLoggedIn);
+      setLoggedIn(isUserLoggedIn);
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -45,12 +52,13 @@ function Header() {
     event.preventDefault();
     if (searchTerm.trim()) {
       navigate(`/search?q=${searchTerm}`);
-      scrollToTop();
+      scrollToTop(); // Scroll to top after performing a search
     }
   };
 
   return (
     <>
+      {/* Helmet for managing head elements */}
       <Helmet>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </Helmet>
@@ -78,7 +86,7 @@ function Header() {
               <i className="material-icons">info</i>
               <span>Infosenter</span>
             </Link>
-
+            
             <button onClick={() => handleAuthNavigation('/nyauksjon')} className="header-button nyauksjon-button">
               <i className="material-icons">add_circle</i>
               <span>Ny Auksjon</span>
