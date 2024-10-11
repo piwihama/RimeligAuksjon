@@ -343,7 +343,7 @@ function PostedAuction() {
           <tr key={index}>
             <td className="bidder-column">
               <img
-                src="Waiving-512-removebg-preview.png"
+                src="/Waiving-512-removebg-preview.png"
                 alt="Bidder"
                 className="bidder-image"
               />
