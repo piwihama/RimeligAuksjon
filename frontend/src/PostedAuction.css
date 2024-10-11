@@ -73,8 +73,7 @@
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  min-width: 300px;
-  max-width: 700px;
+
   order: 2;
   width: 100%;
   margin-bottom: 25px;
@@ -322,6 +321,11 @@
     width: 20px;
     height: 20px;
   }
+  .auction-info {
+    min-width: 350px; /* Set min-width for desktop to give it more space */
+    max-width: 450px; /* Set max-width for desktop for consistency */
+    width: auto; /* Allow the container to adapt within the min and max range */
+  }
 }
 
 /* Mobile-specific styling */
@@ -354,9 +358,9 @@
 
   .auction-info {
     order:2;
-    min-width: 100%; /* Allows the container to fit smaller screens */
-    max-width: 100%; /* Prevents overflow on mobile */
-    padding: 15px; /* Adjust padding for mobile */
+    width: 100%; /* Ensure it uses the full width on mobile */
+    padding: 15px; /* Adjust padding to fit mobile screens better */
+    margin: 0 auto; /* Center the container for a cleaner look on mobile */
   }
 
   .posted-auction-details {
