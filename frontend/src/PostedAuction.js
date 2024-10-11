@@ -331,11 +331,7 @@ function PostedAuction() {
   <h3>Budhistorikk</h3>
   {auction.bids && auction.bids.length > 0 ? (
     <table className="bid-history-table">
-      <thead>
-        <tr>
-          
-        </tr>
-      </thead>
+
       <tbody>
         {auction.bids.map((bid, index) => (
           <tr key={index}>
