@@ -270,13 +270,61 @@
   color: #666;
   text-align: right;
 }
+.bid-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
 
+.bid-history-table th,
+.bid-history-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd; /* Light separator line */
+}
+
+.bid-history-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.bid-history-table td {
+  background-color: #ffffff;
+}
+
+.bid-history-table tr:hover td {
+  background-color: #f9f9f9; /* Subtle hover effect */
+}
+
+.bidder-image {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  margin-right: 8px;
+}
+
+@media (min-width: 769px) {
+  .bidder-image {
+    width: 20px;
+    height: 20px;
+  }
+}
 /* Mobile-specific styling */
 @media (max-width: 768px) {
   .auction-page {
     flex-direction: column;
   }
 
+  .bid-history-table td,
+  .bid-history-table th {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .bidder-image {
+    width: 15px;
+    height: 15px;
+  }
 
   .posted-small-details{
     display: flex;
