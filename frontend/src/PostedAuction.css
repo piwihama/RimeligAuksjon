@@ -267,7 +267,7 @@
 }
 
 .bidder-image {
-  width: 20;
+  width: 20px;
   height: auto;
   object-fit: contain;
   margin-right: 10px;
