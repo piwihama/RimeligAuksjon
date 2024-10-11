@@ -177,31 +177,29 @@ function PostedAuction() {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
-
+  
     const parsedBidAmount = parseFloat(bidAmount);
     const minsteBudøkning = parseFloat(auction.minsteBudøkning) || 100;
     const minimumBid = parseFloat(auction.highestBid) + minsteBudøkning;
-
+  
     if (!bidAmount || isNaN(parsedBidAmount)) {
       setError('Ugyldig budbeløp');
       return;
     }
-
+  
     if (parsedBidAmount < minimumBid) {
       setError(`Bud må være større enn minimumsbudet på ${minimumBid},-`);
       return;
     }
-
+  
     try {
-      const token = localStorage.getItem('accessToken'); // Bruker 'accessToken' for konsistens
+      const token = localStorage.getItem('accessToken');
       if (!token) {
         setError('Du må være innlogget for å legge inn bud.');
         return;
       }
-
-      console.log('Sender bud gjennom WebSocket:', parsedBidAmount);
-
-      // Send budet via HTTP-forespørsel for validering
+  
+      // Send budet via HTTP-forespørsel for validering på serveren
       const response = await axios.post(
         `https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}/bid`,
         { bidAmount: parsedBidAmount },
@@ -209,27 +207,26 @@ function PostedAuction() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
+  
       if (response.status === 200) {
-        // Budet er validert av backend, send gjennom WebSocket
-        socketRef.current.emit('placeBid', { auctionId: id, bidAmount: parsedBidAmount, bidder: response.data.bidder });
         setSuccessMessage('Bud lagt inn vellykket!');
+  
+        // Oppdater klientsiden optimistisk basert på responsen fra serveren
+        setAuction(prevAuction => ({
+          ...prevAuction,
+          highestBid: response.data.highestBid,
+          bids: response.data.bids,
+        }));
+      } else {
+        setError('Kunne ikke legge inn budet, prøv igjen.');
       }
-
-      // Synkroniser med backend etter å ha lagt inn budet
-      const auctionResponse = await axios.get(
-        `https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setAuction(auctionResponse.data);
     } catch (error) {
       const message = error.response?.data?.message || 'Feil ved innlegging av bud. Prøv igjen.';
       setError(message);
       console.error('Error placing bid:', error.response?.data || error);
     }
   };
+  
 
   const handleThumbnailClick = (index) => {
     setCurrentImageIndex(index);
