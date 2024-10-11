@@ -3,19 +3,28 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
 import LoginModal from './LoginModal';
 import { isAuthenticated } from './auth';
-import { Helmet } from 'react-helmet'; // Import Helmet
-
+import { Helmet } from 'react-helmet';
 
 function Header() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalPurpose, setModalPurpose] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(isAuthenticated());
 
   const navigate = useNavigate();
 
+  // Oppdater loggedIn-tilstanden når localStorage endres
   useEffect(() => {
-    setLoggedIn(isAuthenticated());
+    const handleStorageChange = () => {
+      setLoggedIn(isAuthenticated());
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Cleanup listener on component unmount
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const scrollToTop = () => {
@@ -36,19 +45,16 @@ function Header() {
     event.preventDefault();
     if (searchTerm.trim()) {
       navigate(`/search?q=${searchTerm}`);
-      scrollToTop(); // Scroll to top after performing a search
+      scrollToTop();
     }
   };
 
   return (
     <>
-    
-      {/* Helmet for managing head elements */}
       <Helmet>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </Helmet>
       <header className="header-top">
-        
         <div className="upper-row">
           <a className="logo-large" href="/home" title="RimeligAuksjon.no">RIMELIGAUKSJON.NO</a>
           <form onSubmit={handleSearch} className="search-form">
@@ -61,21 +67,18 @@ function Header() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <button 
-                type="submit" 
-                className="search-button"
-              >
+              <button type="submit" className="search-button">
                 <i className="material-icons" style={{ fontSize: '16px' }}>search</i>
               </button>
             </div>
           </form>
-        
+
           <div className="header-button-container">
             <Link to="/info" className="header-button info-button" onClick={scrollToTop}>
               <i className="material-icons">info</i>
               <span>Infosenter</span>
             </Link>
-            
+
             <button onClick={() => handleAuthNavigation('/nyauksjon')} className="header-button nyauksjon-button">
               <i className="material-icons">add_circle</i>
               <span>Ny Auksjon</span>
