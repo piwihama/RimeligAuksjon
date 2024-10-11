@@ -14,9 +14,11 @@
   max-width: 900px;
   margin: 0 auto;
 }
-.additional-info{
+
+.additional-info {
   padding-top: 20px;
 }
+
 .auction-gallery {
   flex: 2;
   display: flex;
@@ -82,7 +84,6 @@
 .posted-title {
   font-size: 26px;
   margin-top: 20px;
-
   margin-bottom: 5px;
   color: #333;
   font-weight: bold;
@@ -152,7 +153,7 @@
 .bid-list h3 {
   color: rgb(211, 13, 13);
   font-weight: bold;
-  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   text-align: left;
   margin-top: 30px;
 }
@@ -207,40 +208,24 @@
 .posted-small-details {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 30px; /* Mindre gap mellom kolonnene */
+  gap: 30px;
   margin-top: 25px;
-  font-size: 8px
+  font-size: 8px;
 }
 
 .posted-detail-item {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 3px; /* Mindre margin mellom elementene */
+  margin-bottom: 3px;
   font-size: 14px;
 }
-.posted-detail-item-top {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 3px; /* Mindre margin mellom elementene */
-  font-size: 14px;
-}
-.detail-info-below{
+
+.detail-info-below {
   font-weight: bold;
   margin-top: 10px;
 }
-.posted-detail-item-bottom{
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 3px; /* Mindre margin mellom elementene */
-  font-size: 14px;
-}
-.top-value{
-  color: rgb(211, 13, 13);
-  font-weight: bold;
-  font-size: 17px;
-}
-.bid-and-finish{
+
+.bid-and-finish {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -249,50 +234,75 @@
 .detail-title {
   font-weight: bold;
   color: #333;
-  flex: 1; /* Tilpasser seg bredden */
+  flex: 1;
 }
 
 .detail-value {
   color: #555;
   text-align: right;
-  flex: 1; /* Tilpasser seg bredden */
+  flex: 1;
 }
-#enddate{
+
+#enddate {
   color: rgb(211, 13, 13);
   font-weight: bold;
-
 }
 
-.posted-column{
-  font-size: 11px;
+.bid-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
 }
-.detail-value {
-  color: #666;
-  text-align: right;
+
+.bid-history-table th,
+.bid-history-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border: 1px solid #ddd;
 }
+
+.bid-history-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.bidder-image {
+  width: 30px;
+  height: auto;
+  object-fit: contain;
+  margin-right: 10px;
+}
+
+.bid-list {
+  overflow-x: auto;
+  margin: 0 auto;
+  max-width: 100%;
+}
+
 @media (min-width: 769px) {
   .bidder-image {
-    width: 30px; /* Juster størrelsen for større skjermer */
+    width: 30px;
     height: auto;
     object-fit: contain;
   }
 
   .bid-history-table th,
   .bid-history-table td {
-    padding: 15px 20px; /* Mer padding for store skjermer */
+    padding: 15px 20px;
   }
 }
+
 /* Mobile-specific styling */
 @media (max-width: 768px) {
   .auction-page {
     flex-direction: column;
   }
 
-
-  .posted-small-details{
+  .posted-small-details {
     display: flex;
     flex-direction: column;
   }
+
   .auction-gallery {
     width: 100%;
     margin-right: 0;
@@ -316,34 +326,17 @@
     display: flex;
     flex-direction: row;
     justify-content: center;
-    
   }
 
   .bidder-image {
-    width: 50px; /* Juster størrelsen for mobil */
+    width: 50px;
     height: auto;
     object-fit: contain;
   }
 
   .bid-history-table th,
   .bid-history-table td {
-    padding: 12px 16px; /* Øker padding for bedre utseende på mobil */
-    font-size: 16px; /* Gjør teksten litt større for lesbarhet */
-  }
-
-  .bid-section h2 {
+    padding: 12px 16px;
     font-size: 16px;
-  }
-
-  .posted-title {
-    font-size: 22px;
-  }
-
-  .detail-title {
-    font-size: 14px;
-  }
-
-  .detail-value {
-    font-size: 14px;
   }
 }
