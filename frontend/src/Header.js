@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
 import LoginModal from './LoginModal';
 import { isAuthenticated } from './auth';
-import { Helmet } from 'react-helmet'; // Import Helmet
+import { Helmet } from 'react-helmet';
 
 function Header() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -13,22 +13,24 @@ function Header() {
 
   const navigate = useNavigate();
 
+  // Effekt som oppdaterer logg inn status når komponenten først monteres
   useEffect(() => {
     const loggedInStatus = isAuthenticated();
-    console.log('User authenticated:', loggedInStatus); // Log the authentication status for debugging
+    console.log('Initial User authenticated:', loggedInStatus); // For debugging
     setLoggedIn(loggedInStatus);
   }, []);
 
+  // Effekt som oppdaterer logg inn status hver gang token endrer seg
   useEffect(() => {
     const handleStorageChange = () => {
       const isUserLoggedIn = isAuthenticated();
-      console.log('Token changed, updating login status:', isUserLoggedIn);
+      console.log('Token changed, updating login status:', isUserLoggedIn); // For debugging
       setLoggedIn(isUserLoggedIn);
     };
 
     window.addEventListener('storage', handleStorageChange);
 
-    // Cleanup listener on component unmount
+    // Cleanup listener når komponenten fjernes
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
@@ -52,13 +54,12 @@ function Header() {
     event.preventDefault();
     if (searchTerm.trim()) {
       navigate(`/search?q=${searchTerm}`);
-      scrollToTop(); // Scroll to top after performing a search
+      scrollToTop();
     }
   };
 
   return (
     <>
-      {/* Helmet for managing head elements */}
       <Helmet>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </Helmet>
@@ -86,7 +87,7 @@ function Header() {
               <i className="material-icons">info</i>
               <span>Infosenter</span>
             </Link>
-            
+
             <button onClick={() => handleAuthNavigation('/nyauksjon')} className="header-button nyauksjon-button">
               <i className="material-icons">add_circle</i>
               <span>Ny Auksjon</span>

@@ -82,6 +82,10 @@ function Login() {
             console.log('Login successful, token received:', res.data.accessToken);
             localStorage.setItem('accessToken', res.data.accessToken); // Store access token in local storage
             localStorage.setItem('role', res.data.role);
+  
+            // Trigger an event to let Header know the user is logged in
+            window.dispatchEvent(new Event('storage'));
+  
             setSuccessMessage('Innlogging vellykket! Du blir sendt til hjemmesiden.');
             setTimeout(() => {
               setSuccessMessage('');
@@ -106,6 +110,7 @@ function Login() {
         });
     }
   };
+  
   
   const refreshAccessToken = async () => {
     try {

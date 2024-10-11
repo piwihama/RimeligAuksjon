@@ -4,7 +4,7 @@ import axios from 'axios';
 let inactivityTimer;
 
 export const isAuthenticated = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('accessToken'); // Bruker accessToken for konsistens
 
   if (!token) return false;
 
@@ -16,12 +16,12 @@ export const isAuthenticated = () => {
       startInactivityTimer();
       return true;
     } else {
-      localStorage.removeItem('token');
+      localStorage.removeItem('accessToken');
       return false;
     }
   } catch (error) {
     console.error('Error parsing token:', error);
-    localStorage.removeItem('token');
+    localStorage.removeItem('accessToken');
     return false;
   }
 };
@@ -36,18 +36,21 @@ const startInactivityTimer = () => {
 
 const refreshAuthToken = async () => {
   try {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     if (!token) return;
 
     const response = await axios.post('/api/refresh-token', {}, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
-    localStorage.setItem('token', response.data.accessToken);
-    startInactivityTimer(); // Reset timer
+    if (response.data.accessToken) {
+      localStorage.setItem('accessToken', response.data.accessToken);
+      window.dispatchEvent(new Event('storage')); // Trigger oppdatering for andre komponenter
+      startInactivityTimer(); // Reset timer
+    }
   } catch (error) {
     console.error('Failed to refresh token:', error);
-    localStorage.removeItem('token');
+    localStorage.removeItem('accessToken');
   }
 };
 
@@ -61,7 +64,7 @@ const parseJwt = (token) => {
   return JSON.parse(jsonPayload);
 };
 
-// Lytt til aktivitet på siden
+// Lytt til aktivitet på siden for å reset inaktivitetstimeren
 window.addEventListener('mousemove', startInactivityTimer);
 window.addEventListener('keydown', startInactivityTimer);
 window.addEventListener('scroll', startInactivityTimer);
