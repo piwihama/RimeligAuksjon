@@ -353,8 +353,10 @@
   }
 
   .auction-info {
-    order: 2;
-    width: 100%;
+    order:2;
+    min-width: 100%; /* Allows the container to fit smaller screens */
+    max-width: 100%; /* Prevents overflow on mobile */
+    padding: 15px; /* Adjust padding for mobile */
   }
 
   .posted-auction-details {
