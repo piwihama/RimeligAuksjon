@@ -258,7 +258,7 @@
 .bid-history-table td {
   padding: 8px 12px;
   text-align: left;
-  border: 1px solid #ddd;
+  border: 0px  ;
 }
 
 .bid-history-table th {
@@ -267,7 +267,7 @@
 }
 
 .bidder-image {
-  width: 30px;
+  width: 20;
   height: auto;
   object-fit: contain;
   margin-right: 10px;
@@ -281,7 +281,7 @@
 
 @media (min-width: 769px) {
   .bidder-image {
-    width: 30px;
+    width: 20;
     height: auto;
     object-fit: contain;
   }
@@ -329,7 +329,7 @@
   }
 
   .bidder-image {
-    width: 50px;
+    width: 20px;
     height: auto;
     object-fit: contain;
   }
