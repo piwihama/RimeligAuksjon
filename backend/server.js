@@ -934,7 +934,7 @@ async function connectDB() {
     });
 
     app.post('/api/liveauctions/:id/bid', authenticateToken, async (req, res) => {
-      const session = client.startSession(); // Start en MongoDB transaksjon
+      const session = client.startSession(); // Start en MongoDB session
       session.startTransaction(); // Start transaksjonen
     
       try {
@@ -944,24 +944,27 @@ async function connectDB() {
         const cacheKey = `liveAuction-${liveAuctionId}`;
         await redis.del(cacheKey); // Invalidate the cache for this auction
     
+        // Utfør en transaksjonssikker oppdatering
         const liveAuction = await liveAuctionCollection
-          .findOne({ _id: new ObjectId(liveAuctionId) })
-          .session(session);
+          .findOne({ _id: new ObjectId(liveAuctionId) }, { session }); // Her har vi fjernet bruk av session fra findOne()
     
         if (!liveAuction) {
           await session.abortTransaction(); // Avbryt transaksjonen hvis auksjonen ikke finnes
+          session.endSession();
           return res.status(404).json({ message: 'Auksjonen ble ikke funnet' });
         }
     
         // Sjekk om brukeren allerede har høyeste bud, og hindre at samme bruker gir to bud på rad
         if (liveAuction.highestBidder === req.user.userId) {
           await session.abortTransaction(); // Avbryt transaksjonen hvis brukeren allerede har høyeste bud
+          session.endSession();
           return res.status(400).json({ message: 'Du kan ikke legge inn to bud på rad. Vent til noen andre byr før du kan by igjen.' });
         }
     
         // Sjekk om budet er høyere enn det nåværende høyeste budet
         if (bidAmount <= liveAuction.highestBid) {
           await session.abortTransaction(); // Avbryt transaksjonen hvis budet ikke er høyt nok
+          session.endSession();
           return res.status(400).json({ message: 'Bud må være høyere enn nåværende høyeste bud' });
         }
     
@@ -974,7 +977,7 @@ async function connectDB() {
           await liveAuctionCollection.updateOne(
             { _id: new ObjectId(liveAuctionId) },
             { $set: { [`bidders.${req.user.userId}`]: userBidderNumber } },
-            { session }
+            { session } // Bruker session her
           );
         }
     
@@ -999,7 +1002,7 @@ async function connectDB() {
               bidCount: 1,
             },
           },
-          { session }
+          { session } // Bruker session her
         );
     
         await session.commitTransaction(); // Fullfør transaksjonen
