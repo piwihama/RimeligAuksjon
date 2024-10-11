@@ -17,7 +17,7 @@ function MinSide() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('accessToken'); // Oppdatert fra 'token' til 'accessToken'
         if (!token) {
           console.log('No token found, redirecting to login');
           navigate('/');
@@ -85,7 +85,7 @@ function MinSide() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('accessToken'); // Oppdatert fra 'token' til 'accessToken'
     localStorage.removeItem('userId');
     localStorage.removeItem('role');
     navigate('/');
@@ -94,7 +94,6 @@ function MinSide() {
   const toggleSection = (section) => {
     setActiveSection(activeSection === section ? null : section);
   };
-
   return (
     <div>
       <Header />
