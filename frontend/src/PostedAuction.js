@@ -333,7 +333,10 @@ function PostedAuction() {
     <ul>
       {auction.bids.map((bid, index) => (
         <li key={index}>
-          {bidderMap[bid.bidder] || `Anonym Budgiver`} - {bid.amount},-
+          {bidderMap[bid.bidder] || `Anonym Budgiver`} - {bid.amount},- 
+          <span style={{ marginLeft: '10px', color: '#555' }}>
+            {new Date(bid.time).toLocaleTimeString('no-NO', { hour: '2-digit', minute: '2-digit' })} {new Date(bid.time).toLocaleDateString('no-NO')}
+          </span>
         </li>
       ))}
     </ul>
@@ -341,6 +344,7 @@ function PostedAuction() {
     <p>Ingen bud er gitt enda</p>
   )}
 </div>
+
 
         </div>
 
