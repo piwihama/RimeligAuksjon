@@ -333,9 +333,9 @@ function PostedAuction() {
     <table className="bid-history-table">
       <thead>
         <tr>
-          <th>Budgiver</th>
-          <th>Beløp</th>
-          <th>Tid og Dato</th>
+          <th></th>
+          <th></th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
