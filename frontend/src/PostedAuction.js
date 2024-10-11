@@ -343,7 +343,7 @@ function PostedAuction() {
           <tr key={index}>
             <td className="bidder-column">
               <img
-                src="/images/Waiving-512-removebg-preview.png"
+                src="https://rimeligauksjon.vercel.app/images/Waiving-512-removebg-preview.png"
                 alt="Bidder"
                 className="bidder-image"
               />
