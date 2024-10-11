@@ -28,7 +28,7 @@
 
 .main-image {
   width: 100%;
-  max-width: 700px;
+  max-width: 600px;
   margin-bottom: 15px;
   border-radius: 10px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
@@ -73,7 +73,7 @@
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  min-width: 400px;
+  min-width: 300px;
   order: 2;
   width: 100%;
   margin-bottom: 25px;
@@ -339,13 +339,7 @@
     width: 15px;
     height: 15px;
   }
-  .main-image {
-    width: 100%;
-    max-width: 600px;
-    margin-bottom: 15px;
-    border-radius: 10px;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-  }
+
   .posted-small-details{
     display: flex;
     flex-direction: column;
