@@ -169,7 +169,7 @@ body {
   .menu {
     display: grid; /* Grid layout for mobile */
     grid-template-columns: repeat(4, 1fr); /* 2 kolonner på mobil */
-    gap: 10px;
+
   }
 
   .menu.open {
