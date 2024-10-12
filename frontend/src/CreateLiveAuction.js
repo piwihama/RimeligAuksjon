@@ -165,7 +165,7 @@ function CreateLiveAuction() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('accessToken');
+      const token = localStorage.getItem('token');
       
       // Log the token for debugging purposes
       console.log('Token:', token);
