@@ -169,7 +169,7 @@ function CreateLiveAuction() {
         'https://rimelig-auksjon-backend.vercel.app/api/liveauctions',
         formData,
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
         }
       );
       if (response.status === 201) {
