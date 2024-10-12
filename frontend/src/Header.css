@@ -160,12 +160,12 @@ body {
     z-index: 1;
   }
   .logo-large{
-    width: 50%;
+    width: 30px;
   }
 
   .search-container {
     display: flex;
-    width: 50%;
+    width: 30px;
     margin: 10px 0;
   }
 
