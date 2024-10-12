@@ -157,16 +157,13 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    z-index: 1;
   }
   .logo-large{
     width: 30px;
   }
 
   .search-container {
-    display: flex;
     width: 30px;
-    margin: 10px 0;
   }
 
   .header-button-container {
