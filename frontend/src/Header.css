@@ -166,7 +166,11 @@ body {
     display: none; /* Skjul knappecontaineren på toppen på mobil */
   }
 
-
+  .menu {
+    display: grid; /* Grid layout for mobile */
+    grid-template-columns: repeat(4, 1fr); /* 2 kolonner på mobil */
+    gap: 10px;
+  }
 
   .menu.open {
     display: flex;
