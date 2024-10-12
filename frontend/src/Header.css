@@ -1,12 +1,12 @@
 body {
   background-color: #ffffff;
-  margin: 0; /* Remove default margin */
-  padding: 0; /* Remove default padding */
+  margin: 0;
+  padding: 0;
 }
 
 .header-top {
   background-color: #ffffff;
-  padding: calc(10px + env(safe-area-inset-top)) 0 10px 0; /* Remove side padding */
+  padding: calc(10px + env(safe-area-inset-top)) 0 10px 0;
   width: 100%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-bottom: 2px solid #dddddd;
@@ -15,9 +15,9 @@ body {
 .upper-row {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Space between logo and search */
+  justify-content: space-between;
   width: 100%;
-  gap: 10px; /* Reduce gap between items */
+  gap: 10px;
 }
 
 .logo-large {
@@ -44,7 +44,6 @@ body {
 .search-container {
   display: flex;
   align-items: center;
-  flex: 2; /* Ensure the search bar takes more space next to the logo */
 }
 
 .search-input {
@@ -53,7 +52,7 @@ body {
   border-radius: 4px 0 0 4px;
   outline: none;
   font-size: 16px;
-  max-width: 300px; /* Limit the width of the search input */
+  max-width: 300px;
 }
 
 .search-button {
@@ -104,14 +103,14 @@ body {
 /* Menu Styling */
 .menu {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Adjust for smaller screens */
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   background-color: #333333;
   padding: 10px 0;
-  width: 100vw; /* Ensure the menu stretches full width */
+  width: 100vw;
   margin: 0;
   border-top: 1px solid #dddddd;
-  justify-content: center; /* Center items in the menu */
+  justify-content: center;
 }
 
 .menu-button {
@@ -142,22 +141,16 @@ body {
   }
 }
 
-/* Mobile Bottom Navigation */
-.mobile-bottom-nav {
-  display: none;
-}
-
 @media (max-width: 768px) {
+  /* Adjust layout for mobile: stack logo and search vertically */
   .upper-row {
-    flex-direction: column;
+    flex-direction: column; /* Stack the logo and search field */
     align-items: center;
-    gap: 10px;
-    z-index: 1;
   }
 
   .search-container {
     width: 100%;
-    margin: 10px 0;
+    margin-top: 10px; /* Add some space between logo and search */
   }
 
   .header-button-container {
@@ -165,7 +158,7 @@ body {
   }
 
   .menu {
-    grid-template-columns: repeat(4, 1fr); /* 4 columns on mobile */
+    grid-template-columns: repeat(4, 1fr);
     justify-content: center;
   }
 
@@ -220,7 +213,6 @@ body {
     display: none;
   }
 
-  /* Ensure full width and center items on desktop */
   .menu {
     display: inline-flex;
     gap: 20px;
