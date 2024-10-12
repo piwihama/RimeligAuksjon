@@ -106,13 +106,14 @@ body {
 /* Menu Styling */
 .menu {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, 1fr); /* Adjust number of columns based on screen size */
   gap: 10px;
   background-color: #333333;
   padding: 10px 0;
   width: 100vw; /* Full viewport width */
-  margin: 0; /* Remove any potential margin */
+  margin: 0; /* Remove margin */
   border-top: 1px solid #dddddd;
+  justify-content: center; /* Center items */
 }
 
 
@@ -170,6 +171,8 @@ body {
 
   .menu {
     grid-template-columns: repeat(4, 1fr); /* 4 columns on mobile */
+    justify-content: center; /* Ensure items stay centered on mobile */
+
   }
 
   .menu.open {
@@ -233,5 +236,7 @@ body {
     display: inline-flex;
     gap: 20px;
     width: 100vw; /* Full width on larger screens */
+    justify-content: center; /* Center items on larger screens */
+
   }
 }
