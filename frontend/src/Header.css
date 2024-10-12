@@ -1,10 +1,11 @@
 body {
-  background-color: #ffffff; /* Tilpass bakgrunnsfargen etter ditt design */
+  background-color: #ffffff;
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
 }
-
 .header-top {
-  background-color: #ffffff; /* White background */
-  padding: calc(10px + env(safe-area-inset-top)) 20px 10px 20px; /* Inkluder safe area padding på toppen */
+  background-color: #ffffff;
+  padding: calc(10px + env(safe-area-inset-top)) 0 10px 0; /* Remove side padding */
   width: 100%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-bottom: 2px solid #dddddd;
@@ -104,15 +105,16 @@ body {
 
 /* Menu Styling */
 .menu {
-  display: grid; /* Grid layout for mobile */
-  grid-template-columns: repeat(2, 1fr); /* 2 kolonner på mobil */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
-  justify-content: center;
   background-color: #333333;
   padding: 10px 0;
-  width: 100%;
+  width: 100vw; /* Full viewport width */
+  margin: 0; /* Remove any potential margin */
   border-top: 1px solid #dddddd;
 }
+
 
 .menu-button {
   color: #ffffff;
@@ -167,9 +169,7 @@ body {
   }
 
   .menu {
-    display: grid; /* Grid layout for mobile */
-    grid-template-columns: repeat(4, 1fr); /* 2 kolonner på mobil */
-
+    grid-template-columns: repeat(4, 1fr); /* 4 columns on mobile */
   }
 
   .menu.open {
@@ -228,5 +228,10 @@ body {
   .nyauksjon-button,
   .header-button {
     display: flex;
+  }
+  .menu {
+    display: inline-flex;
+    gap: 20px;
+    width: 100vw; /* Full width on larger screens */
   }
 }
