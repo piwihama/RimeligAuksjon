@@ -1,11 +1,12 @@
 body {
   background-color: #ffffff;
-  margin: 0; /* Remove default margin */
-  padding: 0; /* Remove default padding */
+  margin: 0;
+  padding: 0;
 }
+
 .header-top {
   background-color: #ffffff;
-  padding: calc(10px + env(safe-area-inset-top)) 0 10px 0; /* Remove side padding */
+  padding: calc(10px + env(safe-area-inset-top)) 0 10px 0;
   width: 100%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-bottom: 2px solid #dddddd;
@@ -14,70 +15,69 @@ body {
 .upper-row {
   display: flex;
   align-items: center;
-  justify-content: center; /* Center content horizontally */
+  justify-content: space-between; /* Space out logo and search on larger screens */
   width: 100%;
-  flex-wrap: wrap;
-  gap: 10px; /* Reduce gap between items */
+  gap: 10px;
 }
 
 /* Logo Styling */
 .logo-large {
-  font-size: 1.5em; /* Larger font size for prominence */
-  font-weight: 700; /* Stronger weight */
-  color: #005050; /* Teal color for a professional look */
+  font-size: 1.5em;
+  font-weight: 700;
+  color: #005050;
   text-decoration: none;
-  padding: 5px 15px; /* Increased padding for better spacing */
-  border-radius: 6px; /* Slightly more rounded corners */
-  border: 2px solid #005050; /* Thicker border for better visibility */
-  background: linear-gradient(45deg, #005050, #333333); /* Gradient background */
-  color: #fff; /* White text color */
-  font-family: 'Helvetica Neue', sans-serif; /* Clean and modern font */
-  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+  padding: 5px 15px;
+  border-radius: 6px;
+  border: 2px solid #005050;
+  background: linear-gradient(45deg, #005050, #333333);
+  color: #fff;
+  font-family: 'Helvetica Neue', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .logo-large:hover {
-  background-color: #FFD166; /* Soft Yellow on hover */
-  color: #005050; /* Teal text color on hover */
-  border-color: #FFD166; /* Soft Yellow border on hover */
+  background-color: #FFD166;
+  color: #005050;
+  border-color: #FFD166;
 }
 
 /* Search Form Styling */
 .search-container {
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin: 10px;
+  justify-content: flex-end; /* Push search to the right side */
+  flex-grow: 1;
 }
 
 .search-input {
-  padding: 8px 12px;
+  padding: 10px;
   border: 1px solid #dddddd;
   border-radius: 4px 0 0 4px;
   outline: none;
   font-size: 16px;
+  width: 100%; /* Make it flexible to take up space */
+  max-width: 300px;
 }
 
 .search-button {
-  padding: 8px 12px;
+  padding: 10px;
   border: 1px solid #dddddd;
   border-left: none;
   border-radius: 0 4px 4px 0;
-  background-color: #005050 !important; /* Teal color */
-  color: #ffffff !important;
+  background-color: #005050;
+  color: #ffffff;
   cursor: pointer;
-  height: 40px; /* Match the height of the input */
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px; /* Adjust font size for icon */
+  font-size: 16px;
 }
 
-/* Header Button Styling */
 .header-button-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px; /* Reduce gap between buttons */
+  gap: 10px;
   margin: 10px;
 }
 
@@ -106,16 +106,15 @@ body {
 /* Menu Styling */
 .menu {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Adjust number of columns based on screen size */
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   background-color: #333333;
   padding: 10px 0;
-  width: 100vw; /* Full viewport width */
-  margin: 0; /* Remove margin */
+  width: 100vw;
+  margin: 0;
   border-top: 1px solid #dddddd;
-  justify-content: center; /* Center items */
+  justify-content: center;
 }
-
 
 .menu-button {
   color: #ffffff;
@@ -124,7 +123,7 @@ body {
   transition: color 0.3s;
   display: flex;
   align-items: center;
-  justify-content: center; /* Center content within each button */
+  justify-content: center;
   padding: 10px;
   background-color: #444444;
   border-radius: 4px;
@@ -135,14 +134,13 @@ body {
 }
 
 .menu-button:hover {
-  color: #FFD166; /* Soft Yellow */
+  color: #FFD166;
 }
 
 @media (min-width: 768px) {
   .menu {
-    display: inline-flex; /* Change to inline-flex on larger screens */
-
-    gap: 20px; /* Adjust gap between buttons */
+    display: inline-flex;
+    gap: 20px;
   }
 }
 
@@ -154,34 +152,36 @@ body {
 @media (max-width: 768px) {
   .upper-row {
     flex-direction: row;
-    display: flex;
     align-items: center;
+    justify-content: space-between; /* Space out items for mobile */
     gap: 10px;
+    padding: 0 10px; /* Ensure some padding on mobile */
   }
-  .logo-large{
+
+  .logo-large {
     width: 150px;
     font-size: 20px;
   }
 
   .search-container {
-    width: 30px;
+    flex-grow: 1;
+    justify-content: flex-end; /* Push the search to the right side */
+    max-width: 70%; /* Limit the search width on mobile */
   }
+
   .search-input {
-    width: 100px;
-    border: 1px solid #dddddd;
-    border-radius: 4px 0 0 4px;
-    outline: none;
-    font-size: 20px;
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
   }
 
   .header-button-container {
-    display: none; /* Skjul knappecontaineren på toppen på mobil */
+    display: none;
   }
 
   .menu {
-    grid-template-columns: repeat(4, 1fr); /* 4 columns on mobile */
-    justify-content: center; /* Ensure items stay centered on mobile */
-
+    grid-template-columns: repeat(4, 1fr);
+    justify-content: center;
   }
 
   .menu.open {
@@ -189,7 +189,7 @@ body {
   }
 
   .mobile-menu-button {
-    display: none; /* Skjuler mobilmeny-knappen */
+    display: none;
   }
 
   .mobile-only {
@@ -235,17 +235,10 @@ body {
     display: none;
   }
 
-  /* Sikre at knappene vises på desktop */
-  .info-button,
-  .nyauksjon-button,
-  .header-button {
-    display: flex;
-  }
   .menu {
     display: inline-flex;
     gap: 20px;
-    width: 100vw; /* Full width on larger screens */
-    justify-content: center; /* Center items on larger screens */
-
+    width: 100vw;
+    justify-content: center;
   }
 }
