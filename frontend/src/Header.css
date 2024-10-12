@@ -155,7 +155,7 @@ body {
   .upper-row {
     flex-direction: row;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     align-items: center;
     gap: 10px;
   }
@@ -166,7 +166,6 @@ body {
 
   .search-container {
     width: 30px;
-    flex-grow: 1;
   }
   .search-input {
     width: 100px;
