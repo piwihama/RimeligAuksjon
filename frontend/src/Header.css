@@ -165,6 +165,14 @@ body {
   .search-container {
     width: 30px;
   }
+  .search-input {
+    padding: 8px 12px;
+    width: 30px;
+    border: 1px solid #dddddd;
+    border-radius: 4px 0 0 4px;
+    outline: none;
+    font-size: 16px;
+  }
 
   .header-button-container {
     display: none; /* Skjul knappecontaineren på toppen på mobil */
