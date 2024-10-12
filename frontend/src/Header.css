@@ -1,12 +1,11 @@
 body {
   background-color: #ffffff;
-  margin: 0;
-  padding: 0;
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
 }
-
 .header-top {
   background-color: #ffffff;
-  padding: calc(10px + env(safe-area-inset-top)) 0 10px 0;
+  padding: calc(10px + env(safe-area-inset-top)) 0 10px 0; /* Remove side padding */
   width: 100%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-bottom: 2px solid #dddddd;
@@ -15,35 +14,39 @@ body {
 .upper-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center; /* Center content horizontally */
   width: 100%;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 10px; /* Reduce gap between items */
 }
 
+/* Logo Styling */
 .logo-large {
-  font-size: 1.5em;
-  font-weight: 700;
-  color: #005050;
+  font-size: 1.5em; /* Larger font size for prominence */
+  font-weight: 700; /* Stronger weight */
+  color: #005050; /* Teal color for a professional look */
   text-decoration: none;
-  padding: 5px 15px;
-  border-radius: 6px;
-  border: 2px solid #005050;
-  background: linear-gradient(45deg, #005050, #333333);
-  color: #fff;
-  font-family: 'Helvetica Neue', sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  padding: 5px 15px; /* Increased padding for better spacing */
+  border-radius: 6px; /* Slightly more rounded corners */
+  border: 2px solid #005050; /* Thicker border for better visibility */
+  background: linear-gradient(45deg, #005050, #333333); /* Gradient background */
+  color: #fff; /* White text color */
+  font-family: 'Helvetica Neue', sans-serif; /* Clean and modern font */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
 }
 
 .logo-large:hover {
-  background-color: #FFD166;
-  color: #005050;
-  border-color: #FFD166;
+  background-color: #FFD166; /* Soft Yellow on hover */
+  color: #005050; /* Teal text color on hover */
+  border-color: #FFD166; /* Soft Yellow border on hover */
 }
 
 /* Search Form Styling */
 .search-container {
   display: flex;
   align-items: center;
+  justify-content: center;
+  margin: 10px;
 }
 
 .search-input {
@@ -52,7 +55,6 @@ body {
   border-radius: 4px 0 0 4px;
   outline: none;
   font-size: 16px;
-  max-width: 300px;
 }
 
 .search-button {
@@ -60,21 +62,22 @@ body {
   border: 1px solid #dddddd;
   border-left: none;
   border-radius: 0 4px 4px 0;
-  background-color: #005050;
-  color: #ffffff;
+  background-color: #005050 !important; /* Teal color */
+  color: #ffffff !important;
   cursor: pointer;
-  height: 40px;
+  height: 40px; /* Match the height of the input */
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 16px; /* Adjust font size for icon */
 }
 
+/* Header Button Styling */
 .header-button-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 10px; /* Reduce gap between buttons */
   margin: 10px;
 }
 
@@ -103,15 +106,16 @@ body {
 /* Menu Styling */
 .menu {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, 1fr); /* Adjust number of columns based on screen size */
   gap: 10px;
   background-color: #333333;
   padding: 10px 0;
-  width: 100vw;
-  margin: 0;
+  width: 100vw; /* Full viewport width */
+  margin: 0; /* Remove margin */
   border-top: 1px solid #dddddd;
-  justify-content: center;
+  justify-content: center; /* Center items */
 }
+
 
 .menu-button {
   color: #ffffff;
@@ -120,7 +124,7 @@ body {
   transition: color 0.3s;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: center; /* Center content within each button */
   padding: 10px;
   background-color: #444444;
   border-radius: 4px;
@@ -131,35 +135,45 @@ body {
 }
 
 .menu-button:hover {
-  color: #FFD166;
+  color: #FFD166; /* Soft Yellow */
 }
 
 @media (min-width: 768px) {
   .menu {
-    display: inline-flex;
-    gap: 20px;
+    display: inline-flex; /* Change to inline-flex on larger screens */
+
+    gap: 20px; /* Adjust gap between buttons */
   }
 }
 
+/* Mobile Bottom Navigation */
+.mobile-bottom-nav {
+  display: none;
+}
+
 @media (max-width: 768px) {
-  /* Adjust layout for mobile: stack logo and search vertically */
   .upper-row {
-    flex-direction: column; /* Stack the logo and search field */
+    flex-direction: row;
+    display: flex;
     align-items: center;
+    gap: 10px;
+    z-index: 1;
   }
 
   .search-container {
+    display: flex;
     width: 100%;
-    margin-top: 10px; /* Add some space between logo and search */
+    margin: 10px 0;
   }
 
   .header-button-container {
-    display: none;
+    display: none; /* Skjul knappecontaineren på toppen på mobil */
   }
 
   .menu {
-    grid-template-columns: repeat(4, 1fr);
-    justify-content: center;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns on mobile */
+    justify-content: center; /* Ensure items stay centered on mobile */
+
   }
 
   .menu.open {
@@ -167,7 +181,7 @@ body {
   }
 
   .mobile-menu-button {
-    display: none;
+    display: none; /* Skjuler mobilmeny-knappen */
   }
 
   .mobile-only {
@@ -213,10 +227,17 @@ body {
     display: none;
   }
 
+  /* Sikre at knappene vises på desktop */
+  .info-button,
+  .nyauksjon-button,
+  .header-button {
+    display: flex;
+  }
   .menu {
     display: inline-flex;
     gap: 20px;
-    width: 100vw;
-    justify-content: center;
+    width: 100vw; /* Full width on larger screens */
+    justify-content: center; /* Center items on larger screens */
+
   }
 }
