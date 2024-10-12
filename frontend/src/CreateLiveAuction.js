@@ -64,7 +64,7 @@ function CreateLiveAuction() {
     const fetchAuction = async () => {
       try {
         const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/auctions/${id}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
         });
         
         const auctionData = response.data;
@@ -165,34 +165,22 @@ function CreateLiveAuction() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
-      
-      // Log the token for debugging purposes
-      console.log('Token:', token);
-  
-      if (!token) {
-        alert('You must be logged in to create an auction');
-        return;
-      }
-  
       const response = await axios.post(
         'https://rimelig-auksjon-backend.vercel.app/api/liveauctions',
         formData,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
         }
       );
-  
       if (response.status === 201) {
         alert('Live auction created successfully');
         navigate('/admin/dashboard');
       }
     } catch (error) {
-      console.error('Error creating live auction:', error.response || error.message);
+      console.error('Error creating live auction:', error);
       alert('Failed to create live auction');
     }
   };
-  
 
   
 
