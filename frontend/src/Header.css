@@ -159,10 +159,13 @@ body {
     gap: 10px;
     z-index: 1;
   }
+  .logo-large{
+    width: 50%;
+  }
 
   .search-container {
     display: flex;
-    width: 100%;
+    width: 50%;
     margin: 10px 0;
   }
 
