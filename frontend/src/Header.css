@@ -142,7 +142,7 @@ body {
   .menu {
     display: inline-flex; /* Change to inline-flex on larger screens */
 
-    gap: 20px; /* Adjust gap between buttons */
+    gap: 18px; /* Adjust gap between buttons */
   }
 }
 
@@ -161,7 +161,7 @@ body {
   }
   .logo-large{
     width: 150px;
-    font-size: 20px;
+    font-size: 15px;
   }
 
   .search-container {
