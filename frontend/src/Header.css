@@ -159,20 +159,19 @@ body {
     gap: 10px;
   }
   .logo-large{
-    width: 100px;
-    font-size: 10px;
+    width: 150px;
+    font-size: 20px;
   }
 
   .search-container {
     width: 30px;
   }
   .search-input {
-    padding: 8px 12px;
     width: 100px;
     border: 1px solid #dddddd;
     border-radius: 4px 0 0 4px;
     outline: none;
-    font-size: 16px;
+    font-size: 20px;
   }
 
   .header-button-container {
