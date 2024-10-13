@@ -155,13 +155,13 @@ body {
     flex-direction: row;
     display: flex;
     align-items: center;
-    gap: 10px; /* Provides a controlled gap between the logo and search */
-    justify-content: flex-start; /* Keeps both logo and search closer to the left */
-    padding: 0 15px; /* Adds padding for more spacing from the screen edge */
+    justify-content: space-between; /* Aligns the logo and search field side by side */
+    width: 100%;
+    padding: 0 15px; /* Adds padding for spacing from the screen edges */
   }
 
   .logo-large {
-    width: auto;
+    flex-shrink: 0; /* Prevents the logo from shrinking */
     font-size: 16px;
     padding: 5px;
   }
@@ -169,12 +169,12 @@ body {
   .search-container {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    width: auto; /* Allows search container to adjust based on the input width */
+    flex-grow: 1; /* Ensures the search bar grows to fill remaining space */
+    margin-left: 10px; /* Provides space between the logo and search */
   }
 
   .search-input {
-    width: 140px; /* Wider search input for better usability on mobile */
+    width: 100%; /* Make the input take all available space */
     padding: 6px;
     font-size: 14px;
     border: 1px solid #dddddd;
