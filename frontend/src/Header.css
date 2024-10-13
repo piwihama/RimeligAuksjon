@@ -163,11 +163,12 @@ body {
   
     .logo-large {
       flex-shrink: 1; /* Allows the logo to shrink to fit */
-      font-size: 14px; /* Reduce the font size on mobile */
+      font-size: 10px; /* Reduce the font size on mobile */
       max-width: 40%; /* Restrict the logo size to a percentage of the screen */
       white-space: nowrap; /* Prevents text from wrapping */
       overflow: hidden; /* Ensures any excess content is hidden */
       text-overflow: ellipsis; /* Add ellipsis if the text overflows */
+    
     }
   
     .search-container {
@@ -179,8 +180,8 @@ body {
   
     .search-input {
       flex-grow: 1; /* Make the input grow to take available space */
-      font-size: 12px; /* Reduce the font size for smaller screens */
-      padding: 6px;
+      font-size: 8px; /* Reduce the font size for smaller screens */
+      padding: 3px;
       border: 1px solid #dddddd;
       border-radius: 4px 0 0 4px;
     }
