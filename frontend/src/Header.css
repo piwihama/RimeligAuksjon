@@ -154,35 +154,48 @@ body {
   .upper-row {
     flex-direction: row;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 10px;
+    gap: 10px; /* Provides a controlled gap between the logo and search */
+    justify-content: flex-start; /* Keeps both logo and search closer to the left */
+    padding: 0 15px; /* Adds padding for more spacing from the screen edge */
   }
-  .logo-large{
-    width: 150px;
-    font-size: 11px;
+
+  .logo-large {
+    width: auto;
+    font-size: 16px;
+    padding: 5px;
   }
 
   .search-container {
-    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: auto; /* Allows search container to adjust based on the input width */
   }
+
   .search-input {
-    width: 100px;
+    width: 140px; /* Wider search input for better usability on mobile */
+    padding: 6px;
+    font-size: 14px;
     border: 1px solid #dddddd;
     border-radius: 4px 0 0 4px;
     outline: none;
-    font-size: 12px;
-   
+  }
+
+  .search-button {
+    padding: 6px 12px;
+    border-radius: 0 4px 4px 0;
+    background-color: #005050;
+    color: white;
   }
 
   .header-button-container {
-    display: none; /* Skjul knappecontaineren på toppen på mobil */
+    display: none;
   }
 
   .menu {
     grid-template-columns: repeat(4, 1fr); /* 4 columns on mobile */
-    justify-content: center; /* Ensure items stay centered on mobile */
-
+    justify-content: center;
   }
 
   .menu.open {
@@ -190,12 +203,14 @@ body {
   }
 
   .mobile-menu-button {
-    display: none; /* Skjuler mobilmeny-knappen */
+    display: none;
   }
 
   .mobile-only {
     display: block;
   }
+
+
 
   .mobile-bottom-nav {
     display: flex;
