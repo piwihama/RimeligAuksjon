@@ -152,11 +152,6 @@ body {
 
 @media (max-width: 768px) {
   @media (max-width: 768px) {
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #ffffff;
-    }
     
     .header-top {
       background-color: #ffffff;
@@ -165,19 +160,10 @@ body {
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       border-bottom: 2px solid #dddddd;
     }
-    
-    .footer {
-      padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
-      background-color: #333;
-      color: #fff;
-      text-align: center;
-    }
-    
     .container {
       padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom);
       margin: 0 auto;
     }
-    
     .upper-row {
       display: flex;
       flex-direction: row;
@@ -228,6 +214,9 @@ body {
     .menu {
       grid-template-columns: repeat(4, 1fr);
       justify-content: center;
+      padding: 10px 0 calc(10px + env(safe-area-inset-bottom)) 0;
+    width: 100vw;
+    margin: 0;
     }
   
     .menu.open {
