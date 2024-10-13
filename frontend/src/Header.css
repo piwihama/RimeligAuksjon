@@ -151,64 +151,70 @@ body {
 }
 
 @media (max-width: 768px) {
-  .upper-row {
-    flex-direction: row;
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* Aligns the logo and search field side by side */
-    width: 100%;
-    padding: 0 15px; /* Adds padding for spacing from the screen edges */
+  @media (max-width: 768px) {
+    .upper-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between; /* Ensure the logo and search bar are spaced evenly */
+      align-items: center;
+      width: 100%;
+      padding: 0 10px; /* Add some padding from the screen edges */
+    }
+  
+    .logo-large {
+      flex-shrink: 1; /* Allows the logo to shrink to fit */
+      font-size: 14px; /* Reduce the font size on mobile */
+      max-width: 40%; /* Restrict the logo size to a percentage of the screen */
+      white-space: nowrap; /* Prevents text from wrapping */
+      overflow: hidden; /* Ensures any excess content is hidden */
+      text-overflow: ellipsis; /* Add ellipsis if the text overflows */
+    }
+  
+    .search-container {
+      display: flex;
+      align-items: center;
+      flex-grow: 1; /* Ensures the search container fills available space */
+      margin-left: 10px; /* Add space between the logo and the search */
+    }
+  
+    .search-input {
+      flex-grow: 1; /* Make the input grow to take available space */
+      font-size: 12px; /* Reduce the font size for smaller screens */
+      padding: 6px;
+      border: 1px solid #dddddd;
+      border-radius: 4px 0 0 4px;
+    }
+  
+    .search-button {
+      padding: 6px 10px; /* Reduce button size */
+      font-size: 12px; /* Smaller icon and text */
+      background-color: #005050;
+      color: white;
+      border-radius: 0 4px 4px 0;
+    }
+  
+    .header-button-container {
+      display: none;
+    }
+  
+    .menu {
+      grid-template-columns: repeat(4, 1fr);
+      justify-content: center;
+    }
+  
+    .menu.open {
+      display: flex;
+    }
+  
+    .mobile-menu-button {
+      display: none;
+    }
+  
+    .mobile-only {
+      display: block;
+    }
   }
-
-  .logo-large {
-    flex-shrink: 0; /* Prevents the logo from shrinking */
-    font-size: 16px;
-    padding: 5px;
-  }
-
-  .search-container {
-    display: flex;
-    align-items: center;
-    flex-grow: 1; /* Ensures the search bar grows to fill remaining space */
-    margin-left: 10px; /* Provides space between the logo and search */
-  }
-
-  .search-input {
-    width: 100%; /* Make the input take all available space */
-    padding: 6px;
-    font-size: 14px;
-    border: 1px solid #dddddd;
-    border-radius: 4px 0 0 4px;
-    outline: none;
-  }
-
-  .search-button {
-    padding: 6px 12px;
-    border-radius: 0 4px 4px 0;
-    background-color: #005050;
-    color: white;
-  }
-
-  .header-button-container {
-    display: none;
-  }
-
-  .menu {
-    grid-template-columns: repeat(4, 1fr); /* 4 columns on mobile */
-    justify-content: center;
-  }
-
-  .menu.open {
-    display: flex;
-  }
-
-  .mobile-menu-button {
-    display: none;
-  }
-
-  .mobile-only {
-    display: block;
-  }
+  
 
 
 
