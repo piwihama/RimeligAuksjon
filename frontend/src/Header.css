@@ -131,7 +131,6 @@ body {
 }
 
 .menu-button i {
-  margin-right: 5px;
 }
 
 .menu-button:hover {
@@ -155,13 +154,13 @@ body {
   .upper-row {
     flex-direction: row;
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     align-items: center;
     gap: 10px;
   }
   .logo-large{
     width: 150px;
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .search-container {
@@ -172,6 +171,7 @@ body {
     border: 1px solid #dddddd;
     border-radius: 4px 0 0 4px;
     outline: none;
+    font-size: 12px;
    
   }
 
