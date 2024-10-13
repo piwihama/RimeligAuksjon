@@ -182,7 +182,7 @@ body {
     .search-input {
       flex-grow: 1; /* Make the input grow to take available space */
       font-size: 9px; /* Reduce the font size for smaller screens */
-      padding: 6px;
+      padding: 9px;
       border: 1px solid #dddddd;
       border-radius: 4px 0 0 4px;
     }
