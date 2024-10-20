@@ -159,7 +159,7 @@ body {
       justify-content: space-between; /* Ensure the logo and search bar are spaced evenly */
       align-items: center;
       width: 100%;
-      padding: 0 5px; /* Add some padding from the screen edges */
+      padding: 0 15px; /* Add some padding from the screen edges */
     }
   
     .logo-large {
