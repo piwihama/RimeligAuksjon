@@ -108,19 +108,19 @@ function Header() {
         </div>
 
         <nav className="menu">
-          <Link to="/kategori/bil" className="menu-button">
-            <i className="material-icons">directions_car</i>Bil
-          </Link>
-          <Link to="/category/boat" className="menu-button">
-            <i className="material-icons">directions_boat</i>Båt
-          </Link>
-          <Link to="/category/motorcycle" className="menu-button">
-            <i className="material-icons">two_wheeler</i>MC
-          </Link>
-          <Link to="/category/marketplace" className="menu-button">
-            <i className="material-icons">store</i>Torg
-          </Link>
-        </nav>
+  <Link to="/kategori/bil" className="menu-button">
+    <i className="material-icons">directions_car</i>Bil
+  </Link>
+  <Link to="/kategori/båt" className="menu-button">
+    <i className="material-icons">directions_boat</i>Båt
+  </Link>
+  <Link to="/kategori/mc" className="menu-button">
+    <i className="material-icons">two_wheeler</i>MC
+  </Link>
+  <Link to="/kategori/torg" className="menu-button">
+    <i className="material-icons">store</i>Torg
+  </Link>
+</nav>
 
         <LoginModal isOpen={modalOpen} onRequestClose={() => setModalOpen(false)} purpose={modalPurpose} />
       </header>
