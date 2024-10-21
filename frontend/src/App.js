@@ -5,21 +5,17 @@ import Signup from './Signup';
 import Home from './Home';
 import MinSide from './MinSide';
 import NewAuction from './NewAuction';
-import Bil from './Bil';
-import Båt from './Båt';
-import MC from './MC';
-import Torg from './Torg';
-import LiveAuctions from './LiveAuctions';
+import LiveAuctions from './LiveAuctions'; // Bruk LiveAuctions for alle kategorier
 import MultiStepForm from './MultiStepForm';
 import AuctionList from './AuctionList';
 import AuctionDetail from './AuctionDetail';
 import AdminLogin from './AdminLogin';
 import AdminCreateAuction from './AdminCreateAuction';
 import AdminDashboard from './AdminDashboard';
-import EditAuction from './EditAuction'; // Importer EditAuction komponenten
-import EditLiveAuction from './EditLiveAuction'; // Importer EditLiveAuction komponenten
-import CreateLiveAuction from './CreateLiveAuction'; // Importer CreateLiveAuction komponenten
-import PostedAuction from './PostedAuction'; // Importer PostedAuction komponenten
+import EditAuction from './EditAuction'; 
+import EditLiveAuction from './EditLiveAuction'; 
+import CreateLiveAuction from './CreateLiveAuction'; 
+import PostedAuction from './PostedAuction'; 
 import Account from './Account';
 import MyAuctions from './MyAuctions';
 import ForgotPassword from './ForgotPassword';
@@ -28,10 +24,10 @@ import { isAuthenticated } from './auth';
 import SearchResults from './SearchResults';
 import InfoPage from './InfoPage';
 
-
 const PrivateRoute = ({ children }) => {
   return isAuthenticated() ? children : <Navigate to="/" />;
 };
+
 const AuthRoute = ({ children }) => {
   return isAuthenticated() ? <Navigate to="/home" /> : children;
 };
@@ -44,15 +40,16 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/home" element={<Home />} />
         <Route path="/minside" element={<PrivateRoute><MinSide /></PrivateRoute>} />
-        <Route path="/kategori/bil" element={<LiveAuctions />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/info" element={<InfoPage />} />
 
+        {/* LiveAuctions for hver kategori */}
+        <Route path="/kategori/bil" element={<LiveAuctions />} />
+        <Route path="/kategori/båt" element={<LiveAuctions />} />
+        <Route path="/kategori/mc" element={<LiveAuctions />} />
+        <Route path="/kategori/torg" element={<LiveAuctions />} />
+        
         <Route path="/nyauksjon" element={<PrivateRoute><NewAuction /></PrivateRoute>} />
-        <Route path="/bil" element={<Bil />} />
-        <Route path="/kategori/båt" element={<Båt />} />
-        <Route path="/kategori/mc" element={<MC />} />
-        <Route path="/kategori/torg" element={<Torg />} />
         <Route path="/bilform" element={<PrivateRoute><MultiStepForm /></PrivateRoute>} />
         <Route path="/auctions" element={<AuctionList />} />
         <Route path="/auction/:id" element={<AuctionDetail />} />
@@ -61,9 +58,9 @@ function App() {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/create-auction" element={<PrivateRoute><AdminCreateAuction /></PrivateRoute>} />
         <Route path="/admin/dashboard" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
-        <Route path="/admin/edit-auction/:id" element={<PrivateRoute><EditAuction /></PrivateRoute>} /> {/* Ny rute */}
-        <Route path="/admin/edit-liveauction/:id" element={<PrivateRoute><EditLiveAuction /></PrivateRoute>} /> {/* Ny rute */}
-        <Route path="/admin/create-liveauction/:id" element={<PrivateRoute><CreateLiveAuction /></PrivateRoute>} /> {/* Ny rute */}
+        <Route path="/admin/edit-auction/:id" element={<PrivateRoute><EditAuction /></PrivateRoute>} /> 
+        <Route path="/admin/edit-liveauction/:id" element={<PrivateRoute><EditLiveAuction /></PrivateRoute>} /> 
+        <Route path="/admin/create-liveauction/:id" element={<PrivateRoute><CreateLiveAuction /></PrivateRoute>} /> 
         <Route path="/account" element={<PrivateRoute><Account /></PrivateRoute>} />
         <Route path="/myauctions" element={<PrivateRoute><MyAuctions /></PrivateRoute>} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

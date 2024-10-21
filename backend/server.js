@@ -602,7 +602,7 @@ async function connectDB() {
         const {
           brand, model, year, location, minPrice, maxPrice, karosseri, fuelType, transmission, drivetrain,
           auctionDuration, reservePrice, auctionWithoutReserve, taxClass, fuel, gearType, mainColor,
-          power, seats, owners, doors, equipment, city
+          power, seats, owners, doors, equipment, city, category // Legg til kategori her
         } = req.query;
     
         // Log incoming request data for debugging
@@ -641,6 +641,12 @@ async function connectDB() {
         if (equipment) query.equipment = { $regex: new RegExp(equipment, 'i') };
         if (city) query.city = city;
     
+        // Legg til kategori-filteret
+        if (category) {
+          query.category = category; // Forvent at kategori er en enkel streng som 'bil', 'båt', etc.
+          console.log(`Filtering by category: ${category}`);
+        }
+    
         // Log the constructed query
         console.log('Constructed query:', query);
     
@@ -668,7 +674,7 @@ async function connectDB() {
             model: 1,
             year: 1,
             mileage: 1, // Legg til mileage her
-
+    
             endDate: 1,
             highestBid: 1,
             bidCount: 1,
