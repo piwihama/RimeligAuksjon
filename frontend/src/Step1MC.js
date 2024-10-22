@@ -47,16 +47,16 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
                 console.log('MC Info:', mcInfo); // Logg MC-info for å se hva du får fra API-et
                 console.log('Tekniske Data:', tekniskeData); // Logg tekniske data
 
-                // Oppdater formData med MC-spesifikke verdier
+                // Oppdater formData med MC-spesifikke verdier, sjekk om feltene er arrays før du bruker dem
                 const updatedFormData = {
                   ...formData,
                   ...values,
-                  brand: tekniskeData.generelt?.merke || '',
-                  model: tekniskeData.generelt?.handelsbetegnelse || '',
+                  brand: Array.isArray(tekniskeData.generelt?.merke) ? tekniskeData.generelt.merke[0] || '' : '',
+                  model: Array.isArray(tekniskeData.generelt?.handelsbetegnelse) ? tekniskeData.generelt.handelsbetegnelse[0] || '' : '',
                   year: mcInfo.godkjenning?.forstegangsGodkjenning?.forstegangRegistrertDato?.split('-')[0] || '',
                   chassisNumber: mcInfo.kjoretoyId?.understellsnummer || '',
-                  power: tekniskeData.motorOgDrivverk?.motor?.[0]?.maksNettoEffekt || '',
-                  fuel: tekniskeData.miljodata?.miljoOgDrivstoffGruppe?.[0]?.drivstoffKodeMiljodata?.kodeNavn || '',
+                  power: Array.isArray(tekniskeData.motorOgDrivverk?.motor) ? tekniskeData.motorOgDrivverk.motor[0]?.maksNettoEffekt || '' : '',
+                  fuel: Array.isArray(tekniskeData.miljodata?.miljoOgDrivstoffGruppe) ? tekniskeData.miljodata.miljoOgDrivstoffGruppe[0]?.drivstoffKodeMiljodata?.kodeNavn || '' : '',
                 };
 
                 setFormData(updatedFormData);
