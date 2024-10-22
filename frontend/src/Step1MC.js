@@ -1,8 +1,7 @@
-// Step1MC.js
 import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import './BilForm.css'; // Du kan lage en egen CSS for MC hvis nødvendig
+import './BilForm.css'; // Bruk samme CSS eller opprett en for MC
 import Header from './Header';
 import Footer from './Footer';
 
@@ -25,7 +24,15 @@ const Step1MC = ({ formData, setFormData, nextStep }) => {
               const contentType = response.headers.get('content-type');
               if (contentType && contentType.indexOf('application/json') !== -1) {
                 const mcData = await response.json();
-                const mcInfo = Array.isArray(mcData.kjoretoydataListe) && mcData.kjoretoydataListe.length > 0 ? mcData.kjoretoydataListe[0] : {};
+                console.log(mcData); // Logg API-responsen
+
+                // Sjekk om vi får riktig data for MC
+                if (!mcData.kjoretoydataListe || mcData.kjoretoydataListe.length === 0) {
+                  console.error('MC data ikke funnet for dette registreringsnummeret');
+                  return;
+                }
+
+                const mcInfo = mcData.kjoretoydataListe[0];
                 const tekniskeData = mcInfo.godkjenning?.tekniskGodkjenning?.tekniskeData || {};
 
                 const updatedFormData = {
