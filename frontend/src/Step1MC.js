@@ -55,8 +55,8 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
                   model: Array.isArray(tekniskeData.generelt?.handelsbetegnelse) ? tekniskeData.generelt.handelsbetegnelse[0] || '' : '',
                   year: mcInfo.godkjenning?.forstegangsGodkjenning?.forstegangRegistrertDato?.split('-')[0] || '',
                   chassisNumber: mcInfo.kjoretoyId?.understellsnummer || '',
-                  power: Array.isArray(tekniskeData.motorOgDrivverk?.motor) ? tekniskeData.motorOgDrivverk.motor[0]?.maksNettoEffekt || '' : '',
-                  fuel: Array.isArray(tekniskeData.miljodata?.miljoOgDrivstoffGruppe) ? tekniskeData.miljodata.miljoOgDrivstoffGruppe[0]?.drivstoffKodeMiljodata?.kodeNavn || '' : '',
+                  power: tekniskeData.motorOgDrivverk?.motor?.[0]?.maksNettoEffekt || '', // Forvent at dette er en array
+                  fuel: tekniskeData.miljodata?.miljoOgDrivstoffGruppe?.[0]?.drivstoffKodeMiljodata?.kodeNavn || '', // Forvent at dette er en array
                 };
 
                 setFormData(updatedFormData);
