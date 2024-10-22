@@ -6,7 +6,6 @@ import Header from './Header';
 import Footer from './Footer';
 
 const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
-  // Sørg for at formData har initialisert regNumber
   const initialFormData = {
     regNumber: formData.regNumber || '', // Initialiser regNumber
     ...formData, // Resten av dataene
@@ -24,7 +23,6 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
           initialValues={initialFormData}
           validationSchema={validationSchema}
           onSubmit={async (values) => {
-            // Sjekk at regNumber er oppgitt før du gjør API-kallet
             if (!values.regNumber) {
               console.error('Ingen registreringsnummer oppgitt');
               return;
@@ -36,9 +34,8 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
               const contentType = response.headers.get('content-type');
               if (contentType && contentType.indexOf('application/json') !== -1) {
                 const mcData = await response.json();
-                console.log(mcData); // Logg API-responsen for debugging
+                console.log('API response:', mcData); // Log hele API-responsen for debugging
 
-                // Sjekk om vi får riktig data for MC
                 if (!mcData.kjoretoydataListe || mcData.kjoretoydataListe.length === 0) {
                   console.error('MC data ikke funnet for dette registreringsnummeret');
                   return;
@@ -46,6 +43,9 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
 
                 const mcInfo = mcData.kjoretoydataListe[0] || {}; // Hvis første element ikke finnes, sett tomt objekt
                 const tekniskeData = mcInfo.godkjenning?.tekniskGodkjenning?.tekniskeData || {};
+
+                console.log('MC Info:', mcInfo); // Logg MC-info for å se hva du får fra API-et
+                console.log('Tekniske Data:', tekniskeData); // Logg tekniske data
 
                 // Oppdater formData med MC-spesifikke verdier
                 const updatedFormData = {
@@ -59,7 +59,6 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
                   fuel: tekniskeData.miljodata?.miljoOgDrivstoffGruppe?.[0]?.drivstoffKodeMiljodata?.kodeNavn || '',
                 };
 
-                // Oppdater formData i state og gå til neste steg
                 setFormData(updatedFormData);
                 nextStep();
               } else {
