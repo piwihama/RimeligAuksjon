@@ -47,16 +47,22 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
                 console.log('MC Info:', mcInfo); // Logg MC-info for å se hva du får fra API-et
                 console.log('Tekniske Data:', tekniskeData); // Logg tekniske data
 
-                // Oppdater formData med MC-spesifikke verdier, sjekk om feltene er arrays før du bruker dem
+                // Håndter arrays korrekt
+                const brand = Array.isArray(tekniskeData.generelt?.merke) ? tekniskeData.generelt.merke[0] : '';
+                const model = Array.isArray(tekniskeData.generelt?.handelsbetegnelse) ? tekniskeData.generelt.handelsbetegnelse[0] : '';
+                const power = tekniskeData.motorOgDrivverk?.motor?.[0]?.maksNettoEffekt || '';
+                const fuel = tekniskeData.miljodata?.miljoOgDrivstoffGruppe?.[0]?.drivstoffKodeMiljodata?.kodeNavn || '';
+
+                // Oppdater formData med MC-spesifikke verdier
                 const updatedFormData = {
                   ...formData,
                   ...values,
-                  brand: Array.isArray(tekniskeData.generelt?.merke) ? tekniskeData.generelt.merke[0] || '' : '',
-                  model: Array.isArray(tekniskeData.generelt?.handelsbetegnelse) ? tekniskeData.generelt.handelsbetegnelse[0] || '' : '',
+                  brand: brand || 'Ukjent merke',
+                  model: model || 'Ukjent modell',
                   year: mcInfo.godkjenning?.forstegangsGodkjenning?.forstegangRegistrertDato?.split('-')[0] || '',
                   chassisNumber: mcInfo.kjoretoyId?.understellsnummer || '',
-                  power: tekniskeData.motorOgDrivverk?.motor?.[0]?.maksNettoEffekt || '', // Forvent at dette er en array
-                  fuel: tekniskeData.miljodata?.miljoOgDrivstoffGruppe?.[0]?.drivstoffKodeMiljodata?.kodeNavn || '', // Forvent at dette er en array
+                  power: power || 'Ukjent effekt',
+                  fuel: fuel || 'Ukjent drivstoff',
                 };
 
                 setFormData(updatedFormData);
