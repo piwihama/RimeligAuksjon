@@ -5,7 +5,7 @@ import './BilForm.css'; // Bruk samme CSS eller opprett en for MC
 import Header from './Header';
 import Footer from './Footer';
 
-const Step1MC = ({ formData, setFormData, nextStep }) => {
+const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
   // Sørg for at formData har initialisert regNumber
   const initialFormData = {
     regNumber: formData.regNumber || '', // Initialiser regNumber
