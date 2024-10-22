@@ -51,6 +51,7 @@ function App() {
         
         <Route path="/nyauksjon" element={<PrivateRoute><NewAuction /></PrivateRoute>} />
         <Route path="/bilform" element={<PrivateRoute><MultiStepForm /></PrivateRoute>} />
+        <Route path="/mcform" element={<PrivateRoute><Step1MC /></PrivateRoute>} />
         <Route path="/auctions" element={<AuctionList />} />
         <Route path="/auction/:id" element={<AuctionDetail />} />
         <Route path="/liveauctions/:id" element={<PostedAuction />} /> {/* New Route */}

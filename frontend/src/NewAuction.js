@@ -23,9 +23,10 @@ function NewAuction() {
         <Link to="/båt" className="category-button">
           Båt
         </Link>
-        <Link to="/mc" className="category-button">
-          MC
-        </Link>
+        <Link to="/mcform" className="category-button">
+  MC
+</Link>
+
         <Link to="/torg" className="category-button">
           Torg
         </Link>
