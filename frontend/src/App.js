@@ -23,6 +23,7 @@ import ResetPassword from './ResetPassword';
 import { isAuthenticated } from './auth';
 import SearchResults from './SearchResults';
 import InfoPage from './InfoPage';
+import Step1MC from './Step1MC';
 
 const PrivateRoute = ({ children }) => {
   return isAuthenticated() ? children : <Navigate to="/" />;
