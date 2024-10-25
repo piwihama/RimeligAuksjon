@@ -177,7 +177,7 @@ body {
       display: flex;
       align-items: center;
       flex-grow: 1; /* Ensures the search container fills available space */
-      margin-left: 10px; /* Add space between the logo and the search */
+      margin-left: 6px; /* Add space between the logo and the search */
     }
   
     .search-input {
