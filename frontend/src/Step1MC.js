@@ -58,7 +58,7 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
                 console.log('MC Info:', mcInfo);
                 console.log('Tekniske Data:', tekniskeData);
 
-                // Trekk ut verdier
+                // Trekk ut verdier med tryggere sjekk for arrays
                 const brand = tekniskeData.generelt?.merke?.[0] || tekniskeData.generelt?.merke || '';
                 const model = tekniskeData.generelt?.handelsbetegnelse?.[0] || tekniskeData.generelt?.handelsbetegnelse || '';
                 const power = tekniskeData.motorOgDrivverk?.motor?.[0]?.maksNettoEffekt || '';
