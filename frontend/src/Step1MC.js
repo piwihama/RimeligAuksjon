@@ -20,7 +20,7 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
     gearType: formData.gearType || '',
     driveType: formData.driveType || '',
     firstRegistration: formData.firstRegistration || '',
-    ...formData, // Resten av dataene for å sikre at vi ikke mister noen andre felter
+    ...formData,
   };
 
   const validationSchema = Yup.object({
@@ -58,7 +58,7 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
                 console.log('MC Info:', mcInfo);
                 console.log('Tekniske Data:', tekniskeData);
 
-                // Trekk ut verdier på en måte som ikke prøver å kalle noen funksjoner
+                // Trekk ut verdier
                 const brand = tekniskeData.generelt?.merke?.[0] || tekniskeData.generelt?.merke || '';
                 const model = tekniskeData.generelt?.handelsbetegnelse?.[0] || tekniskeData.generelt?.handelsbetegnelse || '';
                 const power = tekniskeData.motorOgDrivverk?.motor?.[0]?.maksNettoEffekt || '';
