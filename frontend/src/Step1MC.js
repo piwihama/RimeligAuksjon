@@ -84,6 +84,9 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
                   firstRegistration,
                 };
 
+                // Logg den oppdaterte dataen før vi setter den
+                console.log('Updated Form Data:', updatedFormData);
+
                 setFormData(updatedFormData);
                 nextStep();
               } else {
