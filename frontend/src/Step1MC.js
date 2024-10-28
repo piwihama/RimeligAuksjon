@@ -7,8 +7,20 @@ import Footer from './Footer';
 
 const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
   const initialFormData = {
-    regNumber: formData.regNumber || '', // Initialiser regNumber
-    ...formData, // Resten av dataene
+    regNumber: formData.regNumber || '',
+    brand: formData.brand || '',
+    model: formData.model || '',
+    year: formData.year || '',
+    chassisNumber: formData.chassisNumber || '',
+    power: formData.power || '',
+    fuel: formData.fuel || '',
+    weight: formData.weight || '',
+    seats: formData.seats || '',
+    co2: formData.co2 || '',
+    gearType: formData.gearType || '',
+    driveType: formData.driveType || '',
+    firstRegistration: formData.firstRegistration || '',
+    ...formData, // Resten av dataene for å sikre at vi ikke mister noen andre felter
   };
 
   const validationSchema = Yup.object({
@@ -30,7 +42,6 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
 
             try {
               const response = await fetch(`https://proxyservervegvesen.onrender.com/vehicle-data/${values.regNumber}`);
-
               const contentType = response.headers.get('content-type');
               if (contentType && contentType.indexOf('application/json') !== -1) {
                 const mcData = await response.json();
@@ -47,13 +58,16 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
                 console.log('MC Info:', mcInfo);
                 console.log('Tekniske Data:', tekniskeData);
 
-                // Valider at dataene er riktig og at ingen verdier brukes feil som funksjoner
-                const brand = tekniskeData.generelt?.merke?.[0] || '';
-                const model = tekniskeData.generelt?.handelsbetegnelse?.[0] || '';
+                // Trekk ut verdier på en måte som ikke prøver å kalle noen funksjoner
+                const brand = tekniskeData.generelt?.merke?.[0] || tekniskeData.generelt?.merke || '';
+                const model = tekniskeData.generelt?.handelsbetegnelse?.[0] || tekniskeData.generelt?.handelsbetegnelse || '';
                 const power = tekniskeData.motorOgDrivverk?.motor?.[0]?.maksNettoEffekt || '';
                 const fuel = tekniskeData.miljodata?.miljoOgDrivstoffGruppe?.[0]?.drivstoffKodeMiljodata?.kodeNavn || '';
+                const weight = tekniskeData.vekter?.egenvekt || '';
+                const seats = tekniskeData.persontall?.sitteplasserTotalt || '';
+                const firstRegistration = mcInfo.forstegangsregistrering?.registrertForstegangNorgeDato || '';
 
-                // Logg verdiene for å sikre at de ikke er funksjoner
+                // Logg verdiene for å bekrefte at de er riktig hentet ut
                 console.log('Brand:', brand, 'Model:', model, 'Power:', power, 'Fuel:', fuel);
 
                 const updatedFormData = {
@@ -65,6 +79,9 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
                   chassisNumber: mcInfo.kjoretoyId?.understellsnummer || '',
                   power,
                   fuel,
+                  weight,
+                  seats,
+                  firstRegistration,
                 };
 
                 setFormData(updatedFormData);
