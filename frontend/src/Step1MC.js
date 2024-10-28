@@ -59,10 +59,18 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
                 console.log('Tekniske Data:', tekniskeData);
           
                 // Trekk ut verdier med tryggere sjekk for arrays
-                const brand = tekniskeData.generelt?.merke?.[0] || tekniskeData.generelt?.merke || '';
-                const model = tekniskeData.generelt?.handelsbetegnelse?.[0] || tekniskeData.generelt?.handelsbetegnelse || '';
-                const power = tekniskeData.motorOgDrivverk?.motor?.[0]?.maksNettoEffekt || '';
-                const fuel = tekniskeData.miljodata?.miljoOgDrivstoffGruppe?.[0]?.drivstoffKodeMiljodata?.kodeNavn || '';
+                const brand = Array.isArray(tekniskeData.generelt?.merke) && tekniskeData.generelt.merke.length > 0
+                  ? tekniskeData.generelt.merke[0]?.merke || ''
+                  : tekniskeData.generelt?.merke || '';
+                const model = Array.isArray(tekniskeData.generelt?.handelsbetegnelse) && tekniskeData.generelt.handelsbetegnelse.length > 0
+                  ? tekniskeData.generelt.handelsbetegnelse[0] || ''
+                  : tekniskeData.generelt?.handelsbetegnelse || '';
+                const power = Array.isArray(tekniskeData.motorOgDrivverk?.motor) && tekniskeData.motorOgDrivverk.motor.length > 0
+                  ? tekniskeData.motorOgDrivverk.motor[0]?.maksNettoEffekt || ''
+                  : '';
+                const fuel = Array.isArray(tekniskeData.miljodata?.miljoOgDrivstoffGruppe) && tekniskeData.miljodata.miljoOgDrivstoffGruppe.length > 0
+                  ? tekniskeData.miljodata.miljoOgDrivstoffGruppe[0]?.drivstoffKodeMiljodata?.kodeNavn || ''
+                  : '';
                 const weight = tekniskeData.vekter?.egenvekt || '';
                 const seats = tekniskeData.persontall?.sitteplasserTotalt || '';
                 const firstRegistration = mcInfo.forstegangsregistrering?.registrertForstegangNorgeDato || '';
@@ -86,10 +94,7 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
                 console.log('Updated Form Data:', updatedFormData);
           
                 setFormData(updatedFormData);
-          
-                console.log('Calling nextStep...');
                 nextStep();
-                console.log('nextStep called successfully.');
               } else {
                 const textData = await response.text();
                 console.error('Unexpected content type:', contentType);
@@ -99,7 +104,6 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
               console.error('Error fetching MC data:', error);
             }
           }}
-          
         >
           {() => (
             <Form className="bil-form">
