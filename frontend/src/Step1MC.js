@@ -39,25 +39,25 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
               console.error('Ingen registreringsnummer oppgitt');
               return;
             }
-
+          
             try {
               const response = await fetch(`https://proxyservervegvesen.onrender.com/vehicle-data/${values.regNumber}`);
               const contentType = response.headers.get('content-type');
               if (contentType && contentType.includes('application/json')) {
                 const mcData = await response.json();
                 console.log('API response:', mcData);
-
+          
                 if (!mcData.kjoretoydataListe || mcData.kjoretoydataListe.length === 0) {
                   console.error('MC data ikke funnet for dette registreringsnummeret');
                   return;
                 }
-
+          
                 const mcInfo = mcData.kjoretoydataListe[0] || {};
                 const tekniskeData = mcInfo.godkjenning?.tekniskGodkjenning?.tekniskeData || {};
-
+          
                 console.log('MC Info:', mcInfo);
                 console.log('Tekniske Data:', tekniskeData);
-
+          
                 // Trekk ut verdier med tryggere sjekk for arrays
                 const brand = tekniskeData.generelt?.merke?.[0] || tekniskeData.generelt?.merke || '';
                 const model = tekniskeData.generelt?.handelsbetegnelse?.[0] || tekniskeData.generelt?.handelsbetegnelse || '';
@@ -66,10 +66,9 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
                 const weight = tekniskeData.vekter?.egenvekt || '';
                 const seats = tekniskeData.persontall?.sitteplasserTotalt || '';
                 const firstRegistration = mcInfo.forstegangsregistrering?.registrertForstegangNorgeDato || '';
-
-                // Logg verdiene for å bekrefte at de er riktig hentet ut
+          
                 console.log('Brand:', brand, 'Model:', model, 'Power:', power, 'Fuel:', fuel);
-
+          
                 const updatedFormData = {
                   ...formData,
                   ...values,
@@ -83,12 +82,14 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
                   seats,
                   firstRegistration,
                 };
-
-                // Logg den oppdaterte dataen før vi setter den
+          
                 console.log('Updated Form Data:', updatedFormData);
-
+          
                 setFormData(updatedFormData);
+          
+                console.log('Calling nextStep...');
                 nextStep();
+                console.log('nextStep called successfully.');
               } else {
                 const textData = await response.text();
                 console.error('Unexpected content type:', contentType);
@@ -98,6 +99,7 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
               console.error('Error fetching MC data:', error);
             }
           }}
+          
         >
           {() => (
             <Form className="bil-form">
