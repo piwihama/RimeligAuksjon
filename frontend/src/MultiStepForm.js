@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Step1 from './Step1';
+import Step1MC from './Step1MC'; // Bruk Step1MC her
 import Step2 from './Step2';
 import Step3 from './Step3';
 import Step4 from './Step4';
@@ -10,11 +10,24 @@ const AuctionForm = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     // Step 1 fields
-
+    regNumber: '',
+    brand: '',
+    model: '',
+    year: '',
+    chassisNumber: '',
+    power: '',
+    fuel: '',
+    weight: '',
+    seats: '',
+    co2: '',
+    gearType: '',
+    driveType: '',
+    firstRegistration: '',
 
     // Step 4 fields
     description: '',
     images: [],
+
     // Step 5 fields
     auctionDuration: '',
     reservePrice: '',
@@ -51,19 +64,65 @@ const AuctionForm = () => {
 
   switch (step) {
     case 1:
-      return <Step1 nextStep={nextStep} formData={formData} setFormData={setFormData} />;
+      return (
+        <Step1MC 
+          nextStep={nextStep} 
+          formData={formData} 
+          setFormData={setFormData} 
+        />
+      );
     case 2:
-      return <Step2 nextStep={nextStep} prevStep={prevStep} formData={formData} setFormData={setFormData} />;
+      return (
+        <Step2 
+          nextStep={nextStep} 
+          prevStep={prevStep} 
+          formData={formData} 
+          setFormData={setFormData} 
+        />
+      );
     case 3:
-      return <Step3 nextStep={nextStep} prevStep={prevStep} formData={formData} setFormData={setFormData} />;
+      return (
+        <Step3 
+          nextStep={nextStep} 
+          prevStep={prevStep} 
+          formData={formData} 
+          setFormData={setFormData} 
+        />
+      );
     case 4:
-      return <Step4 nextStep={nextStep} prevStep={prevStep} formData={formData} setFormData={setFormData} />;
+      return (
+        <Step4 
+          nextStep={nextStep} 
+          prevStep={prevStep} 
+          formData={formData} 
+          setFormData={setFormData} 
+        />
+      );
     case 5:
-      return <Step5 nextStep={nextStep} prevStep={prevStep} formData={formData} setFormData={setFormData} />;
+      return (
+        <Step5 
+          nextStep={nextStep} 
+          prevStep={prevStep} 
+          formData={formData} 
+          setFormData={setFormData} 
+        />
+      );
     case 6:
-      return <Summary prevStep={prevStep} formData={formData} submitForm={submitForm} />;
+      return (
+        <Summary 
+          prevStep={prevStep} 
+          formData={formData} 
+          submitForm={submitForm} 
+        />
+      );
     default:
-      return <Step1 nextStep={nextStep} formData={formData} setFormData={setFormData} />;
+      return (
+        <Step1MC 
+          nextStep={nextStep} 
+          formData={formData} 
+          setFormData={setFormData} 
+        />
+      );
   }
 };
 
