@@ -43,7 +43,7 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
             try {
               const response = await fetch(`https://proxyservervegvesen.onrender.com/vehicle-data/${values.regNumber}`);
               const contentType = response.headers.get('content-type');
-              if (contentType && contentType.indexOf('application/json') !== -1) {
+              if (contentType && contentType.includes('application/json')) {
                 const mcData = await response.json();
                 console.log('API response:', mcData);
 
