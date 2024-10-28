@@ -34,26 +34,28 @@ const Step1MC = ({ formData = {}, setFormData, nextStep }) => {
               const contentType = response.headers.get('content-type');
               if (contentType && contentType.indexOf('application/json') !== -1) {
                 const mcData = await response.json();
-                console.log('API response:', mcData); // Log hele API-responsen for debugging
+                console.log('API response:', mcData);
 
                 if (!mcData.kjoretoydataListe || mcData.kjoretoydataListe.length === 0) {
                   console.error('MC data ikke funnet for dette registreringsnummeret');
                   return;
                 }
 
-                const mcInfo = mcData.kjoretoydataListe[0] || {}; // Hvis første element ikke finnes, sett tomt objekt
+                const mcInfo = mcData.kjoretoydataListe[0] || {};
                 const tekniskeData = mcInfo.godkjenning?.tekniskGodkjenning?.tekniskeData || {};
 
-                console.log('MC Info:', mcInfo); // Logg MC-info for å se hva du får fra API-et
-                console.log('Tekniske Data:', tekniskeData); // Logg tekniske data
+                console.log('MC Info:', mcInfo);
+                console.log('Tekniske Data:', tekniskeData);
 
-                // Sjekk om feltene eksisterer og sett dem til tomme strenger hvis de mangler
+                // Valider at dataene er riktig og at ingen verdier brukes feil som funksjoner
                 const brand = tekniskeData.generelt?.merke?.[0] || '';
                 const model = tekniskeData.generelt?.handelsbetegnelse?.[0] || '';
                 const power = tekniskeData.motorOgDrivverk?.motor?.[0]?.maksNettoEffekt || '';
                 const fuel = tekniskeData.miljodata?.miljoOgDrivstoffGruppe?.[0]?.drivstoffKodeMiljodata?.kodeNavn || '';
 
-                // Oppdater formData med MC-spesifikke verdier
+                // Logg verdiene for å sikre at de ikke er funksjoner
+                console.log('Brand:', brand, 'Model:', model, 'Power:', power, 'Fuel:', fuel);
+
                 const updatedFormData = {
                   ...formData,
                   ...values,
