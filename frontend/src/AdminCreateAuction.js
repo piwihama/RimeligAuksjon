@@ -13,6 +13,7 @@ const AdminCreateAuction = () => {
   });
   const navigate = useNavigate();
 
+  
   const handleChange = (e) => {
     setAuctionData({
       ...auctionData,
