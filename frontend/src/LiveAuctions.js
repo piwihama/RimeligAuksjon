@@ -375,8 +375,8 @@ function LiveAuctions() {
                   </div>
                 ))}
               </div>
-              <button onClick={fetchLiveAuctions} className="live-btn live-btn-primary">Filtrer</button>
-            </form>
+              <button onClick={debouncedFetchLiveAuctions} className="live-btn live-btn-primary">Filtrer</button>
+              </form>
             </aside>
           <section className="auctions-section">
             <div className="sort-options">
