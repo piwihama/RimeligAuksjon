@@ -40,7 +40,7 @@ function LiveAuctions() {
     // Oppdaterer filters objektet med category fra URL hvis den finnes
     setFilters((prevFilters) => ({ ...prevFilters, category: category || '' }));
     debouncedFetchLiveAuctions();
-  }, [category, page, sortOption]); // Kjør på nytt ved endring i kategori, side eller sortering
+  }, [category, page, sortOption]);
 
   useEffect(() => {
     fetchFilterCounts();
@@ -49,27 +49,28 @@ function LiveAuctions() {
   const debouncedFetchLiveAuctions = debounce(async () => {
     setLoading(true);
 
-    // Kontroller om category er satt i filteret
-    const categoryParam = filters.category || category || ''; // Bruk enten filters.category eller fra URL (category)
-
     try {
       const queryParams = { 
         page, 
         limit: 10,
-        category: categoryParam
       };
+
+      // Legg kun til category hvis det faktisk har en verdi
+      if (filters.category) {
+        queryParams.category = filters.category;
+      }
 
       for (const key in filters) {
         if (Array.isArray(filters[key])) {
           if (filters[key].length > 0) {
             queryParams[key] = filters[key].join(',');
           }
-        } else if (filters[key]) {
+        } else if (filters[key] && key !== "category") { // Skipper `category` fordi den allerede er sjekket
           queryParams[key] = filters[key];
         }
       }
 
-      console.log('Sending request to URL with queryParams:', queryParams); // Logging av queryParams
+      console.log('Sending request to URL with queryParams:', queryParams);
 
       const headers = {};
       const token = localStorage.getItem('accessToken');
