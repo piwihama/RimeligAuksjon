@@ -5,7 +5,7 @@ import LoginModal from './LoginModal';
 import { isAuthenticated } from './auth';
 import { Helmet } from 'react-helmet';
 
-function Header({ onCategoryChange }) {  // Ny prop for å håndtere kategori
+function Header({ onCategoryChange }) {  // Pass onCategoryChange as a prop
   const [modalOpen, setModalOpen] = useState(false);
   const [modalPurpose, setModalPurpose] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,18 +13,14 @@ function Header({ onCategoryChange }) {  // Ny prop for å håndtere kategori
 
   const navigate = useNavigate();
 
-  // Effekt som oppdaterer logg inn status når komponenten først monteres
   useEffect(() => {
     const loggedInStatus = isAuthenticated();
-    console.log('Initial User authenticated:', loggedInStatus);
     setLoggedIn(loggedInStatus);
   }, []);
 
-  // Effekt som oppdaterer logg inn status hver gang token endrer seg
   useEffect(() => {
     const handleStorageChange = () => {
       const isUserLoggedIn = isAuthenticated();
-      console.log('Token changed, updating login status:', isUserLoggedIn);
       setLoggedIn(isUserLoggedIn);
     };
 
@@ -58,7 +54,9 @@ function Header({ onCategoryChange }) {  // Ny prop for å håndtere kategori
   };
 
   const handleCategoryClick = (category) => {
-    onCategoryChange(category); // Oppdater kategorien basert på menyvalg
+    if (onCategoryChange) {
+      onCategoryChange(category);  // Call the prop function with the selected category
+    }
     navigate(`/kategori/${category}`);
     scrollToTop();
   };
