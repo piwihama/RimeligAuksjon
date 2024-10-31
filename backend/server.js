@@ -609,6 +609,10 @@ async function connectDB() {
         console.log('Received filter parameters:', req.query);
     
         const query = {};
+
+  if (category) {
+    query.category = category;
+  }
     
         // Construct the query with additional logging
         if (brand) {

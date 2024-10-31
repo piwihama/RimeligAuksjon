@@ -45,12 +45,14 @@ function LiveAuctions() {
     fetchFilterCounts();
   }, []);
 
-  // Debounce fetchLiveAuctions to prevent rapid calls
   const debouncedFetchLiveAuctions = debounce(async () => {
     setLoading(true);
     try {
-      const queryParams = { page, limit: 10 };
-
+      const queryParams = { 
+        page, 
+        limit: 10,
+        category: filters.category || category // Legg til kategori her
+      };
       for (const key in filters) {
         if (Array.isArray(filters[key])) {
           if (filters[key].length > 0) {
