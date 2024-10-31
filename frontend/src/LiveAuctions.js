@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Header from './Header';
 import './LiveAuctions.css';
 import Footer from './Footer';
+import debounce from 'lodash.debounce';
 
 function LiveAuctions() {
+  const { category } = useParams(); // Hent kategori fra URL
   const [liveAuctions, setLiveAuctions] = useState([]);
   const [timeLeftMap, setTimeLeftMap] = useState({});
   const [filterCounts, setFilterCounts] = useState({});
   const [filters, setFilters] = useState({
-    category: '',  // Nytt felt for kategori-filter
+    category: category || '',  // Sett kategori-filteret fra URL hvis det finnes
     brand: [],
     model: '',
     year: '',
@@ -35,18 +37,16 @@ function LiveAuctions() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchLiveAuctions();
-    const interval = setInterval(() => {
-      updateAllTimeLeft();
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [filters, page, sortOption]);
+    setFilters((prevFilters) => ({ ...prevFilters, category }));
+    debouncedFetchLiveAuctions();
+  }, [category, page, sortOption]); // Begrens til kun nødvendige dependents
 
   useEffect(() => {
     fetchFilterCounts();
   }, []);
 
-  const fetchLiveAuctions = async () => {
+  // Debounce fetchLiveAuctions to prevent rapid calls
+  const debouncedFetchLiveAuctions = debounce(async () => {
     setLoading(true);
     try {
       const queryParams = { page, limit: 10 };
@@ -72,8 +72,7 @@ function LiveAuctions() {
         headers: headers
       });
 
-      let sortedAuctions = response.data;
-      sortedAuctions = sortAuctions(sortedAuctions, sortOption);
+      let sortedAuctions = sortAuctions(response.data, sortOption);
 
       setLiveAuctions(prevAuctions => [...prevAuctions, ...sortedAuctions]);
       setHasMore(response.data.length > 0);
@@ -89,7 +88,7 @@ function LiveAuctions() {
       setError('Kunne ikke hente live auksjoner. Prøv igjen senere.');
     }
     setLoading(false);
-  };
+  }, 500); // 500ms debounce
 
   const fetchFilterCounts = async () => {
     try {
@@ -153,12 +152,6 @@ function LiveAuctions() {
       ...filters,
       [name]: type === 'checkbox' ? checked : newValue
     });
-    setPage(1);
-    setLiveAuctions([]);
-  };
-
-  const handleCategoryChange = (category) => {
-    setFilters((prevFilters) => ({ ...prevFilters, category }));
     setPage(1);
     setLiveAuctions([]);
   };
