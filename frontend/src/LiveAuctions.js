@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Header from './Header';
 import './LiveAuctions.css';
 import Footer from './Footer';
 
 function LiveAuctions() {
-  const { category } = useParams(); // Hent kategori fra URL
   const [liveAuctions, setLiveAuctions] = useState([]);
   const [timeLeftMap, setTimeLeftMap] = useState({});
   const [filterCounts, setFilterCounts] = useState({});
   const [filters, setFilters] = useState({
-    category: category || '',  // Sett kategori-filteret fra URL hvis det finnes
+    category: '',  // Nytt felt for kategori-filter
     brand: [],
     model: '',
     year: '',
@@ -36,13 +35,12 @@ function LiveAuctions() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setFilters((prevFilters) => ({ ...prevFilters, category }));
     fetchLiveAuctions();
     const interval = setInterval(() => {
       updateAllTimeLeft();
     }, 1000);
     return () => clearInterval(interval);
-  }, [filters, page, sortOption, category]); // Kjør på nytt når kategori endres
+  }, [filters, page, sortOption]);
 
   useEffect(() => {
     fetchFilterCounts();
@@ -155,6 +153,12 @@ function LiveAuctions() {
       ...filters,
       [name]: type === 'checkbox' ? checked : newValue
     });
+    setPage(1);
+    setLiveAuctions([]);
+  };
+
+  const handleCategoryChange = (category) => {
+    setFilters((prevFilters) => ({ ...prevFilters, category }));
     setPage(1);
     setLiveAuctions([]);
   };
