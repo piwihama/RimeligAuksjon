@@ -58,6 +58,7 @@ function CreateLiveAuction() {
     seller: '',
     businessSale: false,
     vat: '',
+    category: '', // Nytt kategori-felt lagt til i formData
   });
 
   useEffect(() => {
@@ -66,10 +67,9 @@ function CreateLiveAuction() {
         const response = await axios.get(`https://rimelig-auksjon-backend.vercel.app/api/auctions/${id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
         });
-        
+
         const auctionData = response.data;
 
-        // Valider datoene før vi setter dem i state
         const isValidDate = (date) => {
           return date && !isNaN(new Date(date));
         };
@@ -124,7 +124,8 @@ function CreateLiveAuction() {
           extensionAfterLastBid: auctionData.extensionAfterLastBid || '',
           seller: auctionData.seller || '',
           businessSale: auctionData.businessSale || false,
-          vat: auctionData.vat || ''
+          vat: auctionData.vat || '',
+          category: auctionData.category || '', // Sett kategori basert på eksisterende data eller default til tom
         });
       } catch (error) {
         console.error('Error fetching auction:', error);
@@ -137,9 +138,6 @@ function CreateLiveAuction() {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
-  // Resten av koden din fortsetter uendret...
-
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -181,15 +179,30 @@ function CreateLiveAuction() {
       alert('Failed to create live auction');
     }
   };
-
   
-
   return (
     <div className="create-live-auction-container">
       <div className="create-live-auction">
         <h1>Create Live Auction</h1>
         <form onSubmit={handleSubmit}>
-          {/* Existing fields */}
+          {/* Eksisterende felt */}
+
+          <div className="form-group">
+            <label htmlFor="category">Kategori</label>
+            <select
+              id="category"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Velg en kategori</option>
+              <option value="bil">Bil</option>
+              <option value="båt">Båt</option>
+              <option value="mc">MC</option>
+              <option value="torg">Torg</option>
+            </select>
+          </div>
           <div className="form-group">
             <label htmlFor="brand">Merke</label>
             <input type="text" id="brand" name="brand" value={formData.brand} onChange={handleChange} />
