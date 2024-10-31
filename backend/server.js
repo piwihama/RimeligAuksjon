@@ -728,8 +728,10 @@ async function connectDB() {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
+        const category = req.query.category;  // Hent kategori fra forespørselsparametere
     
-        const cacheKey = `allLiveAuctions-page-${page}-limit-${limit}`;
+        // Bygg cache-nøkkel som inkluderer kategori
+        const cacheKey = `allLiveAuctions-${category || 'all'}-page-${page}-limit-${limit}`;
         let liveAuctions;
     
         try {
@@ -745,12 +747,15 @@ async function connectDB() {
     
         if (!liveAuctions) {
           console.log(`Cache miss. Fetching from database.`);
-          liveAuctions = await liveAuctionCollection.find({})
+          
+          // Bygg query basert på kategori
+          const query = category ? { category } : {};
+    
+          liveAuctions = await liveAuctionCollection.find(query)
             .project({
               brand: 1,
               model: 1,
-              mileage: 1, // Legg til mileage her
-
+              mileage: 1,
               year: 1,
               endDate: 1,
               highestBid: 1,
@@ -783,6 +788,7 @@ async function connectDB() {
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
     
 
     app.post('/api/liveauctions', authenticateToken, async (req, res) => {
