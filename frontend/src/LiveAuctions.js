@@ -12,7 +12,6 @@ function LiveAuctions() {
   const [timeLeftMap, setTimeLeftMap] = useState({});
   const [filterCounts, setFilterCounts] = useState({});
   const [filters, setFilters] = useState({
-    category: category || '',  // Sett kategori-filteret fra URL hvis det finnes
     brand: [],
     model: '',
     year: '',
@@ -37,7 +36,7 @@ function LiveAuctions() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Oppdaterer filters objektet med category fra URL hvis den finnes
+    // Oppdater filters-tilstanden for å inkludere category fra URL
     setFilters((prevFilters) => ({ ...prevFilters, category: category || '' }));
     debouncedFetchLiveAuctions();
   }, [category, page, sortOption]);
@@ -55,9 +54,9 @@ function LiveAuctions() {
         limit: 10,
       };
 
-      // Legg kun til category hvis det faktisk har en verdi
-      if (filters.category) {
-        queryParams.category = filters.category;
+      // Legg til category kun hvis den finnes
+      if (category) {
+        queryParams.category = category;
       }
 
       for (const key in filters) {
@@ -65,7 +64,7 @@ function LiveAuctions() {
           if (filters[key].length > 0) {
             queryParams[key] = filters[key].join(',');
           }
-        } else if (filters[key] && key !== "category") { // Skipper `category` fordi den allerede er sjekket
+        } else if (filters[key] && key !== "category") { // Skipper `category` fordi den allerede er satt
           queryParams[key] = filters[key];
         }
       }
