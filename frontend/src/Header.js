@@ -5,7 +5,7 @@ import LoginModal from './LoginModal';
 import { isAuthenticated } from './auth';
 import { Helmet } from 'react-helmet';
 
-function Header() {
+function Header({ onCategoryChange }) {  // Ny prop for å håndtere kategori
   const [modalOpen, setModalOpen] = useState(false);
   const [modalPurpose, setModalPurpose] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,7 +16,7 @@ function Header() {
   // Effekt som oppdaterer logg inn status når komponenten først monteres
   useEffect(() => {
     const loggedInStatus = isAuthenticated();
-    console.log('Initial User authenticated:', loggedInStatus); // For debugging
+    console.log('Initial User authenticated:', loggedInStatus);
     setLoggedIn(loggedInStatus);
   }, []);
 
@@ -24,13 +24,12 @@ function Header() {
   useEffect(() => {
     const handleStorageChange = () => {
       const isUserLoggedIn = isAuthenticated();
-      console.log('Token changed, updating login status:', isUserLoggedIn); // For debugging
+      console.log('Token changed, updating login status:', isUserLoggedIn);
       setLoggedIn(isUserLoggedIn);
     };
 
     window.addEventListener('storage', handleStorageChange);
 
-    // Cleanup listener når komponenten fjernes
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
@@ -56,6 +55,12 @@ function Header() {
       navigate(`/search?q=${searchTerm}`);
       scrollToTop();
     }
+  };
+
+  const handleCategoryClick = (category) => {
+    onCategoryChange(category); // Oppdater kategorien basert på menyvalg
+    navigate(`/kategori/${category}`);
+    scrollToTop();
   };
 
   return (
@@ -108,19 +113,19 @@ function Header() {
         </div>
 
         <nav className="menu">
-  <Link to="/kategori/bil" className="menu-button">
-    <i className="material-icons">directions_car</i>Bil
-  </Link>
-  <Link to="/kategori/båt" className="menu-button">
-    <i className="material-icons">directions_boat</i>Båt
-  </Link>
-  <Link to="/kategori/mc" className="menu-button">
-    <i className="material-icons">two_wheeler</i>MC
-  </Link>
-  <Link to="/kategori/torg" className="menu-button">
-    <i className="material-icons">store</i>Torg
-  </Link>
-</nav>
+          <button onClick={() => handleCategoryClick('bil')} className="menu-button">
+            <i className="material-icons">directions_car</i>Bil
+          </button>
+          <button onClick={() => handleCategoryClick('båt')} className="menu-button">
+            <i className="material-icons">directions_boat</i>Båt
+          </button>
+          <button onClick={() => handleCategoryClick('mc')} className="menu-button">
+            <i className="material-icons">two_wheeler</i>MC
+          </button>
+          <button onClick={() => handleCategoryClick('torg')} className="menu-button">
+            <i className="material-icons">store</i>Torg
+          </button>
+        </nav>
 
         <LoginModal isOpen={modalOpen} onRequestClose={() => setModalOpen(false)} purpose={modalPurpose} />
       </header>

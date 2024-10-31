@@ -10,6 +10,7 @@ function LiveAuctions() {
   const [timeLeftMap, setTimeLeftMap] = useState({});
   const [filterCounts, setFilterCounts] = useState({});
   const [filters, setFilters] = useState({
+    category: '',  // Nytt felt for kategori-filter
     brand: [],
     model: '',
     year: '',
@@ -27,9 +28,9 @@ function LiveAuctions() {
   const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(true); // Start med å sette loading til true
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [sortOption, setSortOption] = useState('avsluttes-forst'); // Ny state for sortering
+  const [sortOption, setSortOption] = useState('avsluttes-forst');
 
   const navigate = useNavigate();
 
@@ -46,7 +47,7 @@ function LiveAuctions() {
   }, []);
 
   const fetchLiveAuctions = async () => {
-    setLoading(true); // Start lasting
+    setLoading(true);
     try {
       const queryParams = { page, limit: 10 };
 
@@ -61,7 +62,7 @@ function LiveAuctions() {
       }
 
       const headers = {};
-      const token = localStorage.getItem('accessToken'); // Bruker 'accessToken' for konsistens
+      const token = localStorage.getItem('accessToken');
       if (token) {
         headers.Authorization = `Bearer ${token}`;
       }
@@ -72,15 +73,12 @@ function LiveAuctions() {
       });
 
       let sortedAuctions = response.data;
-
-      // Sorter auksjonene basert på sortOption
       sortedAuctions = sortAuctions(sortedAuctions, sortOption);
 
       setLiveAuctions(prevAuctions => [...prevAuctions, ...sortedAuctions]);
       setHasMore(response.data.length > 0);
       setError(null);
 
-      // Oppdater tid for hver auksjon
       const newTimeLeftMap = {};
       response.data.forEach(auction => {
         newTimeLeftMap[auction._id] = calculateTimeLeft(auction.endDate);
@@ -90,7 +88,7 @@ function LiveAuctions() {
       console.error('Error fetching live auctions:', error);
       setError('Kunne ikke hente live auksjoner. Prøv igjen senere.');
     }
-    setLoading(false); // Stopp lasting
+    setLoading(false);
   };
 
   const fetchFilterCounts = async () => {
@@ -111,7 +109,7 @@ function LiveAuctions() {
       setError('Kunne ikke hente filtertellerne. Prøv igjen senere.');
     }
   };
-//mora di
+
   const sortAuctions = (auctions, option) => {
     switch (option) {
       case 'avsluttes-forst':
@@ -159,11 +157,17 @@ function LiveAuctions() {
     setLiveAuctions([]);
   };
 
+  const handleCategoryChange = (category) => {
+    setFilters((prevFilters) => ({ ...prevFilters, category }));
+    setPage(1);
+    setLiveAuctions([]);
+  };
+
   const loadMore = () => {
     if (hasMore && !loading) {
       setPage(prevPage => prevPage + 1);
     }
-  }; //Random heihei
+  };
 
   const calculateTimeLeft = (endDate) => {
     const difference = new Date(endDate) - new Date();
