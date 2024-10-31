@@ -789,22 +789,12 @@ async function connectDB() {
       try {
         const user = await loginCollection.findOne({ _id: new ObjectId(req.user.userId) });
     
-        // Sjekk at brukeren finnes
-        if (!user) {
-          return res.status(404).json({ message: 'User not found' });
-        }
-    
         const { startDate, endDate, ...auctionData } = req.body;
     
         // Sjekk at kategorien er gyldig
         const allowedCategories = ['bil', 'båt', 'mc', 'torg'];
         if (!allowedCategories.includes(auctionData.category)) {
           return res.status(400).json({ message: 'Invalid category' });
-        }
-    
-        // Sjekk at start- og sluttdatoer er gyldige
-        if (isNaN(new Date(startDate)) || isNaN(new Date(endDate))) {
-          return res.status(400).json({ message: 'Invalid date format for start or end date' });
         }
     
         const newLiveAuction = {
@@ -840,12 +830,6 @@ async function connectDB() {
         const allLiveAuctionsKeys = await redis.keys('allLiveAuctions-*');
         if (allLiveAuctionsKeys.length > 0) {
           await redis.del(allLiveAuctionsKeys);
-        }
-    
-        // Slett eventuelle filter-relaterte cache nøkler
-        const filterKeys = await redis.keys('liveAuctionsFilter-*');
-        if (filterKeys.length > 0) {
-          await redis.del(filterKeys);
         }
     
         // Send en suksessmelding tilbake til klienten
