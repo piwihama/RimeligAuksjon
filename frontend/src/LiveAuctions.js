@@ -37,24 +37,26 @@ function LiveAuctions() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setFilters((prevFilters) => ({ ...prevFilters, category }));
+    // Oppdaterer filters objektet med category fra URL hvis den finnes
+    setFilters((prevFilters) => ({ ...prevFilters, category: category || '' }));
     debouncedFetchLiveAuctions();
-  }, [category, page, sortOption]);
+  }, [category, page, sortOption]); // Kjør på nytt ved endring i kategori, side eller sortering
 
   useEffect(() => {
     fetchFilterCounts();
   }, []);
 
-  // Debounce fetchLiveAuctions to prevent rapid calls
   const debouncedFetchLiveAuctions = debounce(async () => {
     setLoading(true);
-    console.log('Category filter:', filters.category);
+
+    // Kontroller om category er satt i filteret
+    const categoryParam = filters.category || category || ''; // Bruk enten filters.category eller fra URL (category)
 
     try {
       const queryParams = { 
         page, 
         limit: 10,
-        category: filters.category || category // Legg til kategori her
+        category: categoryParam
       };
 
       for (const key in filters) {
@@ -67,7 +69,7 @@ function LiveAuctions() {
         }
       }
 
-      console.log('Sending request to URL with queryParams:', queryParams); // Legger til logging av queryParams
+      console.log('Sending request to URL with queryParams:', queryParams); // Logging av queryParams
 
       const headers = {};
       const token = localStorage.getItem('accessToken');
@@ -202,7 +204,7 @@ function LiveAuctions() {
       return updatedTimeLeftMap;
     });
   };
-  
+
   return (
     <div>
       <Header />
