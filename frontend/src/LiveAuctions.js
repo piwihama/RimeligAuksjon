@@ -40,11 +40,7 @@ function LiveAuctions() {
     return () => clearInterval(interval);
   }, [filters, page, sortOption]);
 
-  useEffect(() => {
-    fetchFilterCounts();
-  }, []);
-
-  const fetchLiveAuctions = async () => {
+  const fetchLiveAuctions = useCallback(async () => {
     setLoading(true);
     try {
       const queryParams = { page, limit: 10, ...filters };
@@ -56,6 +52,7 @@ function LiveAuctions() {
         { params: queryParams, headers }
       );
 
+      console.log("Auksjoner hentet med nåværende filter:", response.data); // Logg de faktiske resultatene
       setLiveAuctions((prevAuctions) =>
         page === 1 ? response.data : [...prevAuctions, ...response.data]
       );
@@ -72,7 +69,11 @@ function LiveAuctions() {
       setError('Kunne ikke hente live auksjoner. Prøv igjen senere.');
     }
     setLoading(false);
-  };
+  }, [filters, page, sortOption]);
+
+  useEffect(() => {
+    fetchFilterCounts();
+  }, []);
 
   const fetchFilterCounts = async () => {
     try {
@@ -93,7 +94,6 @@ function LiveAuctions() {
     setFilters((prevFilters) => ({ ...prevFilters, category }));
     setPage(1);
     setLiveAuctions([]);
-    fetchLiveAuctions(); // Hent auksjoner direkte etter kategorivalg
   }, []);
 
   const sortAuctions = (auctions) => {
