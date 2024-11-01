@@ -512,12 +512,13 @@ async function connectDB() {
 
     app.get('/api/liveauctions/counts', async (req, res) => {
       try {
-        const cacheKey = 'liveAuctionsCounts';
+        const { category } = req.query; // Get the category from the request query
+        const cacheKey = `liveAuctionsCounts-${category || 'all'}`; // Include category in the cache key
         let counts = await redis.get(cacheKey);
-
+    
         if (!counts) {
           console.log('Cache miss. Calculating counts.');
-
+    
           counts = {
             karosseri: {},
             brand: {},
@@ -527,43 +528,48 @@ async function connectDB() {
             driveType: {},
             model: {}
           };
-
+    
           const karosserier = ['Stasjonsvogn', 'Cabriolet', 'Kombi 5-dørs', 'Flerbruksbil', 'Pickup', 'Kombi 3-dørs', 'Sedan', 'Coupe', 'SUV/Offroad', 'Kasse'];
           const brands = ['AUDI', 'BMW', 'BYD', 'CHEVROLET', 'CHRYSLER', 'CITROEN', 'DODGE', 'FERRARI', 'FIAT', 'FORD', 'HONDA', 'HYUNDAI', 'JAGUAR', 'JEEP', 'KIA', 'LAMBORGHINI', 'LAND ROVER', 'LEXUS', 'MASERATI', 'MAZDA', 'MERCEDES-BENZ', 'MINI', 'MITSUBISHI', 'NISSAN', 'OPEL', 'PEUGEOT', 'PORSCHE', 'RENAULT', 'ROLLS ROYCE', 'SAAB', 'SEAT', 'SKODA', 'SUBARU', 'SUZUKI', 'TESLA', 'TOYOTA', 'VOLKSWAGEN', 'VOLVO'];
           const locations = ['Akershus', 'Aust-Agder', 'Buskerud', 'Finnmark', 'Hedmark', 'Hordaland', 'Møre og Romsdal', 'Nordland', 'Nord-Trøndelag', 'Oppland', 'Oslo', 'Rogaland', 'Sogn og Fjordane', 'Sør-Trøndelag', 'Telemark', 'Troms', 'Vest-Agder', 'Vestfold', 'Østfold'];
           const fuelTypes = ['Bensin', 'Diesel', 'Elektrisitet', 'Hybrid'];
           const gearTypes = ['Automat', 'Manuell'];
           const driveTypes = ['Bakhjulstrekk', 'Firehjulstrekk', 'Framhjulstrekk'];
-
+    
           const calculateCounts = async (field, values) => {
             for (const value of values) {
-              counts[field][value] = await liveAuctionCollection.countDocuments({ [field]: value });
+              // Include category in the query if provided
+              const query = { [field]: value };
+              if (category) {
+                query.category = category;
+              }
+              counts[field][value] = await liveAuctionCollection.countDocuments(query);
             }
           };
-
+    
           await calculateCounts('karosseri', karosserier);
           await calculateCounts('brand', brands);
           await calculateCounts('location', locations);
           await calculateCounts('fuel', fuelTypes);
           await calculateCounts('gearType', gearTypes);
           await calculateCounts('driveType', driveTypes);
-
-          const models = await liveAuctionCollection.distinct('model');
+    
+          const models = await liveAuctionCollection.distinct('model', category ? { category } : {}); // Filter models by category if provided
           await calculateCounts('model', models);
-
+    
           await redis.set(cacheKey, JSON.stringify(counts), 'EX', 600);
         } else {
           console.log('Cache hit! Returning cached counts.');
           counts = JSON.parse(counts);
         }
-
+    
         res.json(counts);
       } catch (err) {
         console.error('Error fetching filter counts:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
-
+    
     app.put('/api/liveauctions/:id', authenticateToken, async (req, res) => {
       try {
         const liveAuctionId = req.params.id;
