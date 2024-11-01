@@ -132,7 +132,16 @@ function LiveAuctions() {
     setPage(1);
     setLiveAuctions([]);
   };
-
+  const handleFilterChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+    setPage(1);
+    setLiveAuctions([]);
+  };
+  
   const calculateTimeLeft = (endDate) => {
     const difference = new Date(endDate) - new Date();
     if (difference > 0) {
