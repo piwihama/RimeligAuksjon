@@ -44,6 +44,7 @@ function LiveAuctions() {
     const interval = setInterval(updateAllTimeLeft, 1000);
     return () => clearInterval(interval);
   }, [filters, page, sortOption]);
+  
 
   useEffect(() => {
     fetchFilterCounts();
