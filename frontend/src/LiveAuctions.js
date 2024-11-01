@@ -181,13 +181,11 @@ function LiveAuctions() {
   };
   return (
     <div>
-      <Header onCategorySelect={handleCategorySelect} /> {/* Pass handleCategorySelect to Header */}
+      <Header onCategorySelect={handleCategorySelect} />
       <div className='whole-container'>
         <div className="live-auctions-container">
-
           <aside className="filters-section">
-          <p className='kategoribiltitle'>Kategori / Bil</p>
-
+            <p className='kategoribiltitle'>Kategori / Bil</p>
             <h2>Filtrer auksjoner</h2>
             <button
               type="button"
@@ -196,8 +194,7 @@ function LiveAuctions() {
             >
               {showFilters ? 'Skjul filtre' : 'Vis søkefiltre'}
             </button>
-
-            <form onSubmit={(e) => e.preventDefault()} className={showFilters ? 'filters-form open' : 'filters-form'}>
+            <form className={showFilters ? 'filters-form open' : 'filters-form'}>
               <div className="filter-group">
                 <h3>Karosseri</h3>
                 {['Stasjonsvogn', 'Cabriolet', 'Kombi 5-dørs', 'Flerbruksbil', 'Pickup', 'Kombi 3-dørs', 'Sedan', 'Coupe', 'SUV/Offroad', 'Kasse'].map(type => (
@@ -360,8 +357,8 @@ function LiveAuctions() {
                 ))}
               </div>
               <button onClick={fetchLiveAuctions} className="live-btn live-btn-primary">Filtrer</button>
-            </form>
-            </aside>
+              </form>
+          </aside>
           <section className="auctions-section">
             <div className="sort-options">
               <label htmlFor="sort">Sorter etter:</label>
