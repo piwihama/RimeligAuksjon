@@ -145,6 +145,7 @@ function LiveAuctions() {
       return { ...prevFilters, [name]: newValues };
     });
     setPage(1);
+    fetchLiveAuctions(); // Trigger fetch immediately after updating filter
   };
 
   const handleFilterChange = (e) => {
@@ -154,6 +155,7 @@ function LiveAuctions() {
       [name]: type === 'checkbox' ? checked : value,
     }));
     setPage(1);
+    fetchLiveAuctions(); // Trigger fetch immediately after updating filter
   };
 
   const calculateTimeLeft = (endDate) => {
@@ -211,6 +213,7 @@ function LiveAuctions() {
                   </div>
                 ))}
               </div>
+              {/* Other filter groups like Brand, GearType, Fuel, etc. */}
               <div className="filter-group">
                 <h3>Merke</h3>
                 {[
@@ -356,7 +359,6 @@ function LiveAuctions() {
                   </div>
                 ))}
               </div>
-              <button onClick={fetchLiveAuctions} className="live-btn live-btn-primary">Filtrer</button>
               </form>
           </aside>
           <section className="auctions-section">
