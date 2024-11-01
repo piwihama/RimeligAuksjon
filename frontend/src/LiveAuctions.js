@@ -89,13 +89,12 @@ function LiveAuctions() {
   };
 
   const handleCategorySelect = useCallback((category) => {
-    console.log("Kategori valgt i LiveAuctions:", category); // Bekreft at funksjonen kalles
+    console.log("Kategori valgt i LiveAuctions:", category); // Logging for å bekrefte kategori
     setFilters((prevFilters) => ({ ...prevFilters, category }));
     setPage(1);
     setLiveAuctions([]);
-    fetchLiveAuctions(); // Kall fetch direkte
-  }, [setFilters, setPage, setLiveAuctions]);
-  
+    fetchLiveAuctions(); // Hent auksjoner direkte etter kategorivalg
+  }, []);
 
   const sortAuctions = (auctions) => {
     switch (sortOption) {
