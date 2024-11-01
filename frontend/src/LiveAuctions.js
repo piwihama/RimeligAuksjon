@@ -34,6 +34,7 @@ function LiveAuctions() {
 
   const navigate = useNavigate();
 
+  // Fetch auctions when filters, page, or sortOption change
   useEffect(() => {
     console.log("fetchLiveAuctions called with filters:", filters, "and page:", page);
     fetchLiveAuctions();
@@ -91,11 +92,12 @@ function LiveAuctions() {
     }
   };
 
+  // Handle category selection
   const handleCategorySelect = useCallback((category) => {
     console.log("Selected category:", category);
     setFilters((prevFilters) => ({ ...prevFilters, category }));
     setPage(1);
-    setLiveAuctions([]);
+    setLiveAuctions([]); // Clear auctions to show loading for new category
   }, []);
 
   const sortAuctions = (auctions) => {
@@ -166,6 +168,7 @@ function LiveAuctions() {
       return updatedTimeLeftMap;
     });
   };
+
 
 
   return (
