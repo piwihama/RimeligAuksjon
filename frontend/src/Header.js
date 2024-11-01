@@ -50,6 +50,14 @@ function Header({ onCategorySelect }) {
     }
   };
 
+  const handleCategoryClick = (category) => {
+    console.log(`Kategori valgt: ${category}`);
+    if (onCategorySelect) {
+      onCategorySelect(category);
+    }
+    navigate(`/liveauctions?category=${category}`);
+  };
+
   return (
     <>
       <Helmet>
@@ -98,40 +106,21 @@ function Header({ onCategorySelect }) {
             )}
           </div>
         </div>
+        
         <nav className="menu">
-  <button onClick={() => {
-      console.log("Kategori valgt: Bil");
-      onCategorySelect && onCategorySelect('car');
-    }} 
-    className="menu-button">
-    <i className="material-icons">directions_car</i>Bil
-  </button>
-
-  <button onClick={() => {
-      console.log("Kategori valgt: Båt");
-      onCategorySelect && onCategorySelect('boat');
-    }} 
-    className="menu-button">
-    <i className="material-icons">directions_boat</i>Båt
-  </button>
-
-  <button onClick={() => {
-      console.log("Kategori valgt: MC");
-      onCategorySelect && onCategorySelect('motorcycle');
-    }} 
-    className="menu-button">
-    <i className="material-icons">two_wheeler</i>MC
-  </button>
-
-  <button onClick={() => {
-      console.log("Kategori valgt: Torg");
-      onCategorySelect && onCategorySelect('marketplace');
-    }} 
-    className="menu-button">
-    <i className="material-icons">store</i>Torg
-  </button>
-</nav>
-
+          <button onClick={() => handleCategoryClick('car')} className="menu-button">
+            <i className="material-icons">directions_car</i>Bil
+          </button>
+          <button onClick={() => handleCategoryClick('boat')} className="menu-button">
+            <i className="material-icons">directions_boat</i>Båt
+          </button>
+          <button onClick={() => handleCategoryClick('motorcycle')} className="menu-button">
+            <i className="material-icons">two_wheeler</i>MC
+          </button>
+          <button onClick={() => handleCategoryClick('marketplace')} className="menu-button">
+            <i className="material-icons">store</i>Torg
+          </button>
+        </nav>
 
         <LoginModal isOpen={modalOpen} onRequestClose={() => setModalOpen(false)} purpose={modalPurpose} />
       </header>

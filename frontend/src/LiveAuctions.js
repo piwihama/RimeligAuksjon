@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Header from './Header';
 import './LiveAuctions.css';
@@ -33,8 +33,16 @@ function LiveAuctions() {
   const [sortOption, setSortOption] = useState('avsluttes-forst');
 
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Fetch auctions when filters, page, or sortOption change
+  // Update category filter based on URL when component mounts or URL changes
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const category = params.get('category') || '';
+    setFilters((prevFilters) => ({ ...prevFilters, category }));
+    setPage(1);
+  }, [location.search]);
+
   useEffect(() => {
     console.log("fetchLiveAuctions called with filters:", filters, "and page:", page);
     fetchLiveAuctions();
@@ -92,13 +100,13 @@ function LiveAuctions() {
     }
   };
 
-  // Handle category selection
   const handleCategorySelect = useCallback((category) => {
     console.log("Selected category:", category);
     setFilters((prevFilters) => ({ ...prevFilters, category }));
     setPage(1);
     setLiveAuctions([]); // Clear auctions to show loading for new category
-  }, []);
+    navigate(`/liveauctions?category=${category}`);
+  }, [navigate]);
 
   const sortAuctions = (auctions) => {
     switch (sortOption) {
@@ -168,7 +176,6 @@ function LiveAuctions() {
       return updatedTimeLeftMap;
     });
   };
-
 
 
   return (
