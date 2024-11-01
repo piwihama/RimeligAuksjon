@@ -35,13 +35,23 @@ function LiveAuctions() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Update category filter based on URL when component mounts or URL changes
+  // Update category based on URL path when component mounts or URL changes
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const category = params.get('category') || '';
+    const path = location.pathname.split('/'); // split URL path
+    const categoryPath = path[path.length - 1]; // get the last part of the URL path (e.g., 'båt', 'bil')
+
+    // Map the path to the category filter in English (or the format you need for the filter)
+    const categoryMap = {
+      bil: 'car',
+      båt: 'boat',
+      mc: 'motorcycle',
+      torg: 'marketplace',
+    };
+
+    const category = categoryMap[categoryPath] || '';
     setFilters((prevFilters) => ({ ...prevFilters, category }));
     setPage(1);
-  }, [location.search]);
+  }, [location.pathname]);
 
   useEffect(() => {
     console.log("fetchLiveAuctions called with filters:", filters, "and page:", page);
@@ -105,7 +115,7 @@ function LiveAuctions() {
     setFilters((prevFilters) => ({ ...prevFilters, category }));
     setPage(1);
     setLiveAuctions([]); // Clear auctions to show loading for new category
-    navigate(`/liveauctions?category=${category}`);
+    navigate(`/kategori/${category === 'car' ? 'bil' : category === 'boat' ? 'båt' : category}`);
   }, [navigate]);
 
   const sortAuctions = (auctions) => {
@@ -176,7 +186,6 @@ function LiveAuctions() {
       return updatedTimeLeftMap;
     });
   };
-
 
   return (
     <div>
