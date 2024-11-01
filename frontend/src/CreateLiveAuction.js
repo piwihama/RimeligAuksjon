@@ -9,6 +9,7 @@ function CreateLiveAuction() {
   const [auction, setAuction] = useState(null);
   const [formData, setFormData] = useState({
     brand: '',
+    category: '', // Add category to the form data
     mileage: '',
     karosseri: '',
     model: '',
@@ -201,6 +202,20 @@ function CreateLiveAuction() {
               <option value="båt">Båt</option>
               <option value="mc">MC</option>
               <option value="torg">Torg</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="category">Kategori</label>
+            <select 
+              id="category" 
+              name="category" 
+              value={formData.category} 
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
+              <option value="">Velg Kategori</option>
+              <option value="car">Bil</option>
+              <option value="boat">Båt</option>
+              <option value="motorcycle">MC</option>
+              <option value="marketplace">Torg</option>
             </select>
           </div>
           <div className="form-group">

@@ -609,10 +609,6 @@ async function connectDB() {
         console.log('Received filter parameters:', req.query);
     
         const query = {};
-
-  if (category) {
-    query.category = category;
-  }
     
         // Construct the query with additional logging
         if (brand) {
@@ -732,10 +728,8 @@ async function connectDB() {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
-        const category = req.query.category;  // Hent kategori fra forespørselsparametere
     
-        // Bygg cache-nøkkel som inkluderer kategori
-        const cacheKey = `allLiveAuctions-${category || 'all'}-page-${page}-limit-${limit}`;
+        const cacheKey = `allLiveAuctions-page-${page}-limit-${limit}`;
         let liveAuctions;
     
         try {
@@ -751,15 +745,12 @@ async function connectDB() {
     
         if (!liveAuctions) {
           console.log(`Cache miss. Fetching from database.`);
-          
-          // Bygg query basert på kategori
-          const query = category ? { category } : {};
-    
-          liveAuctions = await liveAuctionCollection.find(query)
+          liveAuctions = await liveAuctionCollection.find({})
             .project({
               brand: 1,
               model: 1,
-              mileage: 1,
+              mileage: 1, // Legg til mileage her
+
               year: 1,
               endDate: 1,
               highestBid: 1,
@@ -793,22 +784,15 @@ async function connectDB() {
       }
     });
     
-    
 
     app.post('/api/liveauctions', authenticateToken, async (req, res) => {
       try {
         const user = await loginCollection.findOne({ _id: new ObjectId(req.user.userId) });
-    
-        const { startDate, endDate, ...auctionData } = req.body;
-    
-        // Sjekk at kategorien er gyldig
-        const allowedCategories = ['bil', 'båt', 'mc', 'torg'];
-        if (!allowedCategories.includes(auctionData.category)) {
-          return res.status(400).json({ message: 'Invalid category' });
-        }
+        const { startDate, endDate, category, ...auctionData } = req.body;
     
         const newLiveAuction = {
           ...auctionData,
+          category, // Add category to live auction data
           startDate: new Date(startDate),
           endDate: new Date(endDate),
           status: 'Pågående',
@@ -819,8 +803,6 @@ async function connectDB() {
           userEmail: user.email,
           userName: `${user.firstName} ${user.lastName}`
         };
-    
-        console.log('Creating new live auction:', newLiveAuction);
     
         // Sett inn den nye auksjonen i databasen
         const result = await liveAuctionCollection.insertOne(newLiveAuction);
@@ -849,7 +831,6 @@ async function connectDB() {
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
-    
     
     app.get('/api/liveauctions/:id', async (req, res) => {
       try {

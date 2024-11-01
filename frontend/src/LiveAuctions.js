@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Header from './Header';
 import './LiveAuctions.css';
 import Footer from './Footer';
-import debounce from 'lodash.debounce';
 
 function LiveAuctions() {
-  const { category } = useParams(); // Hent kategori fra URL
   const [liveAuctions, setLiveAuctions] = useState([]);
   const [timeLeftMap, setTimeLeftMap] = useState({});
   const [filterCounts, setFilterCounts] = useState({});
@@ -26,37 +24,37 @@ function LiveAuctions() {
     reservePrice: '',
     auctionWithoutReserve: false,
   });
+  const [selectedCategory, setSelectedCategory] = useState(''); // New state for selected category
+
   const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Start med å sette loading til true
   const [error, setError] = useState(null);
-  const [sortOption, setSortOption] = useState('avsluttes-forst');
+  const [sortOption, setSortOption] = useState('avsluttes-forst'); // Ny state for sortering
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Oppdater filters-tilstanden for å inkludere category fra URL
-    setFilters((prevFilters) => ({ ...prevFilters, category: category || '' }));
-    debouncedFetchLiveAuctions();
-  }, [category, page, sortOption]);
+    fetchLiveAuctions();
+    const interval = setInterval(() => {
+      updateAllTimeLeft();
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [filters, page, sortOption, selectedCategory]); // Add selectedCategory as a de
 
   useEffect(() => {
     fetchFilterCounts();
   }, []);
 
-  const debouncedFetchLiveAuctions = debounce(async () => {
+  const fetchLiveAuctions = async () => {
     setLoading(true);
-
     try {
-      const queryParams = { 
-        page, 
-        limit: 10,
-      };
+      const queryParams = { page, limit: 10 };
 
-      // Legg til category kun hvis den finnes
-      if (category) {
-        queryParams.category = category;
+      // Include selected category in query parameters if it exists
+      if (selectedCategory) {
+        queryParams.category = selectedCategory;
       }
 
       for (const key in filters) {
@@ -64,12 +62,10 @@ function LiveAuctions() {
           if (filters[key].length > 0) {
             queryParams[key] = filters[key].join(',');
           }
-        } else if (filters[key] && key !== "category") { // Skipper `category` fordi den allerede er satt
+        } else if (filters[key]) {
           queryParams[key] = filters[key];
         }
       }
-
-      console.log('Sending request to URL with queryParams:', queryParams);
 
       const headers = {};
       const token = localStorage.getItem('accessToken');
@@ -82,12 +78,14 @@ function LiveAuctions() {
         headers: headers
       });
 
-      let sortedAuctions = sortAuctions(response.data, sortOption);
+      let sortedAuctions = response.data;
+      sortedAuctions = sortAuctions(sortedAuctions, sortOption);
 
       setLiveAuctions(prevAuctions => [...prevAuctions, ...sortedAuctions]);
       setHasMore(response.data.length > 0);
       setError(null);
 
+      // Update time for each auction
       const newTimeLeftMap = {};
       response.data.forEach(auction => {
         newTimeLeftMap[auction._id] = calculateTimeLeft(auction.endDate);
@@ -98,7 +96,8 @@ function LiveAuctions() {
       setError('Kunne ikke hente live auksjoner. Prøv igjen senere.');
     }
     setLoading(false);
-  }, 500); // 500ms debounce
+  };
+
 
   const fetchFilterCounts = async () => {
     try {
@@ -118,7 +117,7 @@ function LiveAuctions() {
       setError('Kunne ikke hente filtertellerne. Prøv igjen senere.');
     }
   };
-
+//mora di
   const sortAuctions = (auctions, option) => {
     switch (option) {
       case 'avsluttes-forst':
@@ -154,6 +153,13 @@ function LiveAuctions() {
     setPage(1);
     setLiveAuctions([]);
   };
+   // Function to handle category selection from Header
+   const handleCategorySelect = (category) => {
+    setSelectedCategory(category); // Update selected category
+    setPage(1); // Reset pagination on category change
+    setLiveAuctions([]); // Clear previous auctions
+  };
+
 
   const handleFilterChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -170,7 +176,7 @@ function LiveAuctions() {
     if (hasMore && !loading) {
       setPage(prevPage => prevPage + 1);
     }
-  };
+  }; //Random heihei
 
   const calculateTimeLeft = (endDate) => {
     const difference = new Date(endDate) - new Date();
@@ -207,7 +213,7 @@ function LiveAuctions() {
 
   return (
     <div>
-      <Header />
+      <Header onCategorySelect={handleCategorySelect} /> {/* Pass handleCategorySelect to Header */}
       <div className='whole-container'>
         <div className="live-auctions-container">
 
@@ -385,8 +391,8 @@ function LiveAuctions() {
                   </div>
                 ))}
               </div>
-              <button onClick={debouncedFetchLiveAuctions} className="live-btn live-btn-primary">Filtrer</button>
-              </form>
+              <button onClick={fetchLiveAuctions} className="live-btn live-btn-primary">Filtrer</button>
+            </form>
             </aside>
           <section className="auctions-section">
             <div className="sort-options">

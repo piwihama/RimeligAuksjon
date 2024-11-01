@@ -5,7 +5,7 @@ import LoginModal from './LoginModal';
 import { isAuthenticated } from './auth';
 import { Helmet } from 'react-helmet';
 
-function Header({ onCategoryChange }) {  // Pass onCategoryChange as a prop
+function Header({ onCategorySelect }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalPurpose, setModalPurpose] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,19 +13,24 @@ function Header({ onCategoryChange }) {  // Pass onCategoryChange as a prop
 
   const navigate = useNavigate();
 
+  // Effekt som oppdaterer logg inn status når komponenten først monteres
   useEffect(() => {
     const loggedInStatus = isAuthenticated();
+    console.log('Initial User authenticated:', loggedInStatus); // For debugging
     setLoggedIn(loggedInStatus);
   }, []);
 
+  // Effekt som oppdaterer logg inn status hver gang token endrer seg
   useEffect(() => {
     const handleStorageChange = () => {
       const isUserLoggedIn = isAuthenticated();
+      console.log('Token changed, updating login status:', isUserLoggedIn); // For debugging
       setLoggedIn(isUserLoggedIn);
     };
 
     window.addEventListener('storage', handleStorageChange);
 
+    // Cleanup listener når komponenten fjernes
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
@@ -51,14 +56,6 @@ function Header({ onCategoryChange }) {  // Pass onCategoryChange as a prop
       navigate(`/search?q=${searchTerm}`);
       scrollToTop();
     }
-  };
-
-  const handleCategoryClick = (category) => {
-    if (onCategoryChange) {
-      onCategoryChange(category);  // Call the prop function with the selected category
-    }
-    navigate(`/kategori/${category}`);
-    scrollToTop();
   };
 
   return (
@@ -111,16 +108,16 @@ function Header({ onCategoryChange }) {  // Pass onCategoryChange as a prop
         </div>
 
         <nav className="menu">
-          <button onClick={() => handleCategoryClick('bil')} className="menu-button">
+          <button onClick={() => onCategorySelect('car')} className="menu-button">
             <i className="material-icons">directions_car</i>Bil
           </button>
-          <button onClick={() => handleCategoryClick('båt')} className="menu-button">
+          <button onClick={() => onCategorySelect('boat')} className="menu-button">
             <i className="material-icons">directions_boat</i>Båt
           </button>
-          <button onClick={() => handleCategoryClick('mc')} className="menu-button">
+          <button onClick={() => onCategorySelect('motorcycle')} className="menu-button">
             <i className="material-icons">two_wheeler</i>MC
           </button>
-          <button onClick={() => handleCategoryClick('torg')} className="menu-button">
+          <button onClick={() => onCategorySelect('marketplace')} className="menu-button">
             <i className="material-icons">store</i>Torg
           </button>
         </nav>
