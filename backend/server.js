@@ -617,8 +617,15 @@ async function connectDB() {
     
         // Check and handle both array and string inputs for filter parameters
         if (brand) {
-          query.brand = Array.isArray(brand) ? { $in: brand } : { $in: brand.split(',') };
+          query.brand = Array.isArray(brand) ? { $in: brand.map(b => b.toUpperCase()) } : { $in: brand.split(',').map(b => b.toUpperCase()) };
           console.log(`Filtering by brand: ${query.brand}`);
+        }
+        if (gearType) {
+          query.gearType = Array.isArray(gearType) ? { $in: gearType } : { $in: gearType.split(',') };
+          console.log(`Filtering by gearType: ${query.gearType}`);
+        }
+        if (karosseri) {
+          query.karosseri = Array.isArray(karosseri) ? { $in: karosseri } : { $in: karosseri.split(',') };
         }
         if (model) query.model = model;
         if (year) query.year = parseInt(year);
@@ -628,7 +635,6 @@ async function connectDB() {
           query.highestBid = query.highestBid || {};
           query.highestBid.$lte = parseFloat(maxPrice);
         }
-        if (karosseri) query.karosseri = Array.isArray(karosseri) ? { $in: karosseri } : { $in: karosseri.split(',') };
         if (fuelType) query.fuelType = fuelType;
         if (transmission) query.transmission = transmission;
         if (drivetrain) query.drivetrain = drivetrain;
@@ -637,7 +643,6 @@ async function connectDB() {
         if (auctionWithoutReserve) query.auctionWithoutReserve = auctionWithoutReserve === 'true';
         if (taxClass) query.taxClass = taxClass;
         if (fuel) query.fuel = fuel;
-        if (gearType) query.gearType = gearType;
         if (mainColor) query.mainColor = mainColor;
         if (power) query.power = parseInt(power);
         if (seats) query.seats = parseInt(seats);
