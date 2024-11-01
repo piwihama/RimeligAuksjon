@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Header from './Header';
@@ -23,25 +23,22 @@ function LiveAuctions() {
     auctionDuration: '',
     reservePrice: '',
     auctionWithoutReserve: false,
+    category: '',
   });
-  const [selectedCategory, setSelectedCategory] = useState(''); // New state for selected category
-
   const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(true); // Start med å sette loading til true
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [sortOption, setSortOption] = useState('avsluttes-forst'); // Ny state for sortering
+  const [sortOption, setSortOption] = useState('avsluttes-forst');
 
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchLiveAuctions();
-    const interval = setInterval(() => {
-      updateAllTimeLeft();
-    }, 1000);
+    const interval = setInterval(updateAllTimeLeft, 1000);
     return () => clearInterval(interval);
-  }, [filters, page, sortOption, selectedCategory]); // Add selectedCategory as a de
+  }, [filters, page, sortOption]);
 
   useEffect(() => {
     fetchFilterCounts();
@@ -50,44 +47,23 @@ function LiveAuctions() {
   const fetchLiveAuctions = async () => {
     setLoading(true);
     try {
-      const queryParams = { page, limit: 10 };
-
-      // Include selected category in query parameters if it exists
-      if (selectedCategory) {
-        queryParams.category = selectedCategory;
-      }
-
-      for (const key in filters) {
-        if (Array.isArray(filters[key])) {
-          if (filters[key].length > 0) {
-            queryParams[key] = filters[key].join(',');
-          }
-        } else if (filters[key]) {
-          queryParams[key] = filters[key];
-        }
-      }
-
-      const headers = {};
+      const queryParams = { page, limit: 10, ...filters };
       const token = localStorage.getItem('accessToken');
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
-      }
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-      const response = await axios.get('https://rimelig-auksjon-backend.vercel.app/api/liveauctions/filter', {
-        params: queryParams,
-        headers: headers
-      });
+      const response = await axios.get(
+        'https://rimelig-auksjon-backend.vercel.app/api/liveauctions/filter',
+        { params: queryParams, headers }
+      );
 
-      let sortedAuctions = response.data;
-      sortedAuctions = sortAuctions(sortedAuctions, sortOption);
-
-      setLiveAuctions(prevAuctions => [...prevAuctions, ...sortedAuctions]);
+      setLiveAuctions((prevAuctions) =>
+        page === 1 ? response.data : [...prevAuctions, ...response.data]
+      );
       setHasMore(response.data.length > 0);
       setError(null);
 
-      // Update time for each auction
       const newTimeLeftMap = {};
-      response.data.forEach(auction => {
+      response.data.forEach((auction) => {
         newTimeLeftMap[auction._id] = calculateTimeLeft(auction.endDate);
       });
       setTimeLeftMap(newTimeLeftMap);
@@ -98,28 +74,31 @@ function LiveAuctions() {
     setLoading(false);
   };
 
-
   const fetchFilterCounts = async () => {
     try {
-      const headers = {};
       const token = localStorage.getItem('token');
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
-      }
-
-      const response = await axios.get('https://rimelig-auksjon-backend.vercel.app/api/liveauctions/counts', {
-        headers: headers
-      });
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const response = await axios.get(
+        'https://rimelig-auksjon-backend.vercel.app/api/liveauctions/counts',
+        { headers }
+      );
       setFilterCounts(response.data);
-      setError(null);
     } catch (error) {
       console.error('Error fetching filter counts:', error);
-      setError('Kunne ikke hente filtertellerne. Prøv igjen senere.');
     }
   };
-//mora di
-  const sortAuctions = (auctions, option) => {
-    switch (option) {
+
+  const handleCategorySelect = useCallback(
+    (category) => {
+      setFilters((prevFilters) => ({ ...prevFilters, category }));
+      setPage(1);
+      setLiveAuctions([]);
+    },
+    [setFilters, setPage, setLiveAuctions]
+  );
+
+  const sortAuctions = (auctions) => {
+    switch (sortOption) {
       case 'avsluttes-forst':
         return auctions.sort((a, b) => new Date(a.endDate) - new Date(b.endDate));
       case 'avsluttes-sist':
@@ -153,64 +132,29 @@ function LiveAuctions() {
     setPage(1);
     setLiveAuctions([]);
   };
-   // Function to handle category selection from Header
-   const handleCategorySelect = (category) => {
-    setSelectedCategory(category); // Update selected category
-    setPage(1); // Reset pagination on category change
-    setLiveAuctions([]); // Clear previous auctions
-  };
-
-
-  const handleFilterChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    const newValue = (name === 'brand' || name === 'model') ? value.toUpperCase() : value;
-    setFilters({
-      ...filters,
-      [name]: type === 'checkbox' ? checked : newValue
-    });
-    setPage(1);
-    setLiveAuctions([]);
-  };
-
-  const loadMore = () => {
-    if (hasMore && !loading) {
-      setPage(prevPage => prevPage + 1);
-    }
-  }; //Random heihei
 
   const calculateTimeLeft = (endDate) => {
     const difference = new Date(endDate) - new Date();
-    let timeLeft = {};
-
     if (difference > 0) {
-      timeLeft = {
+      return {
         days: Math.floor(difference / (1000 * 60 * 60 * 24)),
         hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
         minutes: Math.floor((difference / 1000 / 60) % 60),
         seconds: Math.floor((difference / 1000) % 60),
       };
-    } else {
-      timeLeft = {
-        days: 0,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-      };
     }
-
-    return timeLeft;
+    return { days: 0, hours: 0, minutes: 0, seconds: 0 };
   };
 
   const updateAllTimeLeft = () => {
-    setTimeLeftMap(prevTimeLeftMap => {
+    setTimeLeftMap((prevTimeLeftMap) => {
       const updatedTimeLeftMap = { ...prevTimeLeftMap };
-      liveAuctions.forEach(auction => {
+      liveAuctions.forEach((auction) => {
         updatedTimeLeftMap[auction._id] = calculateTimeLeft(auction.endDate);
       });
       return updatedTimeLeftMap;
     });
   };
-
   return (
     <div>
       <Header onCategorySelect={handleCategorySelect} /> {/* Pass handleCategorySelect to Header */}
