@@ -54,7 +54,7 @@ function LiveAuctions() {
   // Fetch auctions when filters, page, or sortOption change
   useEffect(() => {
     fetchLiveAuctions();
-    fetchFilterCounts(filters.category); // Fetch filter counts based on category
+    fetchFilterCounts(filters.category);
     const interval = setInterval(updateAllTimeLeft, 1000);
     return () => clearInterval(interval);
   }, [filters, page, sortOption]);
@@ -89,7 +89,6 @@ function LiveAuctions() {
     setLoading(false);
   }, [filters, page, sortOption]);
 
-  // Fetch filter counts based on category
   const fetchFilterCounts = async (category) => {
     try {
       const token = localStorage.getItem('token');
@@ -146,7 +145,6 @@ function LiveAuctions() {
       return { ...prevFilters, [name]: newValues };
     });
     setPage(1);
-    fetchLiveAuctions(); // Trigger fetch immediately after updating filter
   };
 
   const handleFilterChange = (e) => {
@@ -156,7 +154,6 @@ function LiveAuctions() {
       [name]: type === 'checkbox' ? checked : value,
     }));
     setPage(1);
-    fetchLiveAuctions(); // Trigger fetch immediately after updating filter
   };
 
   const calculateTimeLeft = (endDate) => {
