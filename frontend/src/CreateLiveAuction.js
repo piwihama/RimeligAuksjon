@@ -188,22 +188,7 @@ function CreateLiveAuction() {
         <form onSubmit={handleSubmit}>
           {/* Eksisterende felt */}
 
-          <div className="form-group">
-            <label htmlFor="category">Kategori</label>
-            <select
-              id="category"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Velg en kategori</option>
-              <option value="bil">Bil</option>
-              <option value="båt">Båt</option>
-              <option value="mc">MC</option>
-              <option value="torg">Torg</option>
-            </select>
-          </div>
+        
           <div className="form-group">
             <label htmlFor="category">Kategori</label>
             <select 

@@ -13,27 +13,19 @@ function Header({ onCategorySelect }) {
 
   const navigate = useNavigate();
 
-  // Effekt som oppdaterer logg inn status når komponenten først monteres
   useEffect(() => {
     const loggedInStatus = isAuthenticated();
-    console.log('Initial User authenticated:', loggedInStatus); // For debugging
     setLoggedIn(loggedInStatus);
   }, []);
 
-  // Effekt som oppdaterer logg inn status hver gang token endrer seg
   useEffect(() => {
     const handleStorageChange = () => {
       const isUserLoggedIn = isAuthenticated();
-      console.log('Token changed, updating login status:', isUserLoggedIn); // For debugging
       setLoggedIn(isUserLoggedIn);
     };
 
     window.addEventListener('storage', handleStorageChange);
-
-    // Cleanup listener når komponenten fjernes
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   const scrollToTop = () => {
@@ -108,16 +100,16 @@ function Header({ onCategorySelect }) {
         </div>
 
         <nav className="menu">
-          <button onClick={() => onCategorySelect('car')} className="menu-button">
+          <button onClick={() => onCategorySelect && onCategorySelect('car')} className="menu-button">
             <i className="material-icons">directions_car</i>Bil
           </button>
-          <button onClick={() => onCategorySelect('boat')} className="menu-button">
+          <button onClick={() => onCategorySelect && onCategorySelect('boat')} className="menu-button">
             <i className="material-icons">directions_boat</i>Båt
           </button>
-          <button onClick={() => onCategorySelect('motorcycle')} className="menu-button">
+          <button onClick={() => onCategorySelect && onCategorySelect('motorcycle')} className="menu-button">
             <i className="material-icons">two_wheeler</i>MC
           </button>
-          <button onClick={() => onCategorySelect('marketplace')} className="menu-button">
+          <button onClick={() => onCategorySelect && onCategorySelect('marketplace')} className="menu-button">
             <i className="material-icons">store</i>Torg
           </button>
         </nav>
