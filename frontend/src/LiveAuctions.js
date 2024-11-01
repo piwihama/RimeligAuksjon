@@ -35,12 +35,10 @@ function LiveAuctions() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Update category based on URL path when component mounts or URL changes
+  // Update category based on URL path
   useEffect(() => {
-    const path = location.pathname.split('/'); // split URL path
-    const categoryPath = path[path.length - 1]; // get the last part of the URL path (e.g., 'båt', 'bil')
-
-    // Map the path to the category filter in English (or the format you need for the filter)
+    const path = location.pathname.split('/');
+    const categoryPath = path[path.length - 1];
     const categoryMap = {
       bil: 'car',
       båt: 'boat',
@@ -53,9 +51,10 @@ function LiveAuctions() {
     setPage(1);
   }, [location.pathname]);
 
+  // Fetch auctions when filters, page, or sortOption change
   useEffect(() => {
-    console.log("fetchLiveAuctions called with filters:", filters, "and page:", page);
     fetchLiveAuctions();
+    fetchFilterCounts(filters.category); // Fetch filter counts based on category
     const interval = setInterval(updateAllTimeLeft, 1000);
     return () => clearInterval(interval);
   }, [filters, page, sortOption]);
@@ -67,13 +66,11 @@ function LiveAuctions() {
       const token = localStorage.getItem('accessToken');
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-      console.log("API called with queryParams:", queryParams);
       const response = await axios.get(
         'https://rimelig-auksjon-backend.vercel.app/api/liveauctions/filter',
         { params: queryParams, headers }
       );
 
-      console.log("Auctions fetched:", response.data);
       setLiveAuctions((prevAuctions) =>
         page === 1 ? response.data : [...prevAuctions, ...response.data]
       );
@@ -92,17 +89,14 @@ function LiveAuctions() {
     setLoading(false);
   }, [filters, page, sortOption]);
 
-  useEffect(() => {
-    fetchFilterCounts();
-  }, []);
-
-  const fetchFilterCounts = async () => {
+  // Fetch filter counts based on category
+  const fetchFilterCounts = async (category) => {
     try {
       const token = localStorage.getItem('token');
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
       const response = await axios.get(
         'https://rimelig-auksjon-backend.vercel.app/api/liveauctions/counts',
-        { headers }
+        { headers, params: { category } } // Send category in params
       );
       setFilterCounts(response.data);
     } catch (error) {
@@ -110,11 +104,11 @@ function LiveAuctions() {
     }
   };
 
+  // Handle category selection
   const handleCategorySelect = useCallback((category) => {
-    console.log("Selected category:", category);
     setFilters((prevFilters) => ({ ...prevFilters, category }));
     setPage(1);
-    setLiveAuctions([]); // Clear auctions to show loading for new category
+    setLiveAuctions([]);
     navigate(`/kategori/${category === 'car' ? 'bil' : category === 'boat' ? 'båt' : category}`);
   }, [navigate]);
 
@@ -141,17 +135,17 @@ function LiveAuctions() {
     setLiveAuctions([]);
   };
 
+  // Trigger filtering immediately upon checkbox selection
   const handleCheckboxChange = (e) => {
     const { name, value, checked } = e.target;
     const newValue = (name === 'brand' || name === 'model') ? value.toUpperCase() : value;
-    setFilters(prevFilters => {
+    setFilters((prevFilters) => {
       const newValues = checked
         ? [...prevFilters[name], newValue]
         : prevFilters[name].filter(v => v !== newValue);
       return { ...prevFilters, [name]: newValues };
     });
     setPage(1);
-    setLiveAuctions([]);
   };
 
   const handleFilterChange = (e) => {
@@ -161,7 +155,6 @@ function LiveAuctions() {
       [name]: type === 'checkbox' ? checked : value,
     }));
     setPage(1);
-    setLiveAuctions([]);
   };
 
   const calculateTimeLeft = (endDate) => {
@@ -186,7 +179,6 @@ function LiveAuctions() {
       return updatedTimeLeftMap;
     });
   };
-
   return (
     <div>
       <Header onCategorySelect={handleCategorySelect} /> {/* Pass handleCategorySelect to Header */}
