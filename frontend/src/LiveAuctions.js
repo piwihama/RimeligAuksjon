@@ -96,7 +96,7 @@ function LiveAuctions() {
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
       const response = await axios.get(
         'https://rimelig-auksjon-backend.vercel.app/api/liveauctions/counts',
-        { headers, params: { category } } // Send category in params
+        { headers, params: { category } }
       );
       setFilterCounts(response.data);
     } catch (error) {
@@ -142,10 +142,11 @@ function LiveAuctions() {
     setFilters((prevFilters) => {
       const newValues = checked
         ? [...prevFilters[name], newValue]
-        : prevFilters[name].filter(v => v !== newValue);
+        : prevFilters[name].filter((v) => v !== newValue);
       return { ...prevFilters, [name]: newValues };
     });
     setPage(1);
+    fetchLiveAuctions(); // Trigger fetch immediately after updating filter
   };
 
   const handleFilterChange = (e) => {
@@ -155,6 +156,7 @@ function LiveAuctions() {
       [name]: type === 'checkbox' ? checked : value,
     }));
     setPage(1);
+    fetchLiveAuctions(); // Trigger fetch immediately after updating filter
   };
 
   const calculateTimeLeft = (endDate) => {
@@ -179,13 +181,14 @@ function LiveAuctions() {
       return updatedTimeLeftMap;
     });
   };
+
   return (
     <div>
       <Header onCategorySelect={handleCategorySelect} />
-      <div className='whole-container'>
+      <div className="whole-container">
         <div className="live-auctions-container">
           <aside className="filters-section">
-            <p className='kategoribiltitle'>Kategori / Bil</p>
+            <p className="kategoribiltitle">Kategori / Bil</p>
             <h2>Filtrer auksjoner</h2>
             <button
               type="button"
@@ -197,7 +200,7 @@ function LiveAuctions() {
             <form className={showFilters ? 'filters-form open' : 'filters-form'}>
               <div className="filter-group">
                 <h3>Karosseri</h3>
-                {['Stasjonsvogn', 'Cabriolet', 'Kombi 5-dørs', 'Flerbruksbil', 'Pickup', 'Kombi 3-dørs', 'Sedan', 'Coupe', 'SUV/Offroad', 'Kasse'].map(type => (
+                {['Stasjonsvogn', 'Cabriolet', 'Kombi 5-dørs', 'Flerbruksbil', 'Pickup', 'Kombi 3-dørs', 'Sedan', 'Coupe', 'SUV/Offroad', 'Kasse'].map((type) => (
                   <div key={type}>
                     <input
                       type="checkbox"
@@ -377,7 +380,7 @@ function LiveAuctions() {
             ) : liveAuctions.length === 0 ? (
               <p>Ingen aktive auksjoner for øyeblikket</p>
             ) : (
-              liveAuctions.map(auction => {
+              liveAuctions.map((auction) => {
                 const timeLeft = calculateTimeLeft(auction.endDate);
                 const formattedDate = new Date(auction.endDate).toLocaleDateString('no-NO', {
                   year: 'numeric',
@@ -385,36 +388,17 @@ function LiveAuctions() {
                   day: 'numeric',
                 });
                 return (
-                  <div key={auction._id} className="auction-item" onClick={() => navigate(`/liveauctions/${auction._id}`)}
-                    style={{ cursor: 'pointer' }}>
-                    <img 
-                      src={auction.imageUrls && auction.imageUrls.length > 0 ? auction.imageUrls[0] : '/path-to-default-image.jpg'} 
-                      alt={`${auction.brand} ${auction.model}`} 
-                      className="auction-image" 
-                    />
+                  <div key={auction._id} className="auction-item" onClick={() => navigate(`/liveauctions/${auction._id}`)} style={{ cursor: 'pointer' }}>
+                    <img src={auction.imageUrls && auction.imageUrls.length > 0 ? auction.imageUrls[0] : '/path-to-default-image.jpg'} alt={`${auction.brand} ${auction.model}`} className="auction-image" />
                     <div className="auction-info">
                       <h2>{auction.brand.toUpperCase()} {auction.model.toUpperCase()} - {auction.year}</h2>
                       <div className="auction-detail">
                         <span className="left-text"><strong>Gjenstår:</strong></span>
-                        <span className="right-text" style={{ color: 'rgb(211, 13, 13)', fontWeight: 'bold'}}>
-                          {timeLeft.days} Dager {timeLeft.hours}t {timeLeft.minutes}min {timeLeft.seconds}sek
-                        </span>
+                        <span className="right-text" style={{ color: 'rgb(211, 13, 13)', fontWeight: 'bold' }}>{timeLeft.days} Dager {timeLeft.hours}t {timeLeft.minutes}min {timeLeft.seconds}sek</span>
                       </div>
                       <div className="auction-detail">
                         <span className="left-text"><strong>Høyeste Bud:</strong></span>
-                        <span className="right-text"style={{color: 'rgb(211, 13, 13)', fontWeight: 'bold'}}>{auction.highestBid},-</span>
-                      </div>
-                      <div className="auction-detail">
-                        <span className="left-text"><strong>Antall Bud:</strong></span>
-                        <span className="right-text"style={{color: 'rgb(211, 13, 13)', fontWeight: 'bold'}}>{auction.bidCount}</span>
-                      </div>
-                      <div className="auction-detail">
-                        <span className="left-text"><strong>Avsluttes:</strong></span>
-                        <span className="right-text">{formattedDate}</span>
-                      </div>
-                      <div className="auction-detail">
-                        <span className="left-text"><strong>Status:</strong></span>
-                        <span className="right-text">{auction.status}</span>
+                        <span className="right-text" style={{ color: 'rgb(211, 13, 13)', fontWeight: 'bold' }}>{auction.highestBid},-</span>
                       </div>
                       <div className="auction-detail">
                         <span className="left-text"><strong>Sted:</strong></span>
@@ -423,10 +407,8 @@ function LiveAuctions() {
                     </div>
                   </div>
                 );
-                
               })
             )}
-           
           </section>
         </div>
       </div>
