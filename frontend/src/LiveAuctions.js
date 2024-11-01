@@ -35,6 +35,11 @@ function LiveAuctions() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("onCategorySelect-props:", onCategorySelect); // Sjekk om denne er definert
+  }, [onCategorySelect]);
+  
+
+  useEffect(() => {
     fetchLiveAuctions();
     const interval = setInterval(updateAllTimeLeft, 1000);
     return () => clearInterval(interval);
@@ -50,6 +55,8 @@ function LiveAuctions() {
       const queryParams = { page, limit: 10, ...filters };
       const token = localStorage.getItem('accessToken');
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      console.log("Spørringsparametre:", queryParams); // Sjekk om `category` er inkludert
+
 
       const response = await axios.get(
         'https://rimelig-auksjon-backend.vercel.app/api/liveauctions/filter',
@@ -89,13 +96,15 @@ function LiveAuctions() {
   };
 
   const handleCategorySelect = useCallback(
-    (category) => {
-      setFilters((prevFilters) => ({ ...prevFilters, category }));
-      setPage(1);
-      setLiveAuctions([]);
-    },
-    [setFilters, setPage, setLiveAuctions]
-  );
+  (category) => {
+    console.log("Kategori valgt:", category); // Skal vise valgt kategori
+    setFilters((prevFilters) => ({ ...prevFilters, category }));
+    setPage(1);
+    setLiveAuctions([]);
+  },
+  [setFilters, setPage, setLiveAuctions]
+);
+
 
   const sortAuctions = (auctions) => {
     switch (sortOption) {
