@@ -99,19 +99,39 @@ function Header({ onCategorySelect }) {
           </div>
         </div>
         <nav className="menu">
-  <button onClick={() => onCategorySelect && onCategorySelect('car')} className="menu-button">
+  <button onClick={() => {
+      console.log("Kategori valgt: Bil");
+      onCategorySelect && onCategorySelect('car');
+    }} 
+    className="menu-button">
     <i className="material-icons">directions_car</i>Bil
   </button>
-  <button onClick={() => onCategorySelect && onCategorySelect('boat')} className="menu-button">
+
+  <button onClick={() => {
+      console.log("Kategori valgt: Båt");
+      onCategorySelect && onCategorySelect('boat');
+    }} 
+    className="menu-button">
     <i className="material-icons">directions_boat</i>Båt
   </button>
-  <button onClick={() => onCategorySelect && onCategorySelect('motorcycle')} className="menu-button">
+
+  <button onClick={() => {
+      console.log("Kategori valgt: MC");
+      onCategorySelect && onCategorySelect('motorcycle');
+    }} 
+    className="menu-button">
     <i className="material-icons">two_wheeler</i>MC
   </button>
-  <button onClick={() => onCategorySelect && onCategorySelect('marketplace')} className="menu-button">
+
+  <button onClick={() => {
+      console.log("Kategori valgt: Torg");
+      onCategorySelect && onCategorySelect('marketplace');
+    }} 
+    className="menu-button">
     <i className="material-icons">store</i>Torg
   </button>
 </nav>
+
 
         <LoginModal isOpen={modalOpen} onRequestClose={() => setModalOpen(false)} purpose={modalPurpose} />
       </header>

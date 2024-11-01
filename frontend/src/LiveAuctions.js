@@ -88,14 +88,14 @@ function LiveAuctions() {
     }
   };
 
-  const handleCategorySelect = useCallback(
-    (category) => {
-      setFilters((prevFilters) => ({ ...prevFilters, category }));
-      setPage(1);
-      setLiveAuctions([]);
-    },
-    [setFilters, setPage, setLiveAuctions]
-  );
+  const handleCategorySelect = useCallback((category) => {
+    console.log("Kategori valgt i LiveAuctions:", category); // Bekreft at funksjonen kalles
+    setFilters((prevFilters) => ({ ...prevFilters, category }));
+    setPage(1);
+    setLiveAuctions([]);
+    fetchLiveAuctions(); // Kall fetch direkte
+  }, [setFilters, setPage, setLiveAuctions]);
+  
 
   const sortAuctions = (auctions) => {
     switch (sortOption) {
