@@ -5,7 +5,7 @@ import LoginModal from './LoginModal';
 import { isAuthenticated } from './auth';
 import { Helmet } from 'react-helmet';
 
-function Header({ onCategorySelect }) {
+function Header() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalPurpose, setModalPurpose] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -50,12 +50,14 @@ function Header({ onCategorySelect }) {
     }
   };
 
-  const handleCategoryClick = (category) => {
-    console.log(`Kategori valgt: ${category}`);
-    if (onCategorySelect) {
-      onCategorySelect(category);
-    }
-    navigate(`/liveauctions?category=${category}`);
+  const navigateToCategory = (category) => {
+    const categoryPaths = {
+      car: '/kategori/bil',
+      boat: '/kategori/båt',
+      motorcycle: '/kategori/mc',
+      marketplace: '/kategori/torg',
+    };
+    navigate(categoryPaths[category]);
   };
 
   return (
@@ -106,18 +108,18 @@ function Header({ onCategorySelect }) {
             )}
           </div>
         </div>
-        
+
         <nav className="menu">
-          <button onClick={() => handleCategoryClick('car')} className="menu-button">
+          <button onClick={() => navigateToCategory('car')} className="menu-button">
             <i className="material-icons">directions_car</i>Bil
           </button>
-          <button onClick={() => handleCategoryClick('boat')} className="menu-button">
+          <button onClick={() => navigateToCategory('boat')} className="menu-button">
             <i className="material-icons">directions_boat</i>Båt
           </button>
-          <button onClick={() => handleCategoryClick('motorcycle')} className="menu-button">
+          <button onClick={() => navigateToCategory('motorcycle')} className="menu-button">
             <i className="material-icons">two_wheeler</i>MC
           </button>
-          <button onClick={() => handleCategoryClick('marketplace')} className="menu-button">
+          <button onClick={() => navigateToCategory('marketplace')} className="menu-button">
             <i className="material-icons">store</i>Torg
           </button>
         </nav>
