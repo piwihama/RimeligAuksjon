@@ -393,9 +393,16 @@ function LiveAuctions() {
                       <h2>{auction.brand.toUpperCase()} {auction.model.toUpperCase()} - {auction.year} - {auction.mileage}</h2>
 
                       <div className="auction-detail">
-                        <span className="left-text"><strong>Avsluttes:</strong></span>
-                        <span className="right-text" style={{ color: 'rgb(211, 13, 13)', fontWeight: 'bold' }}>{auction.endDate}</span>
-                      </div>
+    <span className="left-text"><strong>Avsluttes:</strong></span>
+    <span className="right-text" style={{ color: 'rgb(211, 13, 13)', fontWeight: 'bold' }}>
+        {new Date(auction.endDate).toLocaleDateString('no-NO', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        })}
+    </span>
+</div>
+
 
                       <div className="auction-detail">
                         <span className="left-text"><strong>Gjenstår:</strong></span>
