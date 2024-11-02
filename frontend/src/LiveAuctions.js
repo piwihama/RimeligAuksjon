@@ -53,7 +53,9 @@ function LiveAuctions() {
 
   // Fetch auctions when filters, page, or sortOption change
   useEffect(() => {
-    fetchLiveAuctions();
+    if (filters.category) {
+      fetchLiveAuctions();
+    }
     fetchFilterCounts(filters.category);
     const interval = setInterval(updateAllTimeLeft, 1000);
     return () => clearInterval(interval);
@@ -145,7 +147,7 @@ function LiveAuctions() {
       return { ...prevFilters, [name]: newValues };
     });
     setPage(1);
-    fetchLiveAuctions(); // Trigger fetch immediately after updating filter
+    fetchLiveAuctions();
   };
 
   const handleFilterChange = (e) => {
@@ -155,7 +157,7 @@ function LiveAuctions() {
       [name]: type === 'checkbox' ? checked : value,
     }));
     setPage(1);
-    fetchLiveAuctions(); // Trigger fetch immediately after updating filter
+    fetchLiveAuctions();
   };
 
   const calculateTimeLeft = (endDate) => {
@@ -180,6 +182,7 @@ function LiveAuctions() {
       return updatedTimeLeftMap;
     });
   };
+
 
   return (
     <div>
