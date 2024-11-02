@@ -602,118 +602,90 @@ async function connectDB() {
     
     app.get('/api/liveauctions/filter', async (req, res) => {
       const startTime = Date.now();
-    
+  
       try {
-        const {
-          brand, model, year, location, minPrice, maxPrice, karosseri, fuelType, transmission, drivetrain,
-          auctionDuration, reservePrice, auctionWithoutReserve, taxClass, fuel, gearType, mainColor,
-          power, seats, owners, doors, equipment, city, category
-        } = req.query;
-    
-        // Log incoming request data for debugging
-        console.log('Received filter parameters:', req.query);
-    
-        const query = {};
-    
-        // Check and handle both array and string inputs for filter parameters
-        if (brand) {
-          query.brand = Array.isArray(brand) ? { $in: brand.map(b => b.toUpperCase()) } : { $in: brand.split(',').map(b => b.toUpperCase()) };
-          console.log(`Filtering by brand: ${query.brand}`);
-        }
-        if (gearType) {
-          query.gearType = Array.isArray(gearType) ? { $in: gearType } : { $in: gearType.split(',') };
-          console.log(`Filtering by gearType: ${query.gearType}`);
-        }
-        if (karosseri) {
-          query.karosseri = Array.isArray(karosseri) ? { $in: karosseri } : { $in: karosseri.split(',') };
-        }
-        if (model) query.model = model;
-        if (year) query.year = parseInt(year);
-        if (location) query.location = location;
-        if (minPrice) query.highestBid = { $gte: parseFloat(minPrice) };
-        if (maxPrice) {
-          query.highestBid = query.highestBid || {};
-          query.highestBid.$lte = parseFloat(maxPrice);
-        }
-        if (fuelType) query.fuelType = fuelType;
-        if (transmission) query.transmission = transmission;
-        if (drivetrain) query.drivetrain = drivetrain;
-        if (auctionDuration) query.auctionDuration = parseInt(auctionDuration);
-        if (reservePrice) query.reservePrice = parseFloat(reservePrice);
-        if (auctionWithoutReserve) query.auctionWithoutReserve = auctionWithoutReserve === 'true';
-        if (taxClass) query.taxClass = taxClass;
-        if (fuel) query.fuel = fuel;
-        if (mainColor) query.mainColor = mainColor;
-        if (power) query.power = parseInt(power);
-        if (seats) query.seats = parseInt(seats);
-        if (owners) query.owners = parseInt(owners);
-        if (doors) query.doors = parseInt(doors);
-        if (equipment) query.equipment = { $regex: new RegExp(equipment, 'i') };
-        if (city) query.city = city;
-    
-        if (category) {
-          query.category = category;
-          console.log(`Filtering by category: ${category}`);
-        }
-    
-        console.log('Constructed query:', query);
-    
-        const cacheKey = `liveAuctionsFilter-${JSON.stringify(req.query)}`;
-        let liveAuctions;
-    
-        try {
-          liveAuctions = await redis.get(cacheKey);
-          if (liveAuctions) {
-            console.log('Cache hit!');
-            liveAuctions = JSON.parse(liveAuctions);
+          const {
+              brand, model, year, location, minPrice, maxPrice, karosseri, fuelType, transmission, drivetrain,
+              auctionDuration, reservePrice, auctionWithoutReserve, taxClass, fuel, gearType, mainColor,
+              power, seats, owners, doors, equipment, city, category
+          } = req.query;
+  
+          // Logg innkommende forespørselsdata for feilsøking
+          console.log('Received filter parameters:', req.query);
+  
+          const query = {};
+  
+          // Filtreringslogikk basert på parametere
+          if (brand) {
+              query.brand = Array.isArray(brand) ? { $in: brand } : { $in: brand.split(',') };
           }
-        } catch (redisError) {
-          console.error('Redis error:', redisError);
-          liveAuctions = null;
-        }
-    
-        if (!liveAuctions) {
-          console.log('Cache miss. Fetching from database.');
-    
-          const dbStartTime = Date.now();
-    
-          liveAuctions = await liveAuctionCollection.find(query).project({
-            brand: 1,
-            model: 1,
-            year: 1,
-            mileage: 1,
-            endDate: 1,
-            highestBid: 1,
-            bidCount: 1,
-            status: 1,
-            location: 1,
-            imageUrls: 1
-          }).toArray();
-    
-          const dbEndTime = Date.now();
-          console.log(`DB query time: ${dbEndTime - dbStartTime}ms`);
-    
-          if (!liveAuctions || liveAuctions.length === 0) {
-            console.log('No live auctions found.');
-          } else {
-            try {
-              await redis.set(cacheKey, JSON.stringify(liveAuctions), 'EX', 600);
-            } catch (redisSetError) {
-              console.error('Error setting Redis cache:', redisSetError);
-            }
+          if (category) {
+              query.category = category;
+              console.log(`Filtering by category: ${category}`);
           }
-        }
-    
-        const endTime = Date.now();
-        console.log(`Total API response time: ${endTime - startTime}ms`);
-    
-        res.json(liveAuctions);
+          if (auctionWithoutReserve) {
+              query.auctionWithoutReserve = auctionWithoutReserve === 'true';
+          }
+          
+          console.log('Constructed query:', query);
+  
+          // Bruk kategorispesifikk cache-nøkkel
+          const cacheKey = `liveAuctionsFilter-${JSON.stringify(query)}`;
+          let liveAuctions;
+  
+          try {
+              liveAuctions = await redis.get(cacheKey);
+              if (liveAuctions) {
+                  console.log('Cache hit!');
+                  liveAuctions = JSON.parse(liveAuctions);
+              }
+          } catch (redisError) {
+              console.error('Redis error:', redisError);
+              liveAuctions = null;
+          }
+  
+          if (!liveAuctions) {
+              console.log('Cache miss. Fetching from database.');
+  
+              const dbStartTime = Date.now();
+  
+              liveAuctions = await liveAuctionCollection.find(query).project({
+                  brand: 1,
+                  model: 1,
+                  year: 1,
+                  mileage: 1,
+                  endDate: 1,
+                  highestBid: 1,
+                  bidCount: 1,
+                  status: 1,
+                  location: 1,
+                  imageUrls: 1
+              }).toArray();
+  
+              const dbEndTime = Date.now();
+              console.log(`DB query time: ${dbEndTime - dbStartTime}ms`);
+  
+              if (!liveAuctions || liveAuctions.length === 0) {
+                  console.log('No live auctions found.');
+              } else {
+                  try {
+                      await redis.set(cacheKey, JSON.stringify(liveAuctions), 'EX', 600);
+                  } catch (redisSetError) {
+                      console.error('Error setting Redis cache:', redisSetError);
+                  }
+              }
+          }
+  
+          const endTime = Date.now();
+          console.log(`Total API response time: ${endTime - startTime}ms`);
+  
+          res.json(liveAuctions);
       } catch (err) {
-        console.error('Error fetching filtered live auctions:', err.message || err);
-        res.status(500).json({ error: 'Internal Server Error' });
+          console.error('Error fetching filtered live auctions:', err.message || err);
+          res.status(500).json({ error: 'Internal Server Error' });
       }
-    });
-    
+  });
+  
 
     app.get('/api/auctions/:id', authenticateToken, async (req, res) => {
       try {
