@@ -28,7 +28,7 @@ function LiveAuctions() {
   const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sortOption, setSortOption] = useState('avsluttes-forst');
 
@@ -63,6 +63,8 @@ function LiveAuctions() {
 
   const fetchLiveAuctions = useCallback(async () => {
     setLoading(true);
+    setLiveAuctions([]); // Clear previous auctions to prevent flicker
+
     try {
       const queryParams = { page, limit: 10, ...filters };
       const token = localStorage.getItem('accessToken');
@@ -73,10 +75,13 @@ function LiveAuctions() {
         { params: queryParams, headers }
       );
 
+      if (response.data.length === 0) {
+        setHasMore(false);
+      }
+
       setLiveAuctions((prevAuctions) =>
         page === 1 ? response.data : [...prevAuctions, ...response.data]
       );
-      setHasMore(response.data.length > 0);
       setError(null);
 
       const newTimeLeftMap = {};
@@ -87,8 +92,9 @@ function LiveAuctions() {
     } catch (error) {
       console.error('Error fetching live auctions:', error);
       setError('Kunne ikke hente live auksjoner. Prøv igjen senere.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [filters, page, sortOption]);
 
   const fetchFilterCounts = async (category) => {
@@ -147,7 +153,7 @@ function LiveAuctions() {
       return { ...prevFilters, [name]: newValues };
     });
     setPage(1);
-    fetchLiveAuctions();
+    fetchLiveAuctions(); // Trigger fetch immediately after updating filter
   };
 
   const handleFilterChange = (e) => {
@@ -157,7 +163,7 @@ function LiveAuctions() {
       [name]: type === 'checkbox' ? checked : value,
     }));
     setPage(1);
-    fetchLiveAuctions();
+    fetchLiveAuctions(); // Trigger fetch immediately after updating filter
   };
 
   const calculateTimeLeft = (endDate) => {
@@ -182,7 +188,6 @@ function LiveAuctions() {
       return updatedTimeLeftMap;
     });
   };
-
 
   return (
     <div>
