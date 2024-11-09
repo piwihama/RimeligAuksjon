@@ -29,6 +29,11 @@ const clearLiveAuctionCaches = async () => {
     await redis.del(filterCacheKeys);
   }
 };
+// Function to clear filter counts cache
+async function clearFilterCountsCache() {
+  const countsCacheKey = 'liveAuctionsCounts';
+  await redis.del(countsCacheKey); // Clear cache for liveAuctionsCounts
+}
 
 const s3 = new S3Client({
   region: 'eu-north-1',
@@ -814,7 +819,7 @@ async function connectDB() {
     
         const newLiveAuction = {
           ...auctionData,
-          category,
+          category, // Add category to live auction data
           startDate: new Date(startDate),
           endDate: new Date(endDate),
           status: 'Pågående',
@@ -826,17 +831,21 @@ async function connectDB() {
           userName: `${user.firstName} ${user.lastName}`
         };
     
+        // Sett inn den nye auksjonen i databasen
         const result = await liveAuctionCollection.insertOne(newLiveAuction);
     
-        // Kall funksjonen for å slette cache relatert til live-auksjoner
-        await clearLiveAuctionCaches();
+        // Clear caches for filters and all live auctions
+        await clearFilterCountsCache();
+        await redis.del("allLiveAuctions");
     
+        // Send en suksessmelding tilbake til klienten
         res.status(201).json({ message: 'Live auction created successfully', result });
       } catch (err) {
         console.error('Error creating live auction:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
     
     
     app.get('/api/liveauctions/:id', async (req, res) => {
@@ -874,8 +883,9 @@ async function connectDB() {
     
         if (result.deletedCount === 0) return res.status(404).json({ message: 'Live auction not found' });
     
-        // Kall funksjonen for å slette cache relatert til live-auksjoner
-        await clearLiveAuctionCaches();
+        // Clear caches for filters and all live auctions
+        await clearFilterCountsCache();
+        await redis.del("allLiveAuctions");
     
         res.json({ message: 'Live auction deleted successfully' });
       } catch (err) {
@@ -904,18 +914,27 @@ async function connectDB() {
       try {
         const liveAuctionId = req.params.id;
         const updateData = { ...req.body };
-        const result = await liveAuctionCollection.updateOne({ _id: new ObjectId(liveAuctionId) }, { $set: updateData });
-
-        if (result.matchedCount === 0) return res.status(404).json({ message: 'Live auction not found' });
-
+    
+        const result = await liveAuctionCollection.updateOne(
+          { _id: new ObjectId(liveAuctionId) },
+          { $set: updateData }
+        );
+    
+        if (result.matchedCount === 0) {
+          return res.status(404).json({ message: 'Live auction not found' });
+        }
+    
+        // Clear caches for filters and all live auctions
+        await clearFilterCountsCache();
         await redis.del("allLiveAuctions");
-
+    
         res.json({ message: 'Live auction updated successfully' });
       } catch (err) {
         console.error('Error updating live auction:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
 
     app.get('/api/search', async (req, res) => {
       try {
