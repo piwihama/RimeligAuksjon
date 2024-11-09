@@ -13,6 +13,22 @@ const Redis = require('ioredis');
 
 // Initialiser Redis-klienten
 const redis = new Redis(process.env.REDIS_URL);
+const clearLiveAuctionCaches = async () => {
+  // Slett alle liste-cache-nøkler for live-auksjoner
+  const liveAuctionsKeys = await redis.keys('allLiveAuctions-*');
+  if (liveAuctionsKeys.length > 0) {
+    await redis.del(liveAuctionsKeys);
+  }
+
+  // Slett teller-cacher for filtrerte data
+  await redis.del('liveAuctionsCounts');
+
+  // Slett spesifikke filter-cacher
+  const filterCacheKeys = await redis.keys('liveAuctionsFilter-*');
+  if (filterCacheKeys.length > 0) {
+    await redis.del(filterCacheKeys);
+  }
+};
 
 const s3 = new S3Client({
   region: 'eu-north-1',
@@ -661,6 +677,7 @@ async function connectDB() {
         const cacheKey = `liveAuctionsFilter-${JSON.stringify(req.query)}`;
         let liveAuctions;
     
+        // Attempt to retrieve from cache
         try {
           liveAuctions = await redis.get(cacheKey);
           if (liveAuctions) {
@@ -713,6 +730,7 @@ async function connectDB() {
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
     
 
     app.get('/api/auctions/:id', authenticateToken, async (req, res) => {
@@ -789,7 +807,6 @@ async function connectDB() {
       }
     });
     
-
     app.post('/api/liveauctions', authenticateToken, async (req, res) => {
       try {
         const user = await loginCollection.findOne({ _id: new ObjectId(req.user.userId) });
@@ -797,7 +814,7 @@ async function connectDB() {
     
         const newLiveAuction = {
           ...auctionData,
-          category, // Add category to live auction data
+          category,
           startDate: new Date(startDate),
           endDate: new Date(endDate),
           status: 'Pågående',
@@ -809,33 +826,18 @@ async function connectDB() {
           userName: `${user.firstName} ${user.lastName}`
         };
     
-        // Sett inn den nye auksjonen i databasen
         const result = await liveAuctionCollection.insertOne(newLiveAuction);
     
-        // Hent den nye auksjonens ID
-        const liveAuctionId = result.insertedId.toString();
+        // Kall funksjonen for å slette cache relatert til live-auksjoner
+        await clearLiveAuctionCaches();
     
-        // Oppdater cache for live auksjoner
-        await redis.del("allLiveAuctions");
-        const cacheKey = `liveAuction-${liveAuctionId}`;
-        await redis.del(cacheKey);  // Slett spesifikke auksjonsdata fra cachen
-    
-        const countsCacheKey = 'liveAuctionsCounts';
-        await redis.del(countsCacheKey);  // Slett cache for liveAuctionsCounts
-    
-        // Finn og slett alle cache-nøkler som matcher "allLiveAuctions-*" mønsteret
-        const allLiveAuctionsKeys = await redis.keys('allLiveAuctions-*');
-        if (allLiveAuctionsKeys.length > 0) {
-          await redis.del(allLiveAuctionsKeys);
-        }
-    
-        // Send en suksessmelding tilbake til klienten
         res.status(201).json({ message: 'Live auction created successfully', result });
       } catch (err) {
         console.error('Error creating live auction:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
     
     app.get('/api/liveauctions/:id', async (req, res) => {
       try {
@@ -872,19 +874,8 @@ async function connectDB() {
     
         if (result.deletedCount === 0) return res.status(404).json({ message: 'Live auction not found' });
     
-        const cacheKey = `liveAuction-${liveAuctionId}`;
-        await redis.del(cacheKey);  // Slett spesifikke auksjonsdata fra cachen
-    
-        const countsCacheKey = 'liveAuctionsCounts';
-        await redis.del(countsCacheKey);  // Slett cache for liveAuctionsCounts
-        const filterCacheKey = 'liveAuctionsFilter-{"page":"1","limit":"10"}';
-        await redis.del(filterCacheKey); 
-
-        // Finn og slett alle cache-nøkler som matcher "allLiveAuctions-*" mønsteret
-        const allLiveAuctionsKeys = await redis.keys('allLiveAuctions-*');
-        if (allLiveAuctionsKeys.length > 0) {
-          await redis.del(allLiveAuctionsKeys);
-        }
+        // Kall funksjonen for å slette cache relatert til live-auksjoner
+        await clearLiveAuctionCaches();
     
         res.json({ message: 'Live auction deleted successfully' });
       } catch (err) {
@@ -892,7 +883,6 @@ async function connectDB() {
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
-    
     
 
     app.delete('/api/auctions/:id', authenticateToken, async (req, res) => {
