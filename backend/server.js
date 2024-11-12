@@ -751,7 +751,7 @@ async function connectDB() {
     });
     app.get('/api/liveauctions', async (req, res) => {
       const startTime = Date.now();
-    
+    //Hei
       try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
