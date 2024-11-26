@@ -29,6 +29,21 @@ const clearLiveAuctionCaches = async () => {
     await redis.del(filterCacheKeys);
   }
 };
+const clearAllCache = async () => {
+  try {
+    // Slett alle nøkler som matcher mønsteret for dine auksjoner
+    const keys = await redis.keys('*'); // Alternativt spesifikt mønster som 'allLiveAuctions-*'
+    if (keys.length > 0) {
+      await redis.del(keys);
+      console.log('All cache cleared successfully.');
+    } else {
+      console.log('No cache keys found to clear.');
+    }
+  } catch (err) {
+    console.error('Error clearing cache:', err);
+  }
+};
+
 // Function to clear filter counts cache
 async function clearFilterCountsCache() {
   const countsCacheKey = 'liveAuctionsCounts';
@@ -879,13 +894,16 @@ async function connectDB() {
     app.delete('/api/liveauctions/:id', authenticateToken, async (req, res) => {
       try {
         const liveAuctionId = req.params.id;
+    
+        // Slett auksjonen fra databasen
         const result = await liveAuctionCollection.deleteOne({ _id: new ObjectId(liveAuctionId) });
     
-        if (result.deletedCount === 0) return res.status(404).json({ message: 'Live auction not found' });
+        if (result.deletedCount === 0) {
+          return res.status(404).json({ message: 'Live auction not found' });
+        }
     
-        // Clear caches for filters and all live auctions
-        await clearFilterCountsCache();
-        await redis.del("allLiveAuctions");
+        // Tøm all cache relatert til live-auksjoner
+        await clearAllCache();
     
         res.json({ message: 'Live auction deleted successfully' });
       } catch (err) {
@@ -893,6 +911,7 @@ async function connectDB() {
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    
     
 
     app.delete('/api/auctions/:id', authenticateToken, async (req, res) => {

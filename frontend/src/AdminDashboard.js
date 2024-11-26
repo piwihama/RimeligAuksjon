@@ -10,7 +10,7 @@ function AdminDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken'); // Bruker 'accessToken' for konsistens
+    const token = localStorage.getItem('accessToken');
     if (!token) {
       navigate('/');
       return;
@@ -57,7 +57,7 @@ function AdminDashboard() {
   };
 
   const handleDelete = (id) => {
-    const token = localStorage.getItem('accessToken'); // Bruker 'accessToken' for konsistens
+    const token = localStorage.getItem('accessToken');
     axios.delete(`https://rimelig-auksjon-backend.vercel.app/api/auctions/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`
@@ -65,6 +65,7 @@ function AdminDashboard() {
     })
       .then(() => {
         setAuctions(auctions.filter(auction => auction._id !== id));
+        clearAllCache(token); // Tømmer all cache etter sletting
       })
       .catch(error => {
         console.error('Error deleting auction:', error);
@@ -76,7 +77,7 @@ function AdminDashboard() {
   };
 
   const handleDeleteLive = (id) => {
-    const token = localStorage.getItem('accessToken'); // Bruker 'accessToken' for konsistens
+    const token = localStorage.getItem('accessToken');
     axios.delete(`https://rimelig-auksjon-backend.vercel.app/api/liveauctions/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`
@@ -84,9 +85,24 @@ function AdminDashboard() {
     })
       .then(() => {
         setLiveAuctions(liveAuctions.filter(liveAuction => liveAuction._id !== id));
+        clearAllCache(token); // Tømmer all cache etter sletting
       })
       .catch(error => {
         console.error('Error deleting live auction:', error);
+      });
+  };
+
+  const clearAllCache = (token) => {
+    axios.post('https://rimelig-auksjon-backend.vercel.app/api/clear-cache', {}, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then(() => {
+        console.log('Cache cleared successfully');
+      })
+      .catch(error => {
+        console.error('Error clearing cache:', error);
       });
   };
 
@@ -156,16 +172,16 @@ function AdminDashboard() {
           <h2>Live Auctions</h2>
           <ul className="admin-live-auction-list">
             {liveAuctions.map(liveAuction => {
-              const imageCount = liveAuction.imageUrls ? liveAuction.imageUrls.length : 0; // Endret fra liveAuctions.imageUrls
+              const imageCount = liveAuction.imageUrls ? liveAuction.imageUrls.length : 0;
               const currentIndex = currentImageIndex[liveAuction._id] || 0;
               return (
                 <li key={liveAuction._id} className="admin-live-auction-item">
                   <div className="admin-live-auction-details">
                     <h3>{liveAuction.brand} {liveAuction.model} - {liveAuction.year}</h3>
-                    {liveAuction.imageUrls && liveAuction.imageUrls.length > 0 && ( // Endret fra liveAuction.imageUrls
+                    {liveAuction.imageUrls && liveAuction.imageUrls.length > 0 && (
                       <div className="admin-auction-carousel">
                         <img
-                          src={liveAuction.imageUrls[currentIndex]} // Endret fra liveAuction.imageUrls
+                          src={liveAuction.imageUrls[currentIndex]}
                           alt={`${liveAuction.brand} ${liveAuction.model}`}
                           className="admin-live-auction-image"
                         />
