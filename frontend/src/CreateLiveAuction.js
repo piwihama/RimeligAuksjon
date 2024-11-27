@@ -198,7 +198,7 @@ function CreateLiveAuction() {
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
               <option value="">Velg Kategori</option>
               <option value="car">Bil</option>
-              <option value="boat">Båt</option>
+              <option value="boat">båt</option>
               <option value="motorcycle">MC</option>
               <option value="marketplace">Torg</option>
             </select>

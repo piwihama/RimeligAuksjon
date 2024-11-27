@@ -53,7 +53,7 @@ function Header() {
   const navigateToCategory = (category) => {
     const categoryPaths = {
       car: '/kategori/bil',
-      boat: '/kategori/båt',
+      boat: '/kategori/bat',
       motorcycle: '/kategori/mc',
       marketplace: '/kategori/torg',
     };
@@ -114,7 +114,7 @@ function Header() {
             <i className="material-icons">directions_car</i>Bil
           </button>
           <button onClick={() => navigateToCategory('boat')} className="menu-button">
-            <i className="material-icons">directions_boat</i>Båt
+            <i className="material-icons">directions_boat</i>bat
           </button>
           <button onClick={() => navigateToCategory('motorcycle')} className="menu-button">
             <i className="material-icons">two_wheeler</i>MC

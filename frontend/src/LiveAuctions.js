@@ -41,7 +41,7 @@ function LiveAuctions() {
     const categoryPath = path[path.length - 1];
     const categoryMap = {
       bil: 'car',
-      båt: 'boat',
+      bat: 'boat',
       mc: 'motorcycle',
       torg: 'marketplace',
     };
@@ -126,7 +126,7 @@ function LiveAuctions() {
     // Gyldige kategorier
     const validCategories = {
       car: 'bil',
-      boat: 'båt',
+      boat: 'bat',
       motorcycle: 'mc',
       marketplace: 'torg',
     };
