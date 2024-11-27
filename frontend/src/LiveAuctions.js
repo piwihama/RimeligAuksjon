@@ -119,12 +119,43 @@ function LiveAuctions() {
   };
 
   const handleCategorySelect = useCallback((category) => {
-    setFilters((prevFilters) => ({ ...prevFilters, category }));
+    // Gyldige kategorier
+    const validCategories = {
+      car: 'bil',
+      boat: 'båt',
+      motorcycle: 'mc',
+      marketplace: 'torg',
+    };
+  
+    if (!validCategories[category]) {
+      console.error(`Ugyldig kategori valgt: ${category}`);
+      return;
+    }
+  
+    // Rens opp filtre og oppdater kun kategori
+    setFilters({
+      brand: [],
+      model: '',
+      year: '',
+      location: [],
+      minPrice: '',
+      maxPrice: '',
+      karosseri: [],
+      fuel: [],
+      gearType: [],
+      driveType: [],
+      auctionDuration: '',
+      reservePrice: '',
+      auctionWithoutReserve: false,
+      category, // Oppdater med valgt kategori
+    });
+  
+    // Tilbakestill til side 1 og naviger til korrekt URL
     setPage(1);
     setLiveAuctions([]);
-    navigate(`/kategori/${category === 'car' ? 'bil' : category === 'boat' ? 'båt' : category}`);
+    navigate(`/kategori/${validCategories[category]}`);
   }, [navigate]);
-
+  
   const sortAuctions = (auctions) => {
     switch (sortOption) {
       case 'avsluttes-forst':

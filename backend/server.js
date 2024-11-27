@@ -644,12 +644,7 @@ async function connectDB() {
         } = req.query;
     
         const query = {};
-        if (category) {
-          query.category = { $eq: category }; // Match eksakt kategori
-        } else {
-          query.category = { $exists: true, $ne: '' }; // Unngå manglende kategorier
-        }
-    
+        if (category) query.category = category;
         if (brand) query.brand = { $in: brand.split(',').map((b) => b.toUpperCase()) };
         if (model) query.model = { $regex: new RegExp(model, 'i') };
         if (year) query.year = parseInt(year);
@@ -682,9 +677,10 @@ async function connectDB() {
           imageUrls: 1,
           karosseri: 1,
           fuelType: 1,
-          category: 1,
+          category: 1
         }).toArray();
     
+        // Returner en tom array i stedet for en melding når ingen resultater finnes
         return res.status(200).json(liveAuctions || []);
       } catch (error) {
         console.error('Error fetching live auctions:', error);
