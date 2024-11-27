@@ -189,7 +189,7 @@ function LiveAuctions() {
             <p className="kategoribiltitle">Kategori / Bil</p>
             <h2>Filtrer auksjoner</h2>
             <button
-              type="button"
+              type="button" //
               className="toggle-filters-button"
               onClick={() => setShowFilters(!showFilters)}
             >
