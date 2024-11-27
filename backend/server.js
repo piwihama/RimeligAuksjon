@@ -643,13 +643,8 @@ async function connectDB() {
           auctionDuration, reservePrice, auctionWithoutReserve, category
         } = req.query;
     
-        // Start med en tom query
         const query = {};
-    
-        // Kategori-filter
         if (category) query.category = category;
-    
-        // Andre filtre
         if (brand) query.brand = { $in: brand.split(',').map((b) => b.toUpperCase()) };
         if (model) query.model = { $regex: new RegExp(model, 'i') };
         if (year) query.year = parseInt(year);
@@ -669,7 +664,6 @@ async function connectDB() {
     
         console.log('Constructed query:', query);
     
-        // Hent data fra databasen
         const liveAuctions = await liveAuctionCollection.find(query).project({
           brand: 1,
           model: 1,
@@ -686,16 +680,14 @@ async function connectDB() {
           category: 1
         }).toArray();
     
-        if (!liveAuctions || liveAuctions.length === 0) {
-          return res.status(200).json({ message: 'Ingen resultater funnet for filtrene.' });
-        }
-    
-        res.json(liveAuctions);
+        // Returner en tom array i stedet for en melding når ingen resultater finnes
+        return res.status(200).json(liveAuctions || []);
       } catch (error) {
         console.error('Error fetching live auctions:', error);
         res.status(500).json({ message: 'Intern serverfeil.' });
       }
     });
+    
     
 
     app.get('/api/auctions/:id', authenticateToken, async (req, res) => {
