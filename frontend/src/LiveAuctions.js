@@ -47,7 +47,6 @@ function LiveAuctions() {
     };
 
     const category = categoryMap[categoryPath] || '';
-    console.log('Navigert kategori:', category); // Logg for feilsøking
     setFilters((prevFilters) => ({ ...prevFilters, category }));
     setPage(1);
   }, [location.pathname]);
@@ -67,16 +66,12 @@ function LiveAuctions() {
       const token = localStorage.getItem('accessToken');
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-      console.log('Henter med filtre:', queryParams); // Logg for feilsøking
       const response = await axios.get(
         'https://rimelig-auksjon-backend.vercel.app/api/liveauctions/filter',
         { params: queryParams, headers }
       );
 
-      console.log('Backend response:', response.data);
-
       if (!Array.isArray(response.data)) {
-        console.error('Uventet respons fra backend:', response.data);
         setError('Uventet dataformat fra serveren.');
         setLoading(false);
         return;
@@ -94,7 +89,6 @@ function LiveAuctions() {
       });
       setTimeLeftMap(newTimeLeftMap);
     } catch (error) {
-      console.error('Error fetching live auctions:', error);
       setError('Kunne ikke hente live auksjoner. Prøv igjen senere.');
     }
     setLoading(false);
@@ -112,7 +106,6 @@ function LiveAuctions() {
       if (response.data && typeof response.data === 'object') {
         setFilterCounts(response.data);
       } else {
-        console.error('Uventede filterdata:', response.data);
         setFilterCounts({});
       }
     } catch (error) {
@@ -120,42 +113,30 @@ function LiveAuctions() {
     }
   };
 
-  const handleCategorySelect = useCallback((category) => {
-    const validCategories = ['car', 'boat', 'motorcycle', 'marketplace'];
+  const handleCheckboxChange = (e) => {
+    const { name, value, checked } = e.target;
+    setFilters((prevFilters) => {
+      const updatedValues = checked
+        ? [...prevFilters[name], value]
+        : prevFilters[name].filter((item) => item !== value);
+      return { ...prevFilters, [name]: updatedValues };
+    });
+    setPage(1);
+  };
 
-    if (!validCategories.includes(category)) {
-      console.error(`Ugyldig kategori valgt: ${category}`);
-      return;
-    }
-
+  const handleFilterChange = (e) => {
+    const { name, value, type, checked } = e.target;
     setFilters((prevFilters) => ({
       ...prevFilters,
-      category,
-      brand: [],
-      model: '',
-      year: '',
-      location: [],
-      minPrice: '',
-      maxPrice: '',
-      karosseri: [],
-      fuel: [],
-      gearType: [],
-      driveType: [],
-      auctionDuration: '',
-      reservePrice: '',
-      auctionWithoutReserve: false,
+      [name]: type === 'checkbox' ? checked : value,
     }));
-
     setPage(1);
-    setLiveAuctions([]);
-    const categoryMap = {
-      car: 'bil',
-      boat: 'båt',
-      motorcycle: 'mc',
-      marketplace: 'torg',
-    };
-    navigate(`/kategori/${categoryMap[category]}`);
-  }, [navigate]);
+  };
+
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
+    setPage(1);
+  };
 
   const calculateTimeLeft = (endDate) => {
     const difference = new Date(endDate) - new Date();
@@ -179,6 +160,7 @@ function LiveAuctions() {
       return updatedTimeLeftMap;
     });
   };
+
 
   return (
     <div>
