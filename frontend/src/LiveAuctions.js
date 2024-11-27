@@ -45,13 +45,15 @@ function LiveAuctions() {
       mc: 'motorcycle',
       torg: 'marketplace',
     };
-
+  
     const category = categoryMap[categoryPath] || '';
-    console.log('Detected category:', category); // Legg til logging
-
-    setFilters((prevFilters) => ({ ...prevFilters, category }));
+    console.log('Path:', path);
+    console.log('Detected categoryPath:', categoryPath);
+    console.log('Mapped category:', category);
+        setFilters((prevFilters) => ({ ...prevFilters, category }));
     setPage(1);
   }, [location.pathname]);
+  
 
   // Fetch auctions when filters, page, or sortOption change
   useEffect(() => {
