@@ -644,7 +644,7 @@ async function connectDB() {
         } = req.query;
     
         const query = {};
-        if (category) query.category = category;
+        if (category) query.category = { $eq: category };
         if (brand) query.brand = { $in: brand.split(',').map((b) => b.toUpperCase()) };
         if (model) query.model = { $regex: new RegExp(model, 'i') };
         if (year) query.year = parseInt(year);
