@@ -66,30 +66,39 @@ function LiveAuctions() {
   const fetchLiveAuctions = useCallback(async () => {
     setLoading(true);
     try {
-      const queryParams = { page, limit: 10, ...filters };
+      // Fjern tomme eller unødvendige verdier fra filtrene
+      const sanitizedFilters = Object.fromEntries(
+        Object.entries(filters).filter(([_, value]) => 
+          value !== '' && value !== null && value !== undefined && (!Array.isArray(value) || value.length > 0)
+        )
+      );
+  
+      console.log('Sanitized filters:', sanitizedFilters); // Logging for debugging
+  
+      const queryParams = { page, limit: 10, ...sanitizedFilters };
       const token = localStorage.getItem('accessToken');
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
+  
       const response = await axios.get(
         'https://rimelig-auksjon-backend.vercel.app/api/liveauctions/filter',
         { params: queryParams, headers }
       );
-
+  
       console.log('Backend response:', response.data);
-
+  
       if (!Array.isArray(response.data)) {
         console.error('Unexpected response data:', response.data);
         setError('Uventet dataformat fra serveren.');
         setLoading(false);
         return;
       }
-
+  
       setLiveAuctions((prevAuctions) =>
         page === 1 ? response.data : [...prevAuctions, ...response.data]
       );
       setHasMore(response.data.length > 0);
       setError(null);
-
+  
       const newTimeLeftMap = {};
       response.data.forEach((auction) => {
         newTimeLeftMap[auction._id] = calculateTimeLeft(auction.endDate);
@@ -101,7 +110,7 @@ function LiveAuctions() {
     }
     setLoading(false);
   }, [filters, page, sortOption]);
-
+  
   const fetchFilterCounts = async (category) => {
     try {
       const token = localStorage.getItem('token');
