@@ -114,6 +114,28 @@ function LiveAuctions() {
       console.error('Error fetching filter counts:', error);
     }
   };
+  const handleCategorySelect = useCallback((category) => {
+    // Map categories to Norwegian names
+    const categoryMap = {
+      car: 'bil',
+      boat: 'båt',
+      motorcycle: 'mc',
+      marketplace: 'torg',
+    };
+
+    if (!categoryMap[category]) {
+      console.error(`Ugyldig kategori valgt: ${category}`);
+      return;
+    }
+
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      category,
+    }));
+    setPage(1);
+    setLiveAuctions([]);
+    navigate(`/kategori/${categoryMap[category]}`);
+  }, [navigate]);
 
   const handleCheckboxChange = (e) => {
     const { name, value, checked } = e.target;
