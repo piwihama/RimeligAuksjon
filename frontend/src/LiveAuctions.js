@@ -71,6 +71,15 @@ function LiveAuctions() {
         { params: queryParams, headers }
       );
 
+      console.log('Backend response:', response.data);
+
+      if (!Array.isArray(response.data)) {
+        console.error('Unexpected response data:', response.data);
+        setError('Uventet dataformat fra serveren.');
+        setLoading(false);
+        return;
+      }
+
       setLiveAuctions((prevAuctions) =>
         page === 1 ? response.data : [...prevAuctions, ...response.data]
       );
@@ -97,13 +106,18 @@ function LiveAuctions() {
         'https://rimelig-auksjon-backend.vercel.app/api/liveauctions/counts',
         { headers, params: { category } }
       );
-      setFilterCounts(response.data);
+
+      if (response.data && typeof response.data === 'object') {
+        setFilterCounts(response.data);
+      } else {
+        console.error('Unexpected filter counts data:', response.data);
+        setFilterCounts({});
+      }
     } catch (error) {
       console.error('Error fetching filter counts:', error);
     }
   };
 
-  // Handle category selection
   const handleCategorySelect = useCallback((category) => {
     setFilters((prevFilters) => ({ ...prevFilters, category }));
     setPage(1);
@@ -134,7 +148,6 @@ function LiveAuctions() {
     setLiveAuctions([]);
   };
 
-  // Trigger filtering immediately upon checkbox selection
   const handleCheckboxChange = (e) => {
     const { name, value, checked } = e.target;
     const newValue = (name === 'brand' || name === 'model') ? value.toUpperCase() : value;
@@ -145,7 +158,6 @@ function LiveAuctions() {
       return { ...prevFilters, [name]: newValues };
     });
     setPage(1);
-    fetchLiveAuctions(); // Trigger fetch immediately after updating filter
   };
 
   const handleFilterChange = (e) => {
@@ -155,7 +167,6 @@ function LiveAuctions() {
       [name]: type === 'checkbox' ? checked : value,
     }));
     setPage(1);
-    fetchLiveAuctions(); // Trigger fetch immediately after updating filter
   };
 
   const calculateTimeLeft = (endDate) => {
@@ -180,7 +191,6 @@ function LiveAuctions() {
       return updatedTimeLeftMap;
     });
   };
-
   return (
     <div>
       <Header onCategorySelect={handleCategorySelect} />
