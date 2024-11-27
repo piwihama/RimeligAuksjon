@@ -35,7 +35,7 @@ function LiveAuctions() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Update category based on URL path
+  // Oppdater kategori basert på URL
   useEffect(() => {
     const path = location.pathname.split('/');
     const categoryPath = path[path.length - 1];
@@ -47,11 +47,12 @@ function LiveAuctions() {
     };
 
     const category = categoryMap[categoryPath] || '';
+    console.log('Navigert kategori:', category); // Logg for feilsøking
     setFilters((prevFilters) => ({ ...prevFilters, category }));
     setPage(1);
   }, [location.pathname]);
 
-  // Fetch auctions when filters, page, or sortOption change
+  // Hent auksjoner ved endring i filtre eller side
   useEffect(() => {
     fetchLiveAuctions();
     fetchFilterCounts(filters.category);
@@ -66,6 +67,7 @@ function LiveAuctions() {
       const token = localStorage.getItem('accessToken');
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
+      console.log('Henter med filtre:', queryParams); // Logg for feilsøking
       const response = await axios.get(
         'https://rimelig-auksjon-backend.vercel.app/api/liveauctions/filter',
         { params: queryParams, headers }
@@ -74,7 +76,7 @@ function LiveAuctions() {
       console.log('Backend response:', response.data);
 
       if (!Array.isArray(response.data)) {
-        console.error('Unexpected response data:', response.data);
+        console.error('Uventet respons fra backend:', response.data);
         setError('Uventet dataformat fra serveren.');
         setLoading(false);
         return;
@@ -100,7 +102,7 @@ function LiveAuctions() {
 
   const fetchFilterCounts = async (category) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken');
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
       const response = await axios.get(
         'https://rimelig-auksjon-backend.vercel.app/api/liveauctions/counts',
@@ -110,7 +112,7 @@ function LiveAuctions() {
       if (response.data && typeof response.data === 'object') {
         setFilterCounts(response.data);
       } else {
-        console.error('Unexpected filter counts data:', response.data);
+        console.error('Uventede filterdata:', response.data);
         setFilterCounts({});
       }
     } catch (error) {
@@ -119,21 +121,16 @@ function LiveAuctions() {
   };
 
   const handleCategorySelect = useCallback((category) => {
-    // Gyldige kategorier
-    const validCategories = {
-      car: 'bil',
-      boat: 'båt',
-      motorcycle: 'mc',
-      marketplace: 'torg',
-    };
-  
-    if (!validCategories[category]) {
+    const validCategories = ['car', 'boat', 'motorcycle', 'marketplace'];
+
+    if (!validCategories.includes(category)) {
       console.error(`Ugyldig kategori valgt: ${category}`);
       return;
     }
-  
-    // Rens opp filtre og oppdater kun kategori
-    setFilters({
+
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      category,
       brand: [],
       model: '',
       year: '',
@@ -147,58 +144,18 @@ function LiveAuctions() {
       auctionDuration: '',
       reservePrice: '',
       auctionWithoutReserve: false,
-      category, // Oppdater med valgt kategori
-    });
-  
-    // Tilbakestill til side 1 og naviger til korrekt URL
-    setPage(1);
-    setLiveAuctions([]);
-    navigate(`/kategori/${validCategories[category]}`);
-  }, [navigate]);
-  
-  const sortAuctions = (auctions) => {
-    switch (sortOption) {
-      case 'avsluttes-forst':
-        return auctions.sort((a, b) => new Date(a.endDate) - new Date(b.endDate));
-      case 'avsluttes-sist':
-        return auctions.sort((a, b) => new Date(b.endDate) - new Date(a.endDate));
-      case 'nyeste-auksjoner':
-        return auctions.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
-      case 'hoyeste-bud':
-        return auctions.sort((a, b) => b.highestBid - a.highestBid);
-      case 'laveste-bud':
-        return auctions.sort((a, b) => a.highestBid - b.highestBid);
-      default:
-        return auctions;
-    }
-  };
-
-  const handleSortChange = (e) => {
-    setSortOption(e.target.value);
-    setPage(1);
-    setLiveAuctions([]);
-  };
-
-  const handleCheckboxChange = (e) => {
-    const { name, value, checked } = e.target;
-    const newValue = (name === 'brand' || name === 'model') ? value.toUpperCase() : value;
-    setFilters((prevFilters) => {
-      const newValues = checked
-        ? [...prevFilters[name], newValue]
-        : prevFilters[name].filter((v) => v !== newValue);
-      return { ...prevFilters, [name]: newValues };
-    });
-    setPage(1);
-  };
-
-  const handleFilterChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [name]: type === 'checkbox' ? checked : value,
     }));
+
     setPage(1);
-  };
+    setLiveAuctions([]);
+    const categoryMap = {
+      car: 'bil',
+      boat: 'båt',
+      motorcycle: 'mc',
+      marketplace: 'torg',
+    };
+    navigate(`/kategori/${categoryMap[category]}`);
+  }, [navigate]);
 
   const calculateTimeLeft = (endDate) => {
     const difference = new Date(endDate) - new Date();
@@ -222,6 +179,7 @@ function LiveAuctions() {
       return updatedTimeLeftMap;
     });
   };
+
   return (
     <div>
       <Header onCategorySelect={handleCategorySelect} />
