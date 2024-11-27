@@ -46,7 +46,7 @@ function App() {
 
         {/* LiveAuctions for hver kategori */}
         <Route path="/kategori/bil" element={<LiveAuctions />} />
-        <Route path="/kategori/båt" element={<LiveAuctions />} />
+        <Route path="/kategori/bat" element={<LiveAuctions />} />
         <Route path="/kategori/mc" element={<LiveAuctions />} />
         <Route path="/kategori/torg" element={<LiveAuctions />} />
         
