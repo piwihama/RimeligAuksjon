@@ -162,7 +162,7 @@ const fetchFilterCounts = useCallback(async () => {
 
     // Send gjeldende kategori som en parameter
     const response = await axios.get(
-      'https://rimelig-auksjon-backend.vercel.app/api/counts',
+      'https://rimelig-auksjon-backend.vercel.app/api/liveauctions/counts',
       { params: { category: filters.category }, headers }
     );
 
