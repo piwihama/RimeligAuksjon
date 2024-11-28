@@ -6,7 +6,7 @@ let inactivityTimer;
 export const isAuthenticated = () => {
   const token = localStorage.getItem('accessToken'); // Bruker accessToken for konsistens
 
-  if (!token) return false;
+  if (!token) return null;
 
   try {
     const payload = parseJwt(token);
@@ -14,17 +14,18 @@ export const isAuthenticated = () => {
 
     if (payload.exp > currentTime) {
       startInactivityTimer();
-      return true;
+      return payload; // Returnerer hele payload, inkludert rollen
     } else {
       localStorage.removeItem('accessToken');
-      return false;
+      return null;
     }
   } catch (error) {
     console.error('Error parsing token:', error);
     localStorage.removeItem('accessToken');
-    return false;
+    return null;
   }
 };
+
 
 const startInactivityTimer = () => {
   clearTimeout(inactivityTimer);
