@@ -659,6 +659,10 @@ async function connectDB() {
           const brands = Array.isArray(brand) ? brand : brand.split(',');
           andConditions.push({ brand: { $in: brands.map((b) => b.toUpperCase()) } });
         }
+        if (gearType && gearType.length > 0) {
+          const gearType = Array.isArray(gearType) ? gearType : gearType.split(',');
+          andConditions.push({ gearType: { $in: gearType.map((b) => b.toUpperCase()) } });
+        }
         if (model) {
           andConditions.push({ model: { $regex: new RegExp(model, 'i') } });
         }
