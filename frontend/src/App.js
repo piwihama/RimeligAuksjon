@@ -35,6 +35,9 @@ const AdminRoute = ({ children }) => {
   const user = isAuthenticated();
   return user && user.role === 'admin' ? children : <Navigate to="/" />;
 };
+const AuthRoute = ({ children }) => {
+  return isAuthenticated() ? <Navigate to="/home" /> : children;
+};
 
 function App() {
   return (
