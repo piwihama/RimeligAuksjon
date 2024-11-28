@@ -645,50 +645,26 @@ async function connectDB() {
     
         const query = {};
     
-        // Kategorifilter
         if (category) query.category = category;
-    
-        // Brand (array split og uppercase)
-        if (brand) query.brand = { $in: brand.split(',').map((b) => b.toUpperCase()) };
-    
-        // Model (regex søk)
+        if (brand) query.brand = { $in: (Array.isArray(brand) ? brand : brand.split(',')).map((b) => b.toUpperCase()) };
         if (model) query.model = { $regex: new RegExp(model, 'i') };
-    
-        // Year (numerisk)
         if (year) query.year = parseInt(year);
-    
-        // Location (regex søk)
         if (location) query.location = { $regex: new RegExp(location, 'i') };
-    
-        // Prisfilter
         if (minPrice || maxPrice) {
           query.highestBid = {};
           if (minPrice) query.highestBid.$gte = parseFloat(minPrice);
           if (maxPrice) query.highestBid.$lte = parseFloat(maxPrice);
         }
-    
-        // Karosseri (array split)
-        if (karosseri) query.karosseri = { $in: karosseri.split(',') };
-    
-        // Drivstofftype
-        if (fuelType) query.fuelType = { $in: fuelType.split(',') };
-    
-        // Girtype og hjuldrift
+        if (karosseri) query.karosseri = { $in: (Array.isArray(karosseri) ? karosseri : karosseri.split(',')) };
+        if (fuelType) query.fuelType = { $in: (Array.isArray(fuelType) ? fuelType : fuelType.split(',')) };
         if (transmission) query.transmission = transmission;
         if (drivetrain) query.drivetrain = drivetrain;
-    
-        // Auksjonsvarighet
         if (auctionDuration) query.auctionDuration = parseInt(auctionDuration);
-    
-        // Minstepris
         if (reservePrice) query.reservePrice = parseFloat(reservePrice);
-    
-        // Uten minstepris
         if (auctionWithoutReserve) query.auctionWithoutReserve = auctionWithoutReserve === 'true';
     
         console.log('Constructed query:', query);
     
-        // Hent data fra databasen
         const liveAuctions = await liveAuctionCollection.find(query).project({
           brand: 1,
           model: 1,
@@ -705,10 +681,10 @@ async function connectDB() {
           category: 1
         }).toArray();
     
-        return res.status(200).json(liveAuctions || []);
+        res.status(200).json(liveAuctions || []);
       } catch (error) {
-        console.error('Error fetching live auctions:', error);
-        res.status(500).json({ message: 'Intern serverfeil.' });
+        console.error('Error processing filter request:', error);
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
       }
     });
     
