@@ -35,9 +35,7 @@ function LiveAuctions() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Debounce timer
-  const [debounceTimer, setDebounceTimer] = useState(null);
-
+  // Update category based on URL path
   useEffect(() => {
     const path = location.pathname.split('/');
     const categoryPath = path[path.length - 1];
@@ -53,29 +51,19 @@ function LiveAuctions() {
     setPage(1);
   }, [location.pathname]);
 
+  // Fetch auctions when filters, page, or sortOption change
   useEffect(() => {
-    // Debounce API call
-    if (debounceTimer) clearTimeout(debounceTimer);
-
-    const timer = setTimeout(() => {
-      fetchLiveAuctions();
-    }, 300); // 300ms debounce
-
-    setDebounceTimer(timer);
-    return () => clearTimeout(timer);
+    fetchLiveAuctions();
+    fetchFilterCounts(filters.category);
+    const interval = setInterval(updateAllTimeLeft, 1000);
+    return () => clearInterval(interval);
   }, [filters, page, sortOption]);
 
   const fetchLiveAuctions = useCallback(async () => {
     setLoading(true);
     try {
-      // Remove empty filters
-      const activeFilters = Object.fromEntries(
-        Object.entries(filters).filter(
-          ([, value]) => value && (Array.isArray(value) ? value.length > 0 : true)
-        )
-      );
-
-      const queryParams = { page, limit: 10, ...activeFilters };
+      const queryParams = { page, limit: 10, ...filters };
+      console.log('Filters sent to backend:', queryParams); // DEBUGGING
       const token = localStorage.getItem('accessToken');
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
@@ -84,6 +72,7 @@ function LiveAuctions() {
         { params: queryParams, headers }
       );
 
+      console.log('Response from backend:', response.data); // DEBUGGING
       setLiveAuctions((prevAuctions) =>
         page === 1 ? response.data : [...prevAuctions, ...response.data]
       );
@@ -102,6 +91,34 @@ function LiveAuctions() {
     setLoading(false);
   }, [filters, page, sortOption]);
 
+  const fetchFilterCounts = async (category) => {
+    try {
+      const token = localStorage.getItem('token');
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const response = await axios.get(
+        'https://rimelig-auksjon-backend.vercel.app/api/liveauctions/counts',
+        { headers, params: { category } }
+      );
+      setFilterCounts(response.data);
+    } catch (error) {
+      console.error('Error fetching filter counts:', error);
+    }
+  };
+
+  const handleCategorySelect = useCallback((category) => {
+    setFilters((prevFilters) => ({ ...prevFilters, category }));
+    setPage(1);
+    setLiveAuctions([]);
+    navigate(`/kategori/${category === 'car' ? 'bil' : category === 'boat' ? 'bat' : category}`);
+  }, [navigate]);
+  
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
+    setPage(1);
+    setLiveAuctions([]);
+  };
+
+
   const handleCheckboxChange = (e) => {
     const { name, value, checked } = e.target;
     const newValue = name === 'brand' ? value.toUpperCase() : value;
@@ -111,20 +128,32 @@ function LiveAuctions() {
         ? [...prevFilters[name], newValue]
         : prevFilters[name].filter((v) => v !== newValue);
 
-      return {
+      const updatedFilters = {
         ...prevFilters,
-        [name]: updatedValues,
+        [name]: updatedValues.length > 0 ? updatedValues : [],
       };
+
+      fetchLiveAuctions(updatedFilters); // Dynamisk oppdatering
+      return updatedFilters;
     });
     setPage(1);
   };
 
   const handleFilterChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+    setFilters((prevFilters) => {
+      const updatedFilters = {
+        ...prevFilters,
+        [name]: type === 'checkbox' ? checked : value,
+      };
+
+      if (!value || value === '') {
+        delete updatedFilters[name]; // Fjern tomme verdier
+      }
+
+      fetchLiveAuctions(updatedFilters); // Dynamisk oppdatering
+      return updatedFilters;
+    });
     setPage(1);
   };
 
