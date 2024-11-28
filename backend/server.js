@@ -645,13 +645,7 @@ async function connectDB() {
     
         const query = {};
     
-        // Bygg query basert på forespørsel
-        if (category) {
-          query.category = category;
-        } else {
-          console.log('Category is empty or undefined, skipping category filter.');
-        }
-    
+        if (category) query.category = category;
         if (brand) query.brand = { $in: (Array.isArray(brand) ? brand : brand.split(',')).map((b) => b.toUpperCase()) };
         if (model) query.model = { $regex: new RegExp(model, 'i') };
         if (year) query.year = parseInt(year);
@@ -671,22 +665,21 @@ async function connectDB() {
     
         console.log('Constructed query:', query);
     
-        const cacheKey = `liveAuctions:${JSON.stringify(req.query)}`;
-        console.log('Cache key:', cacheKey);
-    
-        const cachedData = await redis.get(cacheKey);
-        if (cachedData) {
-          console.log('Cache hit:', cacheKey);
-          return res.status(200).json(JSON.parse(cachedData));
-        }
-    
-        const liveAuctions = await liveAuctionCollection.find(query).toArray();
-        console.log('Fetched live auctions:', liveAuctions);
-    
-        if (liveAuctions.length > 0) {
-          await redis.set(cacheKey, JSON.stringify(liveAuctions), { EX: 300 });
-          console.log('Cache updated:', cacheKey);
-        }
+        const liveAuctions = await liveAuctionCollection.find(query).project({
+          brand: 1,
+          model: 1,
+          year: 1,
+          mileage: 1,
+          endDate: 1,
+          highestBid: 1,
+          bidCount: 1,
+          status: 1,
+          location: 1,
+          imageUrls: 1,
+          karosseri: 1,
+          fuelType: 1,
+          category: 1
+        }).toArray();
     
         res.status(200).json(liveAuctions || []);
       } catch (error) {
@@ -694,6 +687,7 @@ async function connectDB() {
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
       }
     });
+    
     
     
 
