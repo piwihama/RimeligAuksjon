@@ -646,7 +646,12 @@ async function connectDB() {
         const query = {};
     
         // Bygg query basert på forespørsel
-        if (category) query.category = category;
+        if (category) {
+          query.category = category;
+        } else {
+          console.log('Category is empty or undefined, skipping category filter.');
+        }
+    
         if (brand) query.brand = { $in: (Array.isArray(brand) ? brand : brand.split(',')).map((b) => b.toUpperCase()) };
         if (model) query.model = { $regex: new RegExp(model, 'i') };
         if (year) query.year = parseInt(year);
@@ -666,36 +671,20 @@ async function connectDB() {
     
         console.log('Constructed query:', query);
     
-        // Generer en unik cache-nøkkel basert på forespørselens parametere
         const cacheKey = `liveAuctions:${JSON.stringify(req.query)}`;
+        console.log('Cache key:', cacheKey);
     
-        // Sjekk om data allerede er i cache
-        const cachedData = await redisClient.get(cacheKey);
+        const cachedData = await redis.get(cacheKey);
         if (cachedData) {
           console.log('Cache hit:', cacheKey);
           return res.status(200).json(JSON.parse(cachedData));
         }
     
-        // Hent data fra databasen hvis ikke i cache
-        const liveAuctions = await liveAuctionCollection.find(query).project({
-          brand: 1,
-          model: 1,
-          year: 1,
-          mileage: 1,
-          endDate: 1,
-          highestBid: 1,
-          bidCount: 1,
-          status: 1,
-          location: 1,
-          imageUrls: 1,
-          karosseri: 1,
-          fuelType: 1,
-          category: 1
-        }).toArray();
+        const liveAuctions = await liveAuctionCollection.find(query).toArray();
+        console.log('Fetched live auctions:', liveAuctions);
     
-        // Lagre resultatet i cache
         if (liveAuctions.length > 0) {
-          await redisClient.set(cacheKey, JSON.stringify(liveAuctions), { EX: 300 }); // Cache i 5 minutter (300 sekunder)
+          await redis.set(cacheKey, JSON.stringify(liveAuctions), { EX: 300 });
           console.log('Cache updated:', cacheKey);
         }
     
@@ -705,6 +694,7 @@ async function connectDB() {
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
       }
     });
+    
     
 
     app.get('/api/auctions/:id', authenticateToken, async (req, res) => {
