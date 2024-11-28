@@ -58,11 +58,11 @@ function LiveAuctions() {
     const interval = setInterval(updateAllTimeLeft, 1000);
     return () => clearInterval(interval);
   }, [filters, page, sortOption]);
-
   const fetchLiveAuctions = useCallback(async () => {
     setLoading(true);
     try {
       const queryParams = { page, limit: 10, ...filters };
+      console.log('Filters sent to backend:', queryParams); // DEBUGGING
       const token = localStorage.getItem('accessToken');
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
@@ -71,6 +71,7 @@ function LiveAuctions() {
         { params: queryParams, headers }
       );
 
+      console.log('Response from backend:', response.data); // DEBUGGING
       setLiveAuctions((prevAuctions) =>
         page === 1 ? response.data : [...prevAuctions, ...response.data]
       );
@@ -88,6 +89,7 @@ function LiveAuctions() {
     }
     setLoading(false);
   }, [filters, page, sortOption]);
+
 
   const fetchFilterCounts = async (category) => {
     try {

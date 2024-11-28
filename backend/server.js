@@ -645,102 +645,78 @@ async function connectDB() {
     
         const andConditions = [];
     
-        // Filtrer kun hvis parametrene er satt
-        if (category) {
-          andConditions.push({ category: { $eq: category } });
-        }
+        // Log each filter value
+        console.log('Filter values received:', {
+          brand, model, year, location, minPrice, maxPrice, karosseri, fuelType, transmission, drivetrain,
+          auctionDuration, reservePrice, auctionWithoutReserve, category
+        });
     
-        if (brand) {
+        // Construct query
+        if (category) {
+          andConditions.push({ category });
+        }
+        if (brand && brand.length > 0) {
           const brands = Array.isArray(brand) ? brand : brand.split(',');
           andConditions.push({ brand: { $in: brands.map((b) => b.toUpperCase()) } });
         }
-    
         if (model) {
           andConditions.push({ model: { $regex: new RegExp(model, 'i') } });
         }
-    
         if (year) {
           const yearInt = parseInt(year, 10);
           if (!isNaN(yearInt)) {
-            andConditions.push({ year: { $eq: yearInt } });
+            andConditions.push({ year: yearInt });
           }
         }
-    
         if (location) {
           andConditions.push({ location: { $regex: new RegExp(location, 'i') } });
         }
-    
         if (minPrice || maxPrice) {
           const priceFilter = {};
           if (minPrice) priceFilter.$gte = parseFloat(minPrice);
           if (maxPrice) priceFilter.$lte = parseFloat(maxPrice);
           andConditions.push({ highestBid: priceFilter });
         }
-    
         if (karosseri) {
           const karosserier = Array.isArray(karosseri) ? karosseri : karosseri.split(',');
           andConditions.push({ karosseri: { $in: karosserier } });
         }
-    
         if (fuelType) {
           const fuelTypes = Array.isArray(fuelType) ? fuelType : fuelType.split(',');
           andConditions.push({ fuelType: { $in: fuelTypes } });
         }
-    
         if (transmission) {
-          andConditions.push({ transmission: { $eq: transmission } });
+          andConditions.push({ transmission });
         }
-    
         if (drivetrain) {
-          andConditions.push({ drivetrain: { $eq: drivetrain } });
+          andConditions.push({ drivetrain });
         }
-    
         if (auctionDuration) {
           const durationInt = parseInt(auctionDuration, 10);
           if (!isNaN(durationInt)) {
-            andConditions.push({ auctionDuration: { $eq: durationInt } });
+            andConditions.push({ auctionDuration: durationInt });
           }
         }
-    
         if (reservePrice) {
-          andConditions.push({ reservePrice: { $eq: parseFloat(reservePrice) } });
+          andConditions.push({ reservePrice: parseFloat(reservePrice) });
         }
-    
         if (auctionWithoutReserve) {
           andConditions.push({ auctionWithoutReserve: auctionWithoutReserve === 'true' });
         }
     
-        // Bygg MongoDB-spørringen
-        const query = {};
-        if (andConditions.length > 0) {
-          query.$and = andConditions;
-        }
-    
+        const query = andConditions.length > 0 ? { $and: andConditions } : {};
         console.log('Constructed query:', query);
     
-        // Utfør databasespørringen
-        const liveAuctions = await liveAuctionCollection.find(query).project({
-          brand: 1,
-          model: 1,
-          year: 1,
-          mileage: 1,
-          endDate: 1,
-          highestBid: 1,
-          bidCount: 1,
-          status: 1,
-          location: 1,
-          imageUrls: 1,
-          karosseri: 1,
-          fuelType: 1,
-          category: 1
-        }).toArray();
+        const liveAuctions = await liveAuctionCollection.find(query).toArray();
     
-        res.status(200).json(liveAuctions);
+        console.log('Auctions found:', liveAuctions.length);
+        res.status(200).json(liveAuctions || []);
       } catch (error) {
         console.error('Error processing filter request:', error);
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
       }
     });
+    
     
     
 
