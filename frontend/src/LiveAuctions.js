@@ -111,6 +111,13 @@ function LiveAuctions() {
     setLiveAuctions([]);
     navigate(`/kategori/${category === 'car' ? 'bil' : category === 'boat' ? 'bat' : category}`);
   }, [navigate]);
+  
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
+    setPage(1);
+    setLiveAuctions([]);
+  };
+
 
   const handleCheckboxChange = (e) => {
     const { name, value, checked } = e.target;
