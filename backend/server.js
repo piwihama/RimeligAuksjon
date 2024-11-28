@@ -647,25 +647,45 @@ async function connectDB() {
     
         // Filter for kategori
         if (category) {
-          andConditions.push({ category });
+          andConditions.push({
+            $and: [
+              { category },
+              { category: { $exists: true } }
+            ]
+          });
         }
     
         // Filter for merke
         if (brand && brand.length > 0) {
           const brands = Array.isArray(brand) ? brand : brand.split(',');
-          andConditions.push({ brand: { $in: brands.map((b) => b.toUpperCase()) } });
+          andConditions.push({
+            $and: [
+              { brand: { $in: brands.map((b) => b.toUpperCase()) } },
+              { brand: { $exists: true } }
+            ]
+          });
         }
     
         // Filter for modell
         if (model) {
-          andConditions.push({ model: { $regex: new RegExp(model, 'i') } });
+          andConditions.push({
+            $and: [
+              { model: { $regex: new RegExp(model, 'i') } },
+              { model: { $exists: true } }
+            ]
+          });
         }
     
         // Filter for år
         if (year) {
           const yearInt = parseInt(year, 10);
           if (!isNaN(yearInt)) {
-            andConditions.push({ year: yearInt });
+            andConditions.push({
+              $and: [
+                { year: yearInt },
+                { year: { $exists: true } }
+              ]
+            });
           } else {
             console.warn('Invalid year:', year);
           }
@@ -673,7 +693,12 @@ async function connectDB() {
     
         // Filter for sted
         if (location) {
-          andConditions.push({ location: { $regex: new RegExp(location, 'i') } });
+          andConditions.push({
+            $and: [
+              { location: { $regex: new RegExp(location, 'i') } },
+              { location: { $exists: true } }
+            ]
+          });
         }
     
         // Filter for pris
@@ -681,36 +706,66 @@ async function connectDB() {
           const priceFilter = {};
           if (minPrice) priceFilter.$gte = parseFloat(minPrice);
           if (maxPrice) priceFilter.$lte = parseFloat(maxPrice);
-          andConditions.push({ highestBid: priceFilter });
+          andConditions.push({
+            $and: [
+              { highestBid: priceFilter },
+              { highestBid: { $exists: true } }
+            ]
+          });
         }
     
         // Filter for karosseri
         if (karosseri && karosseri.length > 0) {
           const karosserier = Array.isArray(karosseri) ? karosseri : karosseri.split(',');
-          andConditions.push({ karosseri: { $in: karosserier } });
+          andConditions.push({
+            $and: [
+              { karosseri: { $in: karosserier } },
+              { karosseri: { $exists: true } }
+            ]
+          });
         }
     
         // Filter for drivstoff
         if (fuelType && fuelType.length > 0) {
           const fuelTypes = Array.isArray(fuelType) ? fuelType : fuelType.split(',');
-          andConditions.push({ fuelType: { $in: fuelTypes } });
+          andConditions.push({
+            $and: [
+              { fuelType: { $in: fuelTypes } },
+              { fuelType: { $exists: true } }
+            ]
+          });
         }
     
         // Filter for girtype
         if (transmission) {
-          andConditions.push({ transmission });
+          andConditions.push({
+            $and: [
+              { transmission },
+              { transmission: { $exists: true } }
+            ]
+          });
         }
     
         // Filter for driftstype
         if (drivetrain) {
-          andConditions.push({ drivetrain });
+          andConditions.push({
+            $and: [
+              { drivetrain },
+              { drivetrain: { $exists: true } }
+            ]
+          });
         }
     
         // Filter for auksjonsvarighet
         if (auctionDuration) {
           const durationInt = parseInt(auctionDuration, 10);
           if (!isNaN(durationInt)) {
-            andConditions.push({ auctionDuration: durationInt });
+            andConditions.push({
+              $and: [
+                { auctionDuration: durationInt },
+                { auctionDuration: { $exists: true } }
+              ]
+            });
           } else {
             console.warn('Invalid auction duration:', auctionDuration);
           }
@@ -718,12 +773,22 @@ async function connectDB() {
     
         // Filter for minstepris
         if (reservePrice) {
-          andConditions.push({ reservePrice: parseFloat(reservePrice) });
+          andConditions.push({
+            $and: [
+              { reservePrice: parseFloat(reservePrice) },
+              { reservePrice: { $exists: true } }
+            ]
+          });
         }
     
         // Filter for uten minstepris
         if (auctionWithoutReserve) {
-          andConditions.push({ auctionWithoutReserve: auctionWithoutReserve === 'true' });
+          andConditions.push({
+            $and: [
+              { auctionWithoutReserve: auctionWithoutReserve === 'true' },
+              { auctionWithoutReserve: { $exists: true } }
+            ]
+          });
         }
     
         // Bygg MongoDB-spørringen
@@ -763,7 +828,6 @@ async function connectDB() {
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
       }
     });
-    
     
     
 
