@@ -5,10 +5,24 @@ import Header from './Header';
 import './LiveAuctions.css';
 import Footer from './Footer';
 
+// Debounce Hook
+function useDebounce(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
 function LiveAuctions() {
   const [liveAuctions, setLiveAuctions] = useState([]);
   const [timeLeftMap, setTimeLeftMap] = useState({});
-  const [filterCounts, setFilterCounts] = useState({});
   const [filters, setFilters] = useState({
     brand: [],
     model: '',
@@ -25,17 +39,17 @@ function LiveAuctions() {
     auctionWithoutReserve: false,
     category: '',
   });
-  const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sortOption, setSortOption] = useState('avsluttes-forst');
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Update category based on URL path
+  // Debounce filters for better performance
+  const debouncedFilters = useDebounce(filters, 300);
+
   useEffect(() => {
     const path = location.pathname.split('/');
     const categoryPath = path[path.length - 1];
@@ -47,23 +61,33 @@ function LiveAuctions() {
     };
 
     const category = categoryMap[categoryPath] || '';
-    setFilters((prevFilters) => ({ ...prevFilters, category }));
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      category,
+      brand: [],
+      karosseri: [],
+      location: [],
+      fuel: [],
+      gearType: [],
+      driveType: [],
+    }));
     setPage(1);
   }, [location.pathname]);
 
-  // Fetch auctions when filters, page, or sortOption change
   useEffect(() => {
     fetchLiveAuctions();
-    fetchFilterCounts(filters.category);
-    const interval = setInterval(updateAllTimeLeft, 1000);
-    return () => clearInterval(interval);
-  }, [filters, page, sortOption]);
+  }, [debouncedFilters, page, sortOption]);
 
   const fetchLiveAuctions = useCallback(async () => {
     setLoading(true);
     try {
-      const queryParams = { page, limit: 10, ...filters };
-      console.log('Filters sent to backend:', queryParams); // DEBUGGING
+      const activeFilters = Object.fromEntries(
+        Object.entries(debouncedFilters).filter(
+          ([, value]) => value && (Array.isArray(value) ? value.length > 0 : true)
+        )
+      );
+
+      const queryParams = { page, limit: 10, ...activeFilters };
       const token = localStorage.getItem('accessToken');
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
@@ -72,52 +96,16 @@ function LiveAuctions() {
         { params: queryParams, headers }
       );
 
-      console.log('Response from backend:', response.data); // DEBUGGING
       setLiveAuctions((prevAuctions) =>
         page === 1 ? response.data : [...prevAuctions, ...response.data]
       );
-      setHasMore(response.data.length > 0);
       setError(null);
-
-      const newTimeLeftMap = {};
-      response.data.forEach((auction) => {
-        newTimeLeftMap[auction._id] = calculateTimeLeft(auction.endDate);
-      });
-      setTimeLeftMap(newTimeLeftMap);
     } catch (error) {
       console.error('Error fetching live auctions:', error);
       setError('Kunne ikke hente live auksjoner. Prøv igjen senere.');
     }
     setLoading(false);
-  }, [filters, page, sortOption]);
-
-  const fetchFilterCounts = async (category) => {
-    try {
-      const token = localStorage.getItem('token');
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const response = await axios.get(
-        'https://rimelig-auksjon-backend.vercel.app/api/liveauctions/counts',
-        { headers, params: { category } }
-      );
-      setFilterCounts(response.data);
-    } catch (error) {
-      console.error('Error fetching filter counts:', error);
-    }
-  };
-
-  const handleCategorySelect = useCallback((category) => {
-    setFilters((prevFilters) => ({ ...prevFilters, category }));
-    setPage(1);
-    setLiveAuctions([]);
-    navigate(`/kategori/${category === 'car' ? 'bil' : category === 'boat' ? 'bat' : category}`);
-  }, [navigate]);
-  
-  const handleSortChange = (e) => {
-    setSortOption(e.target.value);
-    setPage(1);
-    setLiveAuctions([]);
-  };
-
+  }, [debouncedFilters, page, sortOption]);
 
   const handleCheckboxChange = (e) => {
     const { name, value, checked } = e.target;
@@ -128,32 +116,20 @@ function LiveAuctions() {
         ? [...prevFilters[name], newValue]
         : prevFilters[name].filter((v) => v !== newValue);
 
-      const updatedFilters = {
+      return {
         ...prevFilters,
-        [name]: updatedValues.length > 0 ? updatedValues : [],
+        [name]: updatedValues,
       };
-
-      fetchLiveAuctions(updatedFilters); // Dynamisk oppdatering
-      return updatedFilters;
     });
     setPage(1);
   };
 
   const handleFilterChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFilters((prevFilters) => {
-      const updatedFilters = {
-        ...prevFilters,
-        [name]: type === 'checkbox' ? checked : value,
-      };
-
-      if (!value || value === '') {
-        delete updatedFilters[name]; // Fjern tomme verdier
-      }
-
-      fetchLiveAuctions(updatedFilters); // Dynamisk oppdatering
-      return updatedFilters;
-    });
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
     setPage(1);
   };
 
@@ -170,20 +146,24 @@ function LiveAuctions() {
     return { days: 0, hours: 0, minutes: 0, seconds: 0 };
   };
 
-  const updateAllTimeLeft = () => {
-    setTimeLeftMap((prevTimeLeftMap) => {
-      const updatedTimeLeftMap = { ...prevTimeLeftMap };
-      liveAuctions.forEach((auction) => {
-        updatedTimeLeftMap[auction._id] = calculateTimeLeft(auction.endDate);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeLeftMap((prevTimeLeftMap) => {
+        const updatedTimeLeftMap = { ...prevTimeLeftMap };
+        liveAuctions.forEach((auction) => {
+          updatedTimeLeftMap[auction._id] = calculateTimeLeft(auction.endDate);
+        });
+        return updatedTimeLeftMap;
       });
-      return updatedTimeLeftMap;
-    });
-  };
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [liveAuctions]);
 
   
   return (
     <div>
-      <Header onCategorySelect={handleCategorySelect} />
+      <Header onCategorySelect={(category) => handleFilterChange({ target: { name: 'category', value: category } })} />
       <div className="whole-container">
         <div className="live-auctions-container">
           <aside className="filters-section">
