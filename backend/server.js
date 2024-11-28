@@ -659,7 +659,6 @@ async function connectDB() {
           const brands = Array.isArray(brand) ? brand : brand.split(',');
           andConditions.push({ brand: { $in: brands.map((b) => b.toUpperCase()) } });
         }
-    
         if (model) {
           andConditions.push({ model: { $regex: new RegExp(model, 'i') } });
         }
@@ -682,15 +681,17 @@ async function connectDB() {
           const karosserier = Array.isArray(karosseri) ? karosseri : karosseri.split(',');
           andConditions.push({ karosseri: { $in: karosserier } });
         }
-        if (fuelType) {
+        if (fuelType && fuelType.length > 0) {
           const fuelTypes = Array.isArray(fuelType) ? fuelType : fuelType.split(',');
           andConditions.push({ fuelType: { $in: fuelTypes } });
         }
-        if (transmission) {
-          andConditions.push({ transmission });
+        if (transmission && transmission.length > 0) {
+          const transmissions = Array.isArray(transmission) ? transmission : transmission.split(',');
+          andConditions.push({ transmission: { $in: transmissions } });
         }
-        if (drivetrain) {
-          andConditions.push({ drivetrain });
+        if (drivetrain && drivetrain.length > 0) {
+          const drivetrains = Array.isArray(drivetrain) ? drivetrain : drivetrain.split(',');
+          andConditions.push({ drivetrain: { $in: drivetrains } });
         }
         if (auctionDuration) {
           const durationInt = parseInt(auctionDuration, 10);
@@ -706,7 +707,7 @@ async function connectDB() {
         }
     
         const query = andConditions.length > 0 ? { $and: andConditions } : {};
-        console.log('Constructed query:', query);
+        console.log('Constructed query:', JSON.stringify(query, null, 2));
     
         const liveAuctions = await liveAuctionCollection.find(query).toArray();
     
@@ -717,6 +718,7 @@ async function connectDB() {
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
       }
     });
+    
     
     
     

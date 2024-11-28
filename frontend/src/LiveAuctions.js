@@ -148,23 +148,35 @@ function LiveAuctions() {
     }
     return { days: 0, hours: 0, minutes: 0, seconds: 0 };
   };
-  const fetchFilterCounts = async () => {
-    try {
-      const response = await axios.get('/api/filterCounts');
-      setFilterCounts(response.data);
-    } catch (error) {
-      console.error('Error fetching filter counts:', error);
-    }
-  };
-
-  fetchFilterCounts();
-
+ 
   const handleSortChange = (e) => {
     setSortOption(e.target.value);
     setPage(1);
     setLiveAuctions([]); // Clear auctions on sort change
   };
-  
+  // Oppdatert fetchFilterCounts funksjon
+const fetchFilterCounts = useCallback(async () => {
+  try {
+    const token = localStorage.getItem('accessToken');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    // Send gjeldende kategori som en parameter
+    const response = await axios.get(
+      'https://rimelig-auksjon-backend.vercel.app/api/filterCounts',
+      { params: { category: filters.category }, headers }
+    );
+
+    setFilterCounts(response.data); // Forvent at backend returnerer en struktur som matcher filterCounts
+  } catch (error) {
+    console.error('Error fetching filter counts:', error);
+  }
+}, [filters.category]);
+
+// Kall fetchFilterCounts når kategori eller filtre oppdateres
+useEffect(() => {
+  fetchFilterCounts();
+}, [filters.category, fetchFilterCounts]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeLeftMap((prevTimeLeftMap) => {
