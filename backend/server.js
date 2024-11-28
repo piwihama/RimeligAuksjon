@@ -643,76 +643,93 @@ async function connectDB() {
           auctionDuration, reservePrice, auctionWithoutReserve, category
         } = req.query;
     
-        const query = {};
+        const andConditions = [];
     
-        // Bygg MongoDB query
+        // Filter for kategori
         if (category) {
-          query.category = category;
-        } else {
-          console.log('Category is not defined or empty.');
+          andConditions.push({ category });
         }
     
-        if (brand) {
+        // Filter for merke
+        if (brand && brand.length > 0) {
           const brands = Array.isArray(brand) ? brand : brand.split(',');
-          query.brand = { $in: brands.map((b) => b.toUpperCase()) };
+          andConditions.push({ brand: { $in: brands.map((b) => b.toUpperCase()) } });
         }
     
+        // Filter for modell
         if (model) {
-          query.model = { $regex: new RegExp(model, 'i') };
+          andConditions.push({ model: { $regex: new RegExp(model, 'i') } });
         }
     
+        // Filter for år
         if (year) {
           const yearInt = parseInt(year, 10);
           if (!isNaN(yearInt)) {
-            query.year = yearInt;
+            andConditions.push({ year: yearInt });
           } else {
             console.warn('Invalid year:', year);
           }
         }
     
+        // Filter for sted
         if (location) {
-          query.location = { $regex: new RegExp(location, 'i') };
+          andConditions.push({ location: { $regex: new RegExp(location, 'i') } });
         }
     
+        // Filter for pris
         if (minPrice || maxPrice) {
-          query.highestBid = {};
-          if (minPrice) query.highestBid.$gte = parseFloat(minPrice);
-          if (maxPrice) query.highestBid.$lte = parseFloat(maxPrice);
+          const priceFilter = {};
+          if (minPrice) priceFilter.$gte = parseFloat(minPrice);
+          if (maxPrice) priceFilter.$lte = parseFloat(maxPrice);
+          andConditions.push({ highestBid: priceFilter });
         }
     
-        if (karosseri) {
+        // Filter for karosseri
+        if (karosseri && karosseri.length > 0) {
           const karosserier = Array.isArray(karosseri) ? karosseri : karosseri.split(',');
-          query.karosseri = { $in: karosserier };
+          andConditions.push({ karosseri: { $in: karosserier } });
         }
     
-        if (fuelType) {
+        // Filter for drivstoff
+        if (fuelType && fuelType.length > 0) {
           const fuelTypes = Array.isArray(fuelType) ? fuelType : fuelType.split(',');
-          query.fuelType = { $in: fuelTypes };
+          andConditions.push({ fuelType: { $in: fuelTypes } });
         }
     
+        // Filter for girtype
         if (transmission) {
-          query.transmission = transmission;
+          andConditions.push({ transmission });
         }
     
+        // Filter for driftstype
         if (drivetrain) {
-          query.drivetrain = drivetrain;
+          andConditions.push({ drivetrain });
         }
     
+        // Filter for auksjonsvarighet
         if (auctionDuration) {
           const durationInt = parseInt(auctionDuration, 10);
           if (!isNaN(durationInt)) {
-            query.auctionDuration = durationInt;
+            andConditions.push({ auctionDuration: durationInt });
           } else {
             console.warn('Invalid auction duration:', auctionDuration);
           }
         }
     
+        // Filter for minstepris
         if (reservePrice) {
-          query.reservePrice = parseFloat(reservePrice);
+          andConditions.push({ reservePrice: parseFloat(reservePrice) });
         }
     
+        // Filter for uten minstepris
         if (auctionWithoutReserve) {
-          query.auctionWithoutReserve = auctionWithoutReserve === 'true';
+          andConditions.push({ auctionWithoutReserve: auctionWithoutReserve === 'true' });
+        }
+    
+        // Bygg MongoDB-spørringen
+        const query = {};
+        if (andConditions.length > 0) {
+          query.$and = andConditions;
         }
     
         console.log('Constructed query:', query);
