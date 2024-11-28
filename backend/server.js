@@ -645,163 +645,69 @@ async function connectDB() {
     
         const andConditions = [];
     
-        // Filter for kategori
+        // Filtrer kun hvis parametrene er satt
         if (category) {
-          andConditions.push({
-            $and: [
-              { category },
-              { category: { $ne: "" } }, // Ekskluder tomme verdier
-              { category: { $ne: null } } // Ekskluder null
-            ]
-          });
+          andConditions.push({ category: { $eq: category } });
         }
     
-        // Filter for merke
-        if (brand && brand.length > 0) {
+        if (brand) {
           const brands = Array.isArray(brand) ? brand : brand.split(',');
-          andConditions.push({
-            $and: [
-              { brand: { $in: brands.map((b) => b.toUpperCase()) } },
-              { brand: { $ne: "" } },
-              { brand: { $ne: null } }
-            ]
-          });
+          andConditions.push({ brand: { $in: brands.map((b) => b.toUpperCase()) } });
         }
     
-        // Filter for modell
         if (model) {
-          andConditions.push({
-            $and: [
-              { model: { $regex: new RegExp(model, 'i') } },
-              { model: { $ne: "" } },
-              { model: { $ne: null } }
-            ]
-          });
+          andConditions.push({ model: { $regex: new RegExp(model, 'i') } });
         }
     
-        // Filter for år
         if (year) {
           const yearInt = parseInt(year, 10);
           if (!isNaN(yearInt)) {
-            andConditions.push({
-              $and: [
-                { year: yearInt },
-                { year: { $ne: "" } },
-                { year: { $ne: null } }
-              ]
-            });
-          } else {
-            console.warn('Invalid year:', year);
+            andConditions.push({ year: { $eq: yearInt } });
           }
         }
     
-        // Filter for sted
         if (location) {
-          andConditions.push({
-            $and: [
-              { location: { $regex: new RegExp(location, 'i') } },
-              { location: { $ne: "" } },
-              { location: { $ne: null } }
-            ]
-          });
+          andConditions.push({ location: { $regex: new RegExp(location, 'i') } });
         }
     
-        // Filter for pris
         if (minPrice || maxPrice) {
           const priceFilter = {};
           if (minPrice) priceFilter.$gte = parseFloat(minPrice);
           if (maxPrice) priceFilter.$lte = parseFloat(maxPrice);
-          andConditions.push({
-            $and: [
-              { highestBid: priceFilter },
-              { highestBid: { $ne: "" } },
-              { highestBid: { $ne: null } }
-            ]
-          });
+          andConditions.push({ highestBid: priceFilter });
         }
     
-        // Filter for karosseri
-        if (karosseri && karosseri.length > 0) {
+        if (karosseri) {
           const karosserier = Array.isArray(karosseri) ? karosseri : karosseri.split(',');
-          andConditions.push({
-            $and: [
-              { karosseri: { $in: karosserier } },
-              { karosseri: { $ne: "" } },
-              { karosseri: { $ne: null } }
-            ]
-          });
+          andConditions.push({ karosseri: { $in: karosserier } });
         }
     
-        // Filter for drivstoff
-        if (fuelType && fuelType.length > 0) {
+        if (fuelType) {
           const fuelTypes = Array.isArray(fuelType) ? fuelType : fuelType.split(',');
-          andConditions.push({
-            $and: [
-              { fuelType: { $in: fuelTypes } },
-              { fuelType: { $ne: "" } },
-              { fuelType: { $ne: null } }
-            ]
-          });
+          andConditions.push({ fuelType: { $in: fuelTypes } });
         }
     
-        // Filter for girtype
         if (transmission) {
-          andConditions.push({
-            $and: [
-              { transmission },
-              { transmission: { $ne: "" } },
-              { transmission: { $ne: null } }
-            ]
-          });
+          andConditions.push({ transmission: { $eq: transmission } });
         }
     
-        // Filter for driftstype
         if (drivetrain) {
-          andConditions.push({
-            $and: [
-              { drivetrain },
-              { drivetrain: { $ne: "" } },
-              { drivetrain: { $ne: null } }
-            ]
-          });
+          andConditions.push({ drivetrain: { $eq: drivetrain } });
         }
     
-        // Filter for auksjonsvarighet
         if (auctionDuration) {
           const durationInt = parseInt(auctionDuration, 10);
           if (!isNaN(durationInt)) {
-            andConditions.push({
-              $and: [
-                { auctionDuration: durationInt },
-                { auctionDuration: { $ne: "" } },
-                { auctionDuration: { $ne: null } }
-              ]
-            });
-          } else {
-            console.warn('Invalid auction duration:', auctionDuration);
+            andConditions.push({ auctionDuration: { $eq: durationInt } });
           }
         }
     
-        // Filter for minstepris
         if (reservePrice) {
-          andConditions.push({
-            $and: [
-              { reservePrice: parseFloat(reservePrice) },
-              { reservePrice: { $ne: "" } },
-              { reservePrice: { $ne: null } }
-            ]
-          });
+          andConditions.push({ reservePrice: { $eq: parseFloat(reservePrice) } });
         }
     
-        // Filter for uten minstepris
         if (auctionWithoutReserve) {
-          andConditions.push({
-            $and: [
-              { auctionWithoutReserve: auctionWithoutReserve === 'true' },
-              { auctionWithoutReserve: { $ne: "" } },
-              { auctionWithoutReserve: { $ne: null } }
-            ]
-          });
+          andConditions.push({ auctionWithoutReserve: auctionWithoutReserve === 'true' });
         }
     
         // Bygg MongoDB-spørringen
@@ -812,7 +718,7 @@ async function connectDB() {
     
         console.log('Constructed query:', query);
     
-        // Utfør databasespørringen uten caching
+        // Utfør databasespørringen
         const liveAuctions = await liveAuctionCollection.find(query).project({
           brand: 1,
           model: 1,
@@ -829,19 +735,12 @@ async function connectDB() {
           category: 1
         }).toArray();
     
-        if (!liveAuctions || liveAuctions.length === 0) {
-          console.log('No live auctions found for the given query.');
-        } else {
-          console.log(`Found ${liveAuctions.length} live auctions.`);
-        }
-    
-        res.status(200).json(liveAuctions || []);
+        res.status(200).json(liveAuctions);
       } catch (error) {
         console.error('Error processing filter request:', error);
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
       }
     });
-    
     
     
 
