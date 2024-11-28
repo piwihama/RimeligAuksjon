@@ -812,7 +812,7 @@ async function connectDB() {
     
         console.log('Constructed query:', query);
     
-        // Utfør databasespørringen
+        // Utfør databasespørringen uten caching
         const liveAuctions = await liveAuctionCollection.find(query).project({
           brand: 1,
           model: 1,
@@ -841,6 +841,7 @@ async function connectDB() {
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
       }
     });
+    
     
     
 
