@@ -645,6 +645,7 @@ async function connectDB() {
     
         const query = {};
     
+        // Bygg query basert på forespørsel
         if (category) query.category = category;
         if (brand) query.brand = { $in: (Array.isArray(brand) ? brand : brand.split(',')).map((b) => b.toUpperCase()) };
         if (model) query.model = { $regex: new RegExp(model, 'i') };
@@ -665,6 +666,17 @@ async function connectDB() {
     
         console.log('Constructed query:', query);
     
+        // Generer en unik cache-nøkkel basert på forespørselens parametere
+        const cacheKey = `liveAuctions:${JSON.stringify(req.query)}`;
+    
+        // Sjekk om data allerede er i cache
+        const cachedData = await redisClient.get(cacheKey);
+        if (cachedData) {
+          console.log('Cache hit:', cacheKey);
+          return res.status(200).json(JSON.parse(cachedData));
+        }
+    
+        // Hent data fra databasen hvis ikke i cache
         const liveAuctions = await liveAuctionCollection.find(query).project({
           brand: 1,
           model: 1,
@@ -681,14 +693,18 @@ async function connectDB() {
           category: 1
         }).toArray();
     
+        // Lagre resultatet i cache
+        if (liveAuctions.length > 0) {
+          await redisClient.set(cacheKey, JSON.stringify(liveAuctions), { EX: 300 }); // Cache i 5 minutter (300 sekunder)
+          console.log('Cache updated:', cacheKey);
+        }
+    
         res.status(200).json(liveAuctions || []);
       } catch (error) {
         console.error('Error processing filter request:', error);
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
       }
     });
-    
-    
     
 
     app.get('/api/auctions/:id', authenticateToken, async (req, res) => {
