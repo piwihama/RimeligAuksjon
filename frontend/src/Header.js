@@ -114,7 +114,7 @@ function Header() {
             <i className="material-icons">directions_car</i>Bil
           </button>
           <button onClick={() => navigateToCategory('boat')} className="menu-button">
-            <i className="material-icons">directions_boat</i>bat
+            <i className="material-icons">directions_boat</i>Båt
           </button>
           <button onClick={() => navigateToCategory('motorcycle')} className="menu-button">
             <i className="material-icons">two_wheeler</i>MC
