@@ -31,12 +31,13 @@ function LiveAuctions() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortOption, setSortOption] = useState('avsluttes-forst');
-  const [debounceTimer, setDebounceTimer] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Oppdater kategori basert på URL-stien
+  // Debounce timer
+  const [debounceTimer, setDebounceTimer] = useState(null);
+
   useEffect(() => {
     const path = location.pathname.split('/');
     const categoryPath = path[path.length - 1];
@@ -52,21 +53,22 @@ function LiveAuctions() {
     setPage(1);
   }, [location.pathname]);
 
-  // Hent auksjoner når filtre, side, eller sortering endres (med debounce)
   useEffect(() => {
+    // Debounce API call
     if (debounceTimer) clearTimeout(debounceTimer);
 
     const timer = setTimeout(() => {
       fetchLiveAuctions();
-    }, 300);
+    }, 300); // 300ms debounce
 
     setDebounceTimer(timer);
     return () => clearTimeout(timer);
-  }, [filters, page, sortOption, debounceTimer]);
+  }, [filters, page, sortOption]);
 
   const fetchLiveAuctions = useCallback(async () => {
     setLoading(true);
     try {
+      // Remove empty filters
       const activeFilters = Object.fromEntries(
         Object.entries(filters).filter(
           ([, value]) => value && (Array.isArray(value) ? value.length > 0 : true)
@@ -99,35 +101,6 @@ function LiveAuctions() {
     }
     setLoading(false);
   }, [filters, page, sortOption]);
-
-  const fetchFilterCounts = async (category) => {
-    try {
-      const token = localStorage.getItem('token');
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const response = await axios.get(
-        'https://rimelig-auksjon-backend.vercel.app/api/liveauctions/counts',
-        { headers, params: { category } }
-      );
-      setFilterCounts(response.data);
-    } catch (error) {
-      console.error('Error fetching filter counts:', error);
-    }
-  };
-
-  const handleCategorySelect = useCallback((category) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      category,
-    }));
-    setPage(1);
-    setLiveAuctions([]);
-  }, []);
-
-  const handleSortChange = (e) => {
-    setSortOption(e.target.value);
-    setPage(1);
-    setLiveAuctions([]);
-  };
 
   const handleCheckboxChange = (e) => {
     const { name, value, checked } = e.target;
