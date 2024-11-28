@@ -145,7 +145,14 @@ function LiveAuctions() {
     }
     return { days: 0, hours: 0, minutes: 0, seconds: 0 };
   };
-
+  const [showFilters, setShowFilters] = useState(false);
+  const [filterCounts, setFilterCounts] = useState({});
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
+    setPage(1);
+    setLiveAuctions([]); // Clear auctions on sort change
+  };
+  
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeLeftMap((prevTimeLeftMap) => {
