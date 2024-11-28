@@ -31,11 +31,12 @@ function LiveAuctions() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortOption, setSortOption] = useState('avsluttes-forst');
+  const [debounceTimer, setDebounceTimer] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Update category based on URL path
+  // Oppdater kategori basert på URL-stien
   useEffect(() => {
     const path = location.pathname.split('/');
     const categoryPath = path[path.length - 1];
@@ -51,19 +52,28 @@ function LiveAuctions() {
     setPage(1);
   }, [location.pathname]);
 
-  // Fetch auctions when filters, page, or sortOption change
+  // Hent auksjoner når filtre, side, eller sortering endres (med debounce)
   useEffect(() => {
-    fetchLiveAuctions();
-    fetchFilterCounts(filters.category);
-    const interval = setInterval(updateAllTimeLeft, 1000);
-    return () => clearInterval(interval);
-  }, [filters, page, sortOption]);
+    if (debounceTimer) clearTimeout(debounceTimer);
+
+    const timer = setTimeout(() => {
+      fetchLiveAuctions();
+    }, 300);
+
+    setDebounceTimer(timer);
+    return () => clearTimeout(timer);
+  }, [filters, page, sortOption, debounceTimer]);
 
   const fetchLiveAuctions = useCallback(async () => {
     setLoading(true);
     try {
-      const queryParams = { page, limit: 10, ...filters };
-      console.log('Filters sent to backend:', queryParams); // DEBUGGING
+      const activeFilters = Object.fromEntries(
+        Object.entries(filters).filter(
+          ([, value]) => value && (Array.isArray(value) ? value.length > 0 : true)
+        )
+      );
+
+      const queryParams = { page, limit: 10, ...activeFilters };
       const token = localStorage.getItem('accessToken');
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
@@ -72,7 +82,6 @@ function LiveAuctions() {
         { params: queryParams, headers }
       );
 
-      console.log('Response from backend:', response.data); // DEBUGGING
       setLiveAuctions((prevAuctions) =>
         page === 1 ? response.data : [...prevAuctions, ...response.data]
       );
@@ -106,18 +115,19 @@ function LiveAuctions() {
   };
 
   const handleCategorySelect = useCallback((category) => {
-    setFilters((prevFilters) => ({ ...prevFilters, category }));
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      category,
+    }));
     setPage(1);
     setLiveAuctions([]);
-    navigate(`/kategori/${category === 'car' ? 'bil' : category === 'boat' ? 'bat' : category}`);
-  }, [navigate]);
-  
+  }, []);
+
   const handleSortChange = (e) => {
     setSortOption(e.target.value);
     setPage(1);
     setLiveAuctions([]);
   };
-
 
   const handleCheckboxChange = (e) => {
     const { name, value, checked } = e.target;
@@ -128,32 +138,20 @@ function LiveAuctions() {
         ? [...prevFilters[name], newValue]
         : prevFilters[name].filter((v) => v !== newValue);
 
-      const updatedFilters = {
+      return {
         ...prevFilters,
-        [name]: updatedValues.length > 0 ? updatedValues : [],
+        [name]: updatedValues,
       };
-
-      fetchLiveAuctions(updatedFilters); // Dynamisk oppdatering
-      return updatedFilters;
     });
     setPage(1);
   };
 
   const handleFilterChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFilters((prevFilters) => {
-      const updatedFilters = {
-        ...prevFilters,
-        [name]: type === 'checkbox' ? checked : value,
-      };
-
-      if (!value || value === '') {
-        delete updatedFilters[name]; // Fjern tomme verdier
-      }
-
-      fetchLiveAuctions(updatedFilters); // Dynamisk oppdatering
-      return updatedFilters;
-    });
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
     setPage(1);
   };
 
