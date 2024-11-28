@@ -650,7 +650,8 @@ async function connectDB() {
           andConditions.push({
             $and: [
               { category },
-              { category: { $exists: true } }
+              { category: { $ne: "" } }, // Ekskluder tomme verdier
+              { category: { $ne: null } } // Ekskluder null
             ]
           });
         }
@@ -661,7 +662,8 @@ async function connectDB() {
           andConditions.push({
             $and: [
               { brand: { $in: brands.map((b) => b.toUpperCase()) } },
-              { brand: { $exists: true } }
+              { brand: { $ne: "" } },
+              { brand: { $ne: null } }
             ]
           });
         }
@@ -671,7 +673,8 @@ async function connectDB() {
           andConditions.push({
             $and: [
               { model: { $regex: new RegExp(model, 'i') } },
-              { model: { $exists: true } }
+              { model: { $ne: "" } },
+              { model: { $ne: null } }
             ]
           });
         }
@@ -683,7 +686,8 @@ async function connectDB() {
             andConditions.push({
               $and: [
                 { year: yearInt },
-                { year: { $exists: true } }
+                { year: { $ne: "" } },
+                { year: { $ne: null } }
               ]
             });
           } else {
@@ -696,7 +700,8 @@ async function connectDB() {
           andConditions.push({
             $and: [
               { location: { $regex: new RegExp(location, 'i') } },
-              { location: { $exists: true } }
+              { location: { $ne: "" } },
+              { location: { $ne: null } }
             ]
           });
         }
@@ -709,7 +714,8 @@ async function connectDB() {
           andConditions.push({
             $and: [
               { highestBid: priceFilter },
-              { highestBid: { $exists: true } }
+              { highestBid: { $ne: "" } },
+              { highestBid: { $ne: null } }
             ]
           });
         }
@@ -720,7 +726,8 @@ async function connectDB() {
           andConditions.push({
             $and: [
               { karosseri: { $in: karosserier } },
-              { karosseri: { $exists: true } }
+              { karosseri: { $ne: "" } },
+              { karosseri: { $ne: null } }
             ]
           });
         }
@@ -731,7 +738,8 @@ async function connectDB() {
           andConditions.push({
             $and: [
               { fuelType: { $in: fuelTypes } },
-              { fuelType: { $exists: true } }
+              { fuelType: { $ne: "" } },
+              { fuelType: { $ne: null } }
             ]
           });
         }
@@ -741,7 +749,8 @@ async function connectDB() {
           andConditions.push({
             $and: [
               { transmission },
-              { transmission: { $exists: true } }
+              { transmission: { $ne: "" } },
+              { transmission: { $ne: null } }
             ]
           });
         }
@@ -751,7 +760,8 @@ async function connectDB() {
           andConditions.push({
             $and: [
               { drivetrain },
-              { drivetrain: { $exists: true } }
+              { drivetrain: { $ne: "" } },
+              { drivetrain: { $ne: null } }
             ]
           });
         }
@@ -763,7 +773,8 @@ async function connectDB() {
             andConditions.push({
               $and: [
                 { auctionDuration: durationInt },
-                { auctionDuration: { $exists: true } }
+                { auctionDuration: { $ne: "" } },
+                { auctionDuration: { $ne: null } }
               ]
             });
           } else {
@@ -776,7 +787,8 @@ async function connectDB() {
           andConditions.push({
             $and: [
               { reservePrice: parseFloat(reservePrice) },
-              { reservePrice: { $exists: true } }
+              { reservePrice: { $ne: "" } },
+              { reservePrice: { $ne: null } }
             ]
           });
         }
@@ -786,7 +798,8 @@ async function connectDB() {
           andConditions.push({
             $and: [
               { auctionWithoutReserve: auctionWithoutReserve === 'true' },
-              { auctionWithoutReserve: { $exists: true } }
+              { auctionWithoutReserve: { $ne: "" } },
+              { auctionWithoutReserve: { $ne: null } }
             ]
           });
         }
