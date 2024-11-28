@@ -23,7 +23,10 @@ function useDebounce(value, delay) {
 function LiveAuctions() {
   const [liveAuctions, setLiveAuctions] = useState([]);
   const [timeLeftMap, setTimeLeftMap] = useState({});
+  const [showFilters, setShowFilters] = useState(false);
+  const [filterCounts, setFilterCounts] = useState({});
   const [filters, setFilters] = useState({
+    
     brand: [],
     model: '',
     year: '',
@@ -155,8 +158,7 @@ function LiveAuctions() {
   };
 
   fetchFilterCounts();
-  const [showFilters, setShowFilters] = useState(false);
-  const [filterCounts, setFilterCounts] = useState({});
+
   const handleSortChange = (e) => {
     setSortOption(e.target.value);
     setPage(1);
