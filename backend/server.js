@@ -639,7 +639,7 @@ async function connectDB() {
     app.get('/api/liveauctions/filter', async (req, res) => {
       try {
         const {
-          brand, model, year, location, minPrice, maxPrice, karosseri, fuelType, transmission, drivetrain,
+          brand, model, year, location, minPrice, maxPrice, karosseri, fuel, gearType, driveType,
           auctionDuration, reservePrice, auctionWithoutReserve, category
         } = req.query;
     
@@ -647,7 +647,7 @@ async function connectDB() {
     
         // Log each filter value
         console.log('Filter values received:', {
-          brand, model, year, location, minPrice, maxPrice, karosseri, fuelType, transmission, drivetrain,
+          brand, model, year, location, minPrice, maxPrice, karosseri, fuel, gearType, driveType,
           auctionDuration, reservePrice, auctionWithoutReserve, category
         });
     
@@ -681,17 +681,17 @@ async function connectDB() {
           const karosserier = Array.isArray(karosseri) ? karosseri : karosseri.split(',');
           andConditions.push({ karosseri: { $in: karosserier } });
         }
-        if (fuelType && fuelType.length > 0) {
-          const fuelTypes = Array.isArray(fuelType) ? fuelType : fuelType.split(',');
-          andConditions.push({ fuelType: { $in: fuelTypes } });
+        if (fuel) {
+          const fuels = Array.isArray(fuel) ? fuel : fuel.split(',');
+          andConditions.push({ fuel: { $in: fuels } });
         }
-        if (transmission && transmission.length > 0) {
-          const transmissions = Array.isArray(transmission) ? transmission : transmission.split(',');
-          andConditions.push({ transmission: { $in: transmissions } });
+        if (gearType) {
+          const gearTypes = Array.isArray(gearType) ? gearType : gearType.split(',');
+          andConditions.push({ gearType: { $in: gearTypes } });
         }
-        if (drivetrain && drivetrain.length > 0) {
-          const drivetrains = Array.isArray(drivetrain) ? drivetrain : drivetrain.split(',');
-          andConditions.push({ drivetrain: { $in: drivetrains } });
+        if (driveType) {
+          const driveTypes = Array.isArray(driveType) ? driveType : driveType.split(',');
+          andConditions.push({ driveType: { $in: driveTypes } });
         }
         if (auctionDuration) {
           const durationInt = parseInt(auctionDuration, 10);
