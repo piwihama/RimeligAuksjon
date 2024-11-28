@@ -58,6 +58,7 @@ function LiveAuctions() {
     const interval = setInterval(updateAllTimeLeft, 1000);
     return () => clearInterval(interval);
   }, [filters, page, sortOption]);
+
   const fetchLiveAuctions = useCallback(async () => {
     setLoading(true);
     try {
@@ -90,7 +91,6 @@ function LiveAuctions() {
     setLoading(false);
   }, [filters, page, sortOption]);
 
-
   const fetchFilterCounts = async (category) => {
     try {
       const token = localStorage.getItem('token');
@@ -112,50 +112,42 @@ function LiveAuctions() {
     navigate(`/kategori/${category === 'car' ? 'bil' : category === 'boat' ? 'bat' : category}`);
   }, [navigate]);
 
-  const sortAuctions = (auctions) => {
-    switch (sortOption) {
-      case 'avsluttes-forst':
-        return auctions.sort((a, b) => new Date(a.endDate) - new Date(b.endDate));
-      case 'avsluttes-sist':
-        return auctions.sort((a, b) => new Date(b.endDate) - new Date(a.endDate));
-      case 'nyeste-auksjoner':
-        return auctions.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
-      case 'hoyeste-bud':
-        return auctions.sort((a, b) => b.highestBid - a.highestBid);
-      case 'laveste-bud':
-        return auctions.sort((a, b) => a.highestBid - b.highestBid);
-      default:
-        return auctions;
-    }
-  };
-
-  const handleSortChange = (e) => {
-    setSortOption(e.target.value);
-    setPage(1);
-    setLiveAuctions([]);
-  };
-
   const handleCheckboxChange = (e) => {
     const { name, value, checked } = e.target;
-    const newValue = (name === 'brand' || name === 'model') ? value.toUpperCase() : value;
+    const newValue = name === 'brand' ? value.toUpperCase() : value;
+
     setFilters((prevFilters) => {
-      const newValues = checked
+      const updatedValues = checked
         ? [...prevFilters[name], newValue]
         : prevFilters[name].filter((v) => v !== newValue);
-      return { ...prevFilters, [name]: newValues };
+
+      const updatedFilters = {
+        ...prevFilters,
+        [name]: updatedValues.length > 0 ? updatedValues : [],
+      };
+
+      fetchLiveAuctions(updatedFilters); // Dynamisk oppdatering
+      return updatedFilters;
     });
     setPage(1);
-    fetchLiveAuctions();
   };
 
   const handleFilterChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+    setFilters((prevFilters) => {
+      const updatedFilters = {
+        ...prevFilters,
+        [name]: type === 'checkbox' ? checked : value,
+      };
+
+      if (!value || value === '') {
+        delete updatedFilters[name]; // Fjern tomme verdier
+      }
+
+      fetchLiveAuctions(updatedFilters); // Dynamisk oppdatering
+      return updatedFilters;
+    });
     setPage(1);
-    fetchLiveAuctions();
   };
 
   const calculateTimeLeft = (endDate) => {
