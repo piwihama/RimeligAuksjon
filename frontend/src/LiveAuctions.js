@@ -145,6 +145,16 @@ function LiveAuctions() {
     }
     return { days: 0, hours: 0, minutes: 0, seconds: 0 };
   };
+  const fetchFilterCounts = async () => {
+    try {
+      const response = await axios.get('/api/filterCounts');
+      setFilterCounts(response.data);
+    } catch (error) {
+      console.error('Error fetching filter counts:', error);
+    }
+  };
+
+  fetchFilterCounts();
   const [showFilters, setShowFilters] = useState(false);
   const [filterCounts, setFilterCounts] = useState({});
   const handleSortChange = (e) => {
