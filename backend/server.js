@@ -645,26 +645,79 @@ async function connectDB() {
     
         const query = {};
     
-        if (category) query.category = category;
-        if (brand) query.brand = { $in: (Array.isArray(brand) ? brand : brand.split(',')).map((b) => b.toUpperCase()) };
-        if (model) query.model = { $regex: new RegExp(model, 'i') };
-        if (year) query.year = parseInt(year);
-        if (location) query.location = { $regex: new RegExp(location, 'i') };
+        // Bygg MongoDB query
+        if (category) {
+          query.category = category;
+        } else {
+          console.log('Category is not defined or empty.');
+        }
+    
+        if (brand) {
+          const brands = Array.isArray(brand) ? brand : brand.split(',');
+          query.brand = { $in: brands.map((b) => b.toUpperCase()) };
+        }
+    
+        if (model) {
+          query.model = { $regex: new RegExp(model, 'i') };
+        }
+    
+        if (year) {
+          const yearInt = parseInt(year, 10);
+          if (!isNaN(yearInt)) {
+            query.year = yearInt;
+          } else {
+            console.warn('Invalid year:', year);
+          }
+        }
+    
+        if (location) {
+          query.location = { $regex: new RegExp(location, 'i') };
+        }
+    
         if (minPrice || maxPrice) {
           query.highestBid = {};
           if (minPrice) query.highestBid.$gte = parseFloat(minPrice);
           if (maxPrice) query.highestBid.$lte = parseFloat(maxPrice);
         }
-        if (karosseri) query.karosseri = { $in: (Array.isArray(karosseri) ? karosseri : karosseri.split(',')) };
-        if (fuelType) query.fuelType = { $in: (Array.isArray(fuelType) ? fuelType : fuelType.split(',')) };
-        if (transmission) query.transmission = transmission;
-        if (drivetrain) query.drivetrain = drivetrain;
-        if (auctionDuration) query.auctionDuration = parseInt(auctionDuration);
-        if (reservePrice) query.reservePrice = parseFloat(reservePrice);
-        if (auctionWithoutReserve) query.auctionWithoutReserve = auctionWithoutReserve === 'true';
+    
+        if (karosseri) {
+          const karosserier = Array.isArray(karosseri) ? karosseri : karosseri.split(',');
+          query.karosseri = { $in: karosserier };
+        }
+    
+        if (fuelType) {
+          const fuelTypes = Array.isArray(fuelType) ? fuelType : fuelType.split(',');
+          query.fuelType = { $in: fuelTypes };
+        }
+    
+        if (transmission) {
+          query.transmission = transmission;
+        }
+    
+        if (drivetrain) {
+          query.drivetrain = drivetrain;
+        }
+    
+        if (auctionDuration) {
+          const durationInt = parseInt(auctionDuration, 10);
+          if (!isNaN(durationInt)) {
+            query.auctionDuration = durationInt;
+          } else {
+            console.warn('Invalid auction duration:', auctionDuration);
+          }
+        }
+    
+        if (reservePrice) {
+          query.reservePrice = parseFloat(reservePrice);
+        }
+    
+        if (auctionWithoutReserve) {
+          query.auctionWithoutReserve = auctionWithoutReserve === 'true';
+        }
     
         console.log('Constructed query:', query);
     
+        // Utfør databasespørringen
         const liveAuctions = await liveAuctionCollection.find(query).project({
           brand: 1,
           model: 1,
@@ -680,6 +733,12 @@ async function connectDB() {
           fuelType: 1,
           category: 1
         }).toArray();
+    
+        if (!liveAuctions || liveAuctions.length === 0) {
+          console.log('No live auctions found for the given query.');
+        } else {
+          console.log(`Found ${liveAuctions.length} live auctions.`);
+        }
     
         res.status(200).json(liveAuctions || []);
       } catch (error) {
