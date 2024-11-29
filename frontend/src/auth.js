@@ -36,20 +36,23 @@ const startInactivityTimer = () => {
 // Forny accessToken ved hjelp av refreshToken
 export const refreshAuthToken = async () => {
   try {
+    console.log("Sending refresh token request...");
     const response = await axios.post('/api/refresh-token', {}, { withCredentials: true });
 
     if (response.data.accessToken) {
+      console.log("Token refreshed successfully:", response.data.accessToken);
       localStorage.setItem('accessToken', response.data.accessToken);
-      window.dispatchEvent(new Event('storage')); // Trigger oppdatering for andre komponenter
-      startInactivityTimer(); // Reset timer
+      window.dispatchEvent(new Event('storage'));
+      startInactivityTimer();
       return true;
     }
   } catch (error) {
-    console.error('Failed to refresh token:', error);
+    console.error('Failed to refresh token:', error.response || error.message);
     localStorage.removeItem('accessToken');
     return false;
   }
 };
+
 
 const parseJwt = (token) => {
   const base64Url = token.split('.')[1];
