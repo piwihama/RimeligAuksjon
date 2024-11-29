@@ -231,6 +231,10 @@ async function connectDB() {
       next();
     };
 
+
+
+    
+
     app.post('/signup', async (req, res) => {
       try {
         const { firstName, lastName, email, confirmEmail, password, mobile, birthDate, address1, address2, postalCode, city, country, accountNumber } = req.body;
@@ -240,8 +244,10 @@ async function connectDB() {
         const secret = speakeasy.generateSecret({ length: 20 }).base32; // Generer unik secret
         const otp = speakeasy.totp({
           secret: secret,
-          encoding: 'base32'
+          encoding: 'base32',
         });
+    
+        const otpExpiry = Date.now() + 5 * 60 * 1000; // OTP gyldig i 5 minutter
     
         const newUser = {
           firstName,
@@ -259,7 +265,8 @@ async function connectDB() {
           role: 'user',
           verified: false,
           otpSecret: secret, // Lagre secret
-          otp
+          otp, // Behold for debugging (valgfritt)
+          otpExpiry, // Legg til utløpstid
         };
     
         await loginCollection.insertOne(newUser);
@@ -268,15 +275,15 @@ async function connectDB() {
           service: 'gmail',
           auth: {
             user: 'peiwast124@gmail.com',
-            pass: 'eysj jfoz ahcj qqzo'
-          }
+            pass: 'eysj jfoz ahcj qqzo',
+          },
         });
     
         let mailOptions = {
           from: '"RimeligAuksjon.no" <peiwast124@gmail.com>',
           to: email,
           subject: 'Verifiser din brukerkonto.',
-          text: `Engangskoden din er: ${otp}`
+          text: `Engangskoden din er: ${otp}. Den er gyldig i 5 minutter.`,
         };
     
         await transporter.sendMail(mailOptions);
@@ -286,8 +293,7 @@ async function connectDB() {
         res.status(500).json({ message: 'Internal Server Error' });
       }
     });
-   
-
+    
     app.post('/verify-otp', async (req, res) => {
       try {
         const { email, otp } = req.body;
@@ -302,12 +308,18 @@ async function connectDB() {
           return res.status(400).json({ message: 'User not found' });
         }
     
+        // Sjekk om OTP-en har utløpt
+        if (user.otpExpiry < Date.now()) {
+          console.error('OTP has expired for email:', email);
+          return res.status(400).json({ message: 'OTP has expired' });
+        }
+    
         // Verifiser OTP med speakeasy
         const verified = speakeasy.totp.verify({
           secret: user.otpSecret,
           encoding: 'base32',
           token: otp,
-          window: 2 // Utvider tidsvinduet for å tillate mer fleksibilitet
+          window: 2, // Utvider tidsvinduet for å tillate mer fleksibilitet
         });
     
         // Hvis OTP ikke stemmer
@@ -316,20 +328,24 @@ async function connectDB() {
           return res.status(400).json({ message: 'Invalid OTP' });
         }
     
-        // Oppdater brukeren som verifisert og fjern OTP-secret
+        // Oppdater brukeren som verifisert og fjern OTP-secret og utløpstid
         await loginCollection.updateOne(
           { email },
-          { $set: { verified: true }, $unset: { otpSecret: "" } }
+          { $set: { verified: true }, $unset: { otpSecret: "", otpExpiry: "" } }
         );
     
         console.log(`Email verified successfully for email: ${email}`);
         res.status(200).json({ message: 'Email verified successfully' });
-    
       } catch (err) {
         console.error('Error during OTP verification:', err);
         res.status(500).json({ message: 'Internal Server Error' });
       }
     });
+    
+
+
+
+   
     
     
     app.post('/forgot-password', async (req, res) => {
