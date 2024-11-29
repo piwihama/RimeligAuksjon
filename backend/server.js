@@ -383,99 +383,26 @@ async function connectDB() {
       }
     });
 
+    app.post('/api/refresh-token', (req, res) => {
+      const refreshToken = req.cookies.refreshToken;
+      if (!refreshToken) return res.status(401).json({ message: 'No refresh token provided' });
     
-    app.post('/login', async (req, res) => {
-      try {
-        const { email, password } = req.body;
-        const user = await loginCollection.findOne({ email, password });
-        if (!user) return res.status(400).json({ message: 'Invalid email or password' });
-        if (!user.verified) {
-          const otp = speakeasy.totp({
-            secret: 'secret',
-            encoding: 'base32'
-          });
-
-          await loginCollection.updateOne({ email }, { $set: { otp } });
-
-          let transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-              user: 'peiwast124@gmail.com',
-              pass: 'eysj jfoz ahcj qqzo'
-            }
-          }); 
-          let mailOptions = {
-            from: '"RimeligAuksjon.no" <peiwast124@gmail.com>',
-            to: email,
-            subject: 'Verifiser din brukerkonto.',
-            text: `Din engangskode er: ${otp}`
-          };
-
-          await transporter.sendMail(mailOptions);
-
-          return res.status(200).json({ message: 'User not verified', email });
-        }
-
-
-        const accessToken = jwt.sign({ userId: user._id, role: user.role }, 'your_jwt_secret', { expiresIn: '1h' });
-        res.json({ accessToken, role: user.role });
-      } catch (err) {app.post('/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const user = await loginCollection.findOne({ email, password });
-    if (!user) return res.status(400).json({ message: 'Invalid email or password' });
-
-    if (!user.verified) {
-      const otp = speakeasy.totp({
-        secret: 'secret',
-        encoding: 'base32'
+      jwt.verify(refreshToken, 'your_refresh_secret', (err, user) => {
+        if (err) return res.status(403).json({ message: 'Invalid refresh token' });
+    
+        // Generer nytt access token
+        const newAccessToken = jwt.sign({ userId: user.userId, role: user.role }, 'your_jwt_secret', { expiresIn: '15m' });
+        res.json({ accessToken: newAccessToken });
       });
-
-      await loginCollection.updateOne({ email }, { $set: { otp } });
-
-      let transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: 'peiwast124@gmail.com',
-          pass: 'eysj jfoz ahcj qqzo'
-        }
-      });
-
-      let mailOptions = {
-        from: '"RimeligAuksjon.no" <peiwast124@gmail.com>',
-        to: email,
-        subject: 'Verifiser din brukerkonto.',
-        text: `Din engangskode er: ${otp}`
-      };
-
-      await transporter.sendMail(mailOptions);
-
-      return res.status(200).json({ message: 'User not verified', email });
-    }
-
-    // Generer access token (kort levetid) og refresh token (lengre levetid)
-    const accessToken = jwt.sign({ userId: user._id, role: user.role }, 'your_jwt_secret', { expiresIn: '15m' });
-    const refreshToken = jwt.sign({ userId: user._id, role: user.role }, 'your_refresh_secret', { expiresIn: '7d' });
-
-    // Lagre refresh token som en HTTP-only cookie
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'Strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dager
+    });
+    
+    // Logout Endpoint
+    app.post('/logout', (req, res) => {
+      res.clearCookie('refreshToken');
+      res.json({ message: 'Logged out successfully' });
     });
 
-    res.json({ accessToken, role: user.role });
-  } catch (err) {
-    console.error('Error during login:', err);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
-});
-
-        console.error('Error during login:', err);
-        res.status(500).json({ message: 'Internal Server Error' });
-      }
-    });
+ 
     app.get('/api/auctions', async (req, res) => {
       console.log('Fetching auctions...');
       try {
@@ -540,11 +467,12 @@ async function connectDB() {
         res.json({ accessToken: newAccessToken });
       });
     });
+    
+    // Logout Endpoint
     app.post('/logout', (req, res) => {
       res.clearCookie('refreshToken');
       res.json({ message: 'Logged out successfully' });
     });
-    
 
     app.get('/api/liveauctions/counts', async (req, res) => {
       try {

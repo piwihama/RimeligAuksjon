@@ -26,7 +26,6 @@ export const isAuthenticated = () => {
   }
 };
 
-
 const startInactivityTimer = () => {
   clearTimeout(inactivityTimer);
 
@@ -35,30 +34,28 @@ const startInactivityTimer = () => {
   }, 14 * 60 * 1000); // Forny token 1 minutt før utløp (hvis tokenet er 15 minutter langt)
 };
 
-const refreshAuthToken = async () => {
+// Forny accessToken ved hjelp av refreshToken
+export const refreshAuthToken = async () => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) return;
-
-    const response = await axios.post('/api/refresh-token', {}, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    const response = await axios.post('/api/refresh-token', {}, { withCredentials: true });
 
     if (response.data.accessToken) {
       localStorage.setItem('accessToken', response.data.accessToken);
       window.dispatchEvent(new Event('storage')); // Trigger oppdatering for andre komponenter
       startInactivityTimer(); // Reset timer
+      return true;
     }
   } catch (error) {
     console.error('Failed to refresh token:', error);
     localStorage.removeItem('accessToken');
+    return false;
   }
 };
 
 const parseJwt = (token) => {
   const base64Url = token.split('.')[1];
   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+  const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
     return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
   }).join(''));
 
