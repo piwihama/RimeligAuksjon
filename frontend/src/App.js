@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './Login';
 import Signup from './Signup';
@@ -20,7 +20,7 @@ import Account from './Account';
 import MyAuctions from './MyAuctions';
 import ForgotPassword from './ForgotPassword';
 import ResetPassword from './ResetPassword';
-import { isAuthenticated } from './auth'; // Oppdater denne funksjonen til å returnere brukerens rolle
+import { isAuthenticated, refreshAuthToken } from './auth';
 import SearchResults from './SearchResults';
 import InfoPage from './InfoPage';
 import Step1MC from './Step1MC';
@@ -35,11 +35,20 @@ const AdminRoute = ({ children }) => {
   const user = isAuthenticated();
   return user && user.role === 'admin' ? children : <Navigate to="/" />;
 };
+
 const AuthRoute = ({ children }) => {
   return isAuthenticated() ? <Navigate to="/home" /> : children;
 };
 
 function App() {
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refreshAuthToken(); // Forny token periodisk
+    }, 10 * 60 * 1000); // Forny hvert 10. minutt (før accessToken utløper)
+
+    return () => clearInterval(interval); // Rydd opp når komponenten unmountes
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>

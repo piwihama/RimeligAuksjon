@@ -1,4 +1,3 @@
-// src/api.js
 import axios from 'axios';
 import { refreshAuthToken } from './auth';
 

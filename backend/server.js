@@ -460,17 +460,22 @@ async function connectDB() {
       jwt.verify(refreshToken, 'your_refresh_secret', (err, user) => {
         if (err) return res.status(403).json({ message: 'Invalid refresh token' });
     
-        // Generer nytt access token
+        // Generer nytt access-token og refresh-token
         const newAccessToken = jwt.sign({ userId: user.userId, role: user.role }, 'your_jwt_secret', { expiresIn: '15m' });
+        const newRefreshToken = jwt.sign({ userId: user.userId, role: user.role }, 'your_refresh_secret', { expiresIn: '7d' });
+    
+        // Oppdater refresh-token i cookie
+        res.cookie('refreshToken', newRefreshToken, {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'Strict',
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dager
+        });
+    
         res.json({ accessToken: newAccessToken });
       });
     });
     
-    // Logout Endpoint
-    app.post('/logout', (req, res) => {
-      res.clearCookie('refreshToken');
-      res.json({ message: 'Logged out successfully' });
-    });
 
  
     app.get('/api/auctions', async (req, res) => {

@@ -1,4 +1,3 @@
-// src/auth.js
 import axios from 'axios';
 
 let inactivityTimer;
@@ -63,7 +62,6 @@ const parseJwt = (token) => {
 };
 
 // Lytt til aktivitet på siden for å reset inaktivitetstimeren
-window.addEventListener('mousemove', startInactivityTimer);
-window.addEventListener('keydown', startInactivityTimer);
-window.addEventListener('scroll', startInactivityTimer);
-window.addEventListener('click', startInactivityTimer);
+['mousemove', 'keydown', 'scroll', 'click'].forEach((event) => {
+  window.addEventListener(event, startInactivityTimer);
+});
