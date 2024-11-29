@@ -69,7 +69,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.options('*', cors(corsOptions));
+app.options('*', cors(corsOptions)); //
 
 // Plasser dette før andre ruter og mellomvarer
 app.options('*', (req, res) => {
