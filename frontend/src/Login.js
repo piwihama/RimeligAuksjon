@@ -188,7 +188,7 @@ function Login() {
           <h2>Logg inn</h2>
           {successMessage && <div className="alert alert-success">{successMessage}</div>}
           {!otpRequired && !forgotPassword ? (
-            <form onSubmit={handleSubmit} autoComplete="off">
+            <form onSubmit={handleSubmit} autoComplete="on">
               <div className="form-group">
                 <label htmlFor="email"><strong>E-post</strong></label>
                 <input
