@@ -530,18 +530,7 @@ async function connectDB() {
     
     
     // Endepunkt for å fornye tokenet
-    app.post('/api/refresh-token', (req, res) => {
-      const refreshToken = req.cookies.refreshToken;
-      if (!refreshToken) return res.status(401).json({ message: 'No refresh token provided' });
-    
-      jwt.verify(refreshToken, 'your_refresh_secret', (err, user) => {
-        if (err) return res.status(403).json({ message: 'Invalid refresh token' });
-    
-        // Generer nytt access token
-        const newAccessToken = jwt.sign({ userId: user.userId, role: user.role }, 'your_jwt_secret', { expiresIn: '15m' });
-        res.json({ accessToken: newAccessToken });
-      });
-    });
+ 
     
     // Logout Endpoint
     app.post('/logout', (req, res) => {
