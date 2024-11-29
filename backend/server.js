@@ -457,12 +457,23 @@ async function connectDB() {
     });
 
     app.post('/api/refresh-token', (req, res) => {
-      console.log('Cookies received:', req.cookies); // Denne skal vise refreshToken
+      console.log('Cookies received:', req.cookies); // Logger innkommende cookies
+      console.log('Headers received:', req.headers); // Logger headers for å verifisere CORS og token-tilstedeværelse
+    
       const refreshToken = req.cookies.refreshToken;
-      if (!refreshToken) return res.status(401).json({ message: 'No refresh token provided' });
+    
+      if (!refreshToken) {
+        console.error('No refresh token provided');
+        return res.status(401).json({ message: 'No refresh token provided' });
+      }
     
       jwt.verify(refreshToken, 'your_refresh_secret', (err, user) => {
-        if (err) return res.status(403).json({ message: 'Invalid refresh token' });
+        if (err) {
+          console.error('Invalid refresh token:', err);
+          return res.status(403).json({ message: 'Invalid refresh token' });
+        }
+    
+        console.log('Token verified successfully:', user);
     
         const newAccessToken = jwt.sign({ userId: user.userId, role: user.role }, 'your_jwt_secret', { expiresIn: '15m' });
         const newRefreshToken = jwt.sign({ userId: user.userId, role: user.role }, 'your_refresh_secret', { expiresIn: '7d' });
@@ -474,9 +485,11 @@ async function connectDB() {
           maxAge: 7 * 24 * 60 * 60 * 1000,
         });
     
+        console.log('New tokens generated and sent');
         res.json({ accessToken: newAccessToken });
       });
     });
+    
     
     
 
