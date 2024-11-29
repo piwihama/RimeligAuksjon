@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "cookie-parser": "^1.4.7",
     "express": "^4.19.2",
     "git": "^0.1.5",
     "react-helmet": "^6.1.0",
