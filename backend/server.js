@@ -384,6 +384,60 @@ async function connectDB() {
       }
     });
 
+    app.post('/login', async (req, res) => {
+      try {
+        const { email, password } = req.body;
+        const user = await loginCollection.findOne({ email, password });
+        if (!user) return res.status(400).json({ message: 'Invalid email or password' });
+    
+        if (!user.verified) {
+          const otp = speakeasy.totp({
+            secret: 'secret',
+            encoding: 'base32',
+          });
+    
+          await loginCollection.updateOne({ email }, { $set: { otp } });
+    
+          let transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: 'peiwast124@gmail.com',
+              pass: 'eysj jfoz ahcj qqzo',
+            },
+          });
+    
+          let mailOptions = {
+            from: '"RimeligAuksjon.no" <peiwast124@gmail.com>',
+            to: email,
+            subject: 'Verifiser din brukerkonto.',
+            text: `Din engangskode er: ${otp}`,
+          };
+    
+          await transporter.sendMail(mailOptions);
+    
+          return res.status(200).json({ message: 'User not verified', email });
+        }
+    
+        // Generer tokens
+        const accessToken = jwt.sign({ userId: user._id, role: user.role }, 'your_jwt_secret', { expiresIn: '15m' });
+        const refreshToken = jwt.sign({ userId: user._id, role: user.role }, 'your_refresh_secret', { expiresIn: '7d' });
+    
+        // Sett refreshToken som en HTTP-only cookie
+        res.cookie('refreshToken', refreshToken, {
+          httpOnly: true,
+          secure: true, // Bruk true hvis du bruker HTTPS
+          sameSite: 'Strict',
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dager
+        });
+    
+        res.json({ accessToken, role: user.role });
+      } catch (err) {
+        console.error('Error during login:', err);
+        res.status(500).json({ message: 'Internal Server Error' });
+      }
+    });
+    
+
     app.post('/reset-password', async (req, res) => {
       try {
         const { email, otp, newPassword } = req.body;
