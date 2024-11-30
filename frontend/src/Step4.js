@@ -8,7 +8,7 @@ import Footer from './Footer';
 
 const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     const [previewImages, setPreviewImages] = useState(formData.previewImages || []);
-    const [modalImage, setModalImage] = useState(null); // State to handle modal image display
+    const [modalImage, setModalImage] = useState(null);
 
     const validationSchema = Yup.object({
         description: Yup.string().required('Beskrivelse er påkrevd'),
@@ -111,7 +111,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                                                             >
                                                                 <img src={src} alt={`Preview ${index}`} />
                                                                 <span className="remove-icon" onClick={(e) => {
-                                                                    e.stopPropagation(); // Prevent opening modal on remove click
+                                                                    e.stopPropagation();
                                                                     removeImage(index, setFieldValue);
                                                                 }}>×</span>
                                                             </div>
