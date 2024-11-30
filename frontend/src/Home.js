@@ -19,7 +19,7 @@ function Home() {
   const navigate = useNavigate();
 
   const handleButtonClick = () => {
-    navigate('/info');
+    navigate('/info');//
   };
 
   useEffect(() => {
