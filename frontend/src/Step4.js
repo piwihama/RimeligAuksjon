@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import './Step4.css';
 import Header from './Header';
 import Footer from './Footer';
@@ -52,6 +53,17 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
         setModalImage(null);
     };
 
+    const handleOnDragEnd = (result, setFieldValue) => {
+        if (!result.destination) return;
+        const items = Array.from(previewImages);
+        const [reorderedItem] = items.splice(result.source.index, 1);
+        items.splice(result.destination.index, 0, reorderedItem);
+
+        setPreviewImages(items);
+        setFieldValue('images', items);
+        setFormData({ ...formData, images: items, previewImages: items });
+    };
+
     return (
         <div>
             <Header />
@@ -80,15 +92,34 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                             <div className='step4-group'>
                                 <label htmlFor='images'>Bilder</label>
                                 <div className="step4-image-preview-container">
-                                    {previewImages.map((src, index) => (
-                                        <div key={index} className="image-preview" onClick={() => openModal(src)}>
-                                            <img src={src} alt={`Preview ${index}`} />
-                                            <span className="remove-icon" onClick={(e) => {
-                                                e.stopPropagation(); // Prevent opening modal on remove click
-                                                removeImage(index, setFieldValue);
-                                            }}>×</span>
-                                        </div>
-                                    ))}
+                                    <DragDropContext onDragEnd={(result) => handleOnDragEnd(result, setFieldValue)}>
+                                        <Droppable droppableId="images">
+                                            {(provided) => (
+                                                <div {...provided.droppableProps} ref={provided.innerRef} className="image-list-container">
+                                                    {previewImages.map((src, index) => (
+                                                        <Draggable key={index} draggableId={`image-${index}`} index={index}>
+                                                            {(provided) => (
+                                                                <div
+                                                                    className="image-preview"
+                                                                    {...provided.draggableProps}
+                                                                    {...provided.dragHandleProps}
+                                                                    ref={provided.innerRef}
+                                                                    onClick={() => openModal(src)}
+                                                                >
+                                                                    <img src={src} alt={`Preview ${index}`} />
+                                                                    <span className="remove-icon" onClick={(e) => {
+                                                                        e.stopPropagation(); // Prevent opening modal on remove click
+                                                                        removeImage(index, setFieldValue);
+                                                                    }}>×</span>
+                                                                </div>
+                                                            )}
+                                                        </Draggable>
+                                                    ))}
+                                                    {provided.placeholder}
+                                                </div>
+                                            )}
+                                        </Droppable>
+                                    </DragDropContext>
                                     <label htmlFor='images' className='step4-image-upload-label'>
                                         <i className='material-icons'>add</i>
                                         <input
