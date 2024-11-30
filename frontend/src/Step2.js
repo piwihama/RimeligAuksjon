@@ -23,8 +23,8 @@ const Step2 = ({ formData, setFormData, nextStep, prevStep }) => {
     firstRegistration: Yup.string().required('1. gang registrert er påkrevd'),
     doors: Yup.string().required('Antall dører er påkrevd'),
     weight: Yup.string().required('Egenvekt er påkrevd'),
-    co2: Yup.string().required('CO2-utslipp er påkrevd'),
-    omregistreringsavgift: Yup.string().required('Omregistreringsavgift er påkrevd'),
+    co2: Yup.string(),
+    omregistreringsavgift: Yup.string(),
     lastEUApproval: Yup.string().required('Sist EU-godkjent er påkrevd'),
     nextEUControl: Yup.string().required('Neste frist for EU-kontroll er påkrevd'),
     mileage: Yup.string().required('Kilometerstand er påkrevd'), // Nytt felt for kilometerstand
