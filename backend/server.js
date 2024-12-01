@@ -13,7 +13,8 @@ const Redis = require('ioredis');
 const cookieParser = require('cookie-parser'); // Legg til her
 
 
-// Initialiser Redis-klienten
+
+////7777777777777777777777777777777777777777777777777// Initialiser Redis-klienten
 const redis = new Redis(process.env.REDIS_URL);
 const clearLiveAuctionCaches = async () => {
   // Slett alle liste-cache-nøkler for live-auksjoner
