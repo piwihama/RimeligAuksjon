@@ -1,3 +1,9 @@
+
+const Logger = require('./logg');
+const logger = new Logger();
+
+
+
 const express = require('express');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
@@ -11,95 +17,6 @@ const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require('uuid');
 const Redis = require('ioredis');
 const cookieParser = require('cookie-parser'); // Legg til her
-const writeLog = require('./logg');
-
-
-//////////////////////////////////////////////////////
-const fs = require('fs');
-const path = require('path');
-
-
-
-
-// Define the log file path
-const logFilePath = path.join(__dirname, 'server.log');
-
-// Function to write logs to the log file
-const writeLog = (message) => {
-  const timestamp = new Date().toISOString();
-  const logMessage = `[${timestamp}] ${message}\n`;
-
-  // Append the log message to the server.log file
-  fs.appendFile(logFilePath, logMessage, (err) => {
-    if (err) {
-      console.error('Failed to write log:', err);
-    }
-  });
-};
-
-// Middleware to log requests
-app.use((req, res, next) => {
-  writeLog(`Incoming request: ${req.method} ${req.url}`);
-  next();
-});
-
-// Endpoint for creating auctions
-app.post('/api/auctions', authenticateToken, async (req, res) => {
-  try {
-    writeLog('Received auction data for new auction: ' + JSON.stringify(req.body));
-
-    const user = await loginCollection.findOne({ _id: new ObjectId(req.user.userId) });
-
-    if (!user) {
-      writeLog('Error: User not found.');
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    const { brand, model, year, images } = req.body;
-
-    // Log number of images received
-    writeLog(`Received ${images.length} images for auction.`);
-
-    const imageUrls = await Promise.all(images.map((imageBase64) => {
-      return uploadImageToS3(imageBase64, user.email, brand, model, year);
-    }));
-
-    // Log image upload results
-    writeLog(`Uploaded images successfully. URLs: ${JSON.stringify(imageUrls)}`);
-
-    const newAuction = {
-      ...req.body,
-      userId: new ObjectId(req.user.userId),
-      userEmail: user.email,
-      userName: `${user.firstName} ${user.lastName}`,
-      imageUrls: imageUrls
-    };
-
-    delete newAuction.images; // Remove base64 images before saving
-    delete newAuction.previewImages;
-
-    const result = await auctionCollection.insertOne(newAuction);
-
-    writeLog(`Auction created successfully. Auction ID: ${result.insertedId}`);
-    res.json(result);
-  } catch (err) {
-    writeLog('Error during auction creation: ' + err.message);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  writeLog(`Server started on port ${PORT}`);
-  console.log(`Server is running on port ${PORT}`);
-});
-
-module.exports = writeLog;
-
-
-
-
 
 
 
