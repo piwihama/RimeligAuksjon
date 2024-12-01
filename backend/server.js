@@ -591,7 +591,7 @@ async function connectDB() {
               counts[field][value] = await liveAuctionCollection.countDocuments(query);
             }
           };
-    
+    // Hei
           await calculateCounts('karosseri', karosserier);
           await calculateCounts('brand', brands);
           await calculateCounts('location', locations);
