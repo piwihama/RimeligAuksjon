@@ -1,9 +1,3 @@
-
-const Logger = require('./logg');
-const logger = new Logger();
-
-
-
 const express = require('express');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
