@@ -30,5 +30,5 @@ api.interceptors.response.use(
     return Promise.reject(error); // Kaster andre feil videre
   }
 );
-
+//
 export default api;
