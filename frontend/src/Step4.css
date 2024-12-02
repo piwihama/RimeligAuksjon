@@ -70,7 +70,11 @@
     cursor: not-allowed;
   }
   
-  /* Container for bilder */
+
+
+
+
+/* Container for hele bildeopplastingsseksjonen */
 .step4-image-preview-container {
     display: flex;
     flex-wrap: wrap;
@@ -79,10 +83,10 @@
     margin-top: 20px;
 }
 
-/* Hver bildeforhåndsvisning */
+/* Stil for hvert enkelt bilde */
 .image-preview {
     position: relative;
-    width: 200px;
+    width: 200px; /* Bredde for hvert bildeelement */
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: #f9f9f9;
@@ -93,28 +97,29 @@
     margin: 10px;
 }
 
-/* Forhåndsvisning av bilde */
+/* Bildet i forhåndsvisningen */
 .image-preview img {
-    width: 100%;
+    width: 100%; /* Bildet fyller hele bredden */
     height: auto;
-    max-height: 150px;
-    object-fit: cover;
+    max-height: 150px; /* Begrens høyden for god visning */
+    object-fit: cover; /* Bildet beholdes proporsjonalt */
     border-radius: 5px;
-    margin-bottom: 10px;
+    margin-bottom: 10px; /* Avstand til knappene */
 }
 
-/* Knapper under bildet */
+/* Knappekontaineren under bildet */
 .button-container {
     display: flex;
-    gap: 5px;
+    flex-direction: row;
+    gap: 5px; /* Mellomrom mellom knappene */
     justify-content: center;
     flex-wrap: wrap;
     margin-top: 10px;
 }
 
-/* Knappene for flytting og sletting */
+/* Stil for knappene */
 .button-container button {
-    padding: 8px 12px;
+    padding: 8px 10px;
     background-color: #005050;
     color: white;
     border: none;
@@ -133,7 +138,7 @@
     cursor: not-allowed;
 }
 
-/* Filopplastingsområdet */
+/* Stil for opplastingsområdet */
 .step4-image-upload-label {
     display: flex;
     flex-direction: column;
@@ -167,4 +172,38 @@
     margin-top: 10px;
 }
 
-  
+/* Feilmelding */
+.step4-error {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* Navigasjonsknapper */
+.step4-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.step4-btn-primary {
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: white;
+    background-color: #005050;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.step4-btn-primary:hover {
+    background-color: #003838;
+    transform: scale(1.05);
+}
+
+.step4-btn-primary:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
