@@ -1,4 +1,3 @@
-/* Container for hele skjemaet */
 .step4-container {
     width: 80%;
     margin: 20px auto;
@@ -6,30 +5,28 @@
     background-color: #f9f9f9; /* Lys bakgrunnsfarge */
     border-radius: 10px; /* Myke kanter */
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Diskret skygge */
-    padding: 30px; /* Bedre innvendig avstand */
-}
-
-/* Skjemafeltene */
-.step4-form {
+    padding: 20px;
+  }
+  
+  .step4-form {
     display: flex;
     flex-direction: column;
     gap: 20px; /* Mellomrom mellom feltene */
-}
-
-.step4-group {
+  }
+  
+  .step4-group {
     text-align: left;
-    margin-bottom: 20px; /* Avstand mellom grupper */
-}
-
-.step4-group label {
-    font-size: 1.1rem; /* Litt større skrift for etiketter */
+  }
+  
+  .step4-group label {
+    font-size: 1rem; /* Større skrift for etiketter */
     font-weight: bold;
     color: #011010; /* Teal farge for etiketter */
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     display: block;
-}
-
-.step4-control {
+  }
+  
+  .step4-control {
     width: 100%;
     padding: 12px;
     font-size: 1rem;
@@ -38,61 +35,81 @@
     background-color: #fff;
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Lett innvendig skygge */
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.step4-control:focus {
+  }
+  
+  .step4-control:focus {
     border-color: #005050; /* Fokusfarge */
     box-shadow: 0 0 5px rgba(0, 80, 80, 0.5); /* Glød-effekt */
     outline: none; /* Fjern standard fokusramme */
-}
-
-/* Feilmeldinger */
-.step4-error {
+  }
+  
+  .step4-error {
     color: red;
     font-size: 0.9rem;
     margin-top: 5px;
-}
-
-/* Bilder og knappene */
-.step4-image-preview-container {
+  }
+  
+  .step4-btn-primary {
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #005050;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .step4-btn-primary:hover {
+    background-color: #003838; /* Mørkere farge ved hover */
+    transform: scale(1.05); /* Lett zoom-effekt */
+  }
+  
+  .step4-btn-primary:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  /* Bilder og knapp-layout */
+  .step4-image-preview-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 30px; /* Større avstand mellom bildene */
+    gap: 20px;
     justify-content: center;
-    margin-top: 20px; /* Avstand til toppen */
-}
-
-.image-preview {
+    margin-top: 20px;
+  }
+  
+  .image-preview {
     position: relative;
-    width: 220px; /* Juster bredde */
-    height: 300px; /* Juster høyde */
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    width: 220px; /* Bredde på hver bildecontainer */
     background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
     display: flex;
-    flex-direction: column; /* Plasserer knappene under bildet */
+    flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding: 15px; /* Bedre innvendig padding */
-}
-
-.image-preview img {
-    max-width: 100%; /* Bildet skaleres til å passe ruten */
-    max-height: 200px; /* Tilpass høyde */
-    object-fit: contain; /* Sørg for at bildet ikke blir strukket */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Lett skygge */
+  }
+  
+  .image-preview img {
+    max-width: 100%;
+    max-height: 150px;
+    margin-bottom: 10px;
     border-radius: 5px;
-}
-
-/* Knappene under bildet */
-.button-container {
+    object-fit: contain; /* Sikrer riktig bildevisning */
+  }
+  
+  .button-container {
     display: flex;
-    gap: 10px; /* Mellomrom mellom knappene */
-    justify-content: center;
     flex-wrap: wrap;
-}
-
-.button-container button {
-    padding: 8px 15px; /* Bedre størrelse på knappene */
+    gap: 5px;
+    justify-content: center;
+  }
+  
+  .button-container button {
+    padding: 8px 10px;
     background-color: #005050;
     color: white;
     border: none;
@@ -100,58 +117,66 @@
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s ease;
-}
-
-.button-container button:hover {
-    background-color: #003838; /* Hover-effekt */
-}
-
-.button-container button:disabled {
+  }
+  
+  .button-container button:hover {
+    background-color: #003838;
+  }
+  
+  .button-container button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
-}
-
-/* Filopplastingsfelt */
-.step4-image-upload-label {
+  }
+  
+  /* Filopplastingsseksjon */
+  .step4-image-upload-label {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 20px;
-    background-color: #f9f9f9;
-    border: 2px dashed #ccc;
+    background-color: #f9f9f9; /* Lys bakgrunnsfarge */
+    border: 2px dashed #ccc; /* Dash-bordert */
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease, border-color 0.3s ease;
     text-align: center;
-    color: #555;
-}
-
-.step4-image-upload-label:hover {
-    background-color: #f0f0f0;
-    border-color: #005050;
-}
-
-.step4-image-upload-label input[type="file"] {
-    display: none;
-}
-
-.step4-image-upload-label::after {
+    color: #555; /* Nøytral tekstfarge */
+  }
+  
+  .step4-image-upload-label:hover {
+    background-color: #f0f0f0; /* Lysere farge ved hover */
+    border-color: #005050; /* Teal farge ved hover */
+  }
+  
+  .step4-image-upload-label input[type="file"] {
+    display: none; /* Skjuler standard filopplastingsknapp */
+  }
+  
+  .step4-image-upload-label::after {
     content: "Last opp bilder";
     font-size: 1rem;
     font-weight: bold;
     color: #051a1a;
     margin-top: 10px;
-}
-
-/* Navigasjonsknapper */
-.step4-navigation {
+  }
+  
+  /* Feilmelding */
+  .step4-error {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  /* Navigasjonsknapper */
+  .step4-navigation {
     display: flex;
     justify-content: space-between;
-    margin-top: 30px;
-}
-
-.step4-btn-primary {
+    margin-top: 20px;
+  }
+  
+  .step4-btn-primary {
     padding: 10px 20px;
     font-size: 1rem;
     color: white;
@@ -160,14 +185,15 @@
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.step4-btn-primary:hover {
-    background-color: #003838;
-    transform: scale(1.05);
-}
-
-.step4-btn-primary:disabled {
+  }
+  
+  .step4-btn-primary:hover {
+    background-color: #003838; /* Mørkere grønn ved hover */
+    transform: scale(1.05); /* Zoom-effekt ved hover */
+  }
+  
+  .step4-btn-primary:disabled {
     background-color: #ccc;
     cursor: not-allowed;
-}
+  }
+  
