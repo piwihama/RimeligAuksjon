@@ -86,35 +86,36 @@
     margin-top: 20px;
 }
 
-/* Hvert bildeelement */
+/* Stil for hvert bilde og knappene */
 .image-preview {
     position: relative;
-    width: 200px; /* Større bredde for bilder */
+    width: 220px; /* Bredde på hver firkant */
+    height: 280px; /* Nok plass til bilde og knapper */
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: #f9f9f9;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 15px;
-    margin: 10px;
+    justify-content: space-between;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 /* Bildene */
 .image-preview img {
-    width: 100%; /* Bildene fyller hele bredden */
+    width: 100%; /* Bildene fyller firkanten */
     height: auto;
-    max-height: 150px; /* Begrens høyden */
+    max-height: 200px; /* Begrens høyden */
     object-fit: cover;
     border-radius: 5px;
-    margin-bottom: 10px;
 }
 
 /* Knapper under hvert bilde */
 .button-container {
     display: flex;
     justify-content: center;
-    gap: 8px; /* Mellomrom mellom knappene */
+    gap: 5px; /* Mellomrom mellom knappene */
     margin-top: 10px;
 }
 
@@ -139,7 +140,7 @@
     cursor: not-allowed;
 }
 
-/* Opplastingsområdet */
+/* Stil for opplastingsområdet */
 .step4-image-upload-label {
     display: flex;
     flex-direction: column;
@@ -173,31 +174,41 @@
     margin-top: 10px;
 }
 
-/* Responsiv tilpasning */
+/* Feilmelding */
+.step4-error {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* Responsiv design */
 @media (max-width: 768px) {
     .image-preview {
-        width: 160px; /* Mindre bredde på små skjermer */
+        width: 180px;
+        height: 260px;
     }
 
     .image-preview img {
-        max-height: 120px; /* Begrens høyde */
+        max-height: 160px;
     }
 
     .button-container {
-        flex-wrap: wrap; /* Knapper tilpasser seg små skjermer */
+        gap: 3px;
     }
 }
 
 @media (max-width: 480px) {
     .image-preview {
-        width: 140px; /* Enda mindre bredde for mobil */
+        width: 150px;
+        height: 240px;
     }
 
     .image-preview img {
-        max-height: 100px;
+        max-height: 140px;
     }
 
     .button-container {
-        gap: 5px; /* Reduser mellomrom mellom knapper */
+        gap: 2px;
     }
 }
