@@ -7,12 +7,25 @@ import Footer from './Footer';
 
 const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     const [previewImages, setPreviewImages] = useState(formData.previewImages || []);
+    const [modalImage, setModalImage] = useState(null);
 
     const validationSchema = Yup.object({
         description: Yup.string().required('Beskrivelse er påkrevd'),
         conditionDescription: Yup.string().required('Beskrivelse av egenerklæring/tilstand er påkrevd'),
         images: Yup.array().min(1, 'Minst ett bilde er påkrevd')
     });
+
+    // Funksjon for å håndtere bildeflytting
+    const moveImage = (index, direction) => {
+        const newPreviews = [...previewImages];
+        const newIndex = index + direction;
+
+        if (newIndex >= 0 && newIndex < newPreviews.length) {
+            [newPreviews[index], newPreviews[newIndex]] = [newPreviews[newIndex], newPreviews[index]];
+            setPreviewImages(newPreviews);
+            setFormData({ ...formData, previewImages: newPreviews });
+        }
+    };
 
     const handleImageChange = async (event, setFieldValue) => {
         const files = Array.from(event.target.files);
@@ -43,16 +56,12 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
         setFormData({ ...formData, images: newFiles, previewImages: newPreviews });
     };
 
-    const moveImage = (index, direction) => {
-        const newPreviews = [...previewImages];
-        const newIndex = index + direction;
+    const openModal = (image) => {
+        setModalImage(image);
+    };
 
-        if (newIndex >= 0 && newIndex < newPreviews.length) {
-            // Bytt plass på bildene
-            [newPreviews[index], newPreviews[newIndex]] = [newPreviews[newIndex], newPreviews[index]];
-            setPreviewImages(newPreviews);
-            setFormData({ ...formData, previewImages: newPreviews });
-        }
+    const closeModal = () => {
+        setModalImage(null);
     };
 
     return (
@@ -70,18 +79,18 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                     {({ setFieldValue }) => (
                         <Form className="step4-form">
                             <h2>Detaljer om Auksjon</h2>
-                            <div className='step4-group'>
-                                <label htmlFor='description'>Beskrivelse av det du skal selge</label>
-                                <Field as='textarea' id='description' name='description' className='step4-control' />
-                                <ErrorMessage name='description' component='div' className='step4-error' />
+                            <div className="step4-group">
+                                <label htmlFor="description">Beskrivelse av det du skal selge</label>
+                                <Field as="textarea" id="description" name="description" className="step4-control" />
+                                <ErrorMessage name="description" component="div" className="step4-error" />
                             </div>
-                            <div className='step4-group'>
-                                <label htmlFor='conditionDescription'>Beskrivelse av egenerklæring / tilstand</label>
-                                <Field as='textarea' id='conditionDescription' name='conditionDescription' className='step4-control' />
-                                <ErrorMessage name='conditionDescription' component='div' className='step4-error' />
+                            <div className="step4-group">
+                                <label htmlFor="conditionDescription">Beskrivelse av egenerklæring / tilstand</label>
+                                <Field as="textarea" id="conditionDescription" name="conditionDescription" className="step4-control" />
+                                <ErrorMessage name="conditionDescription" component="div" className="step4-error" />
                             </div>
-                            <div className='step4-group'>
-                                <label htmlFor='images'>Bilder</label>
+                            <div className="step4-group">
+                                <label htmlFor="images">Bilder</label>
                                 <div className="step4-image-preview-container">
                                     {previewImages.map((src, index) => (
                                         <div key={index} className="image-preview">
@@ -113,25 +122,25 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                                             </div>
                                         </div>
                                     ))}
-                                    <label htmlFor='images' className='step4-image-upload-label'>
-                                        <i className='material-icons'>add</i>
+                                    <label htmlFor="images" className="step4-image-upload-label">
+                                        <i className="material-icons">add</i>
                                         <input
-                                            type='file'
-                                            id='images'
-                                            name='images'
+                                            type="file"
+                                            id="images"
+                                            name="images"
                                             onChange={(event) => handleImageChange(event, setFieldValue)}
-                                            className='step4-control'
+                                            className="step4-control"
                                             multiple
                                         />
                                     </label>
                                 </div>
-                                <ErrorMessage name='images' component='div' className='step4-error' />
+                                <ErrorMessage name="images" component="div" className="step4-error" />
                             </div>
                             <div className="step4-navigation">
-                                <button type="button" onClick={prevStep} className="step4-btn-primary" style={{ padding: '8px 16px', margin: '10px 5px' }}>
+                                <button type="button" onClick={prevStep} className="step4-btn-primary">
                                     Tilbake
                                 </button>
-                                <button type="submit" className="step4-btn-primary" style={{ padding: '8px 16px', margin: '10px 5px' }}>
+                                <button type="submit" className="step4-btn-primary">
                                     Neste
                                 </button>
                             </div>
@@ -139,6 +148,17 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                     )}
                 </Formik>
             </div>
+
+            {/* Modal */}
+            {modalImage && (
+                <div className="modal" style={{ display: 'block' }} onClick={closeModal}>
+                    <span className="close" onClick={closeModal}>&times;</span>
+                    <div className="modal-content">
+                        <img src={modalImage} alt="Full screen preview" />
+                    </div>
+                </div>
+            )}
+
             <Footer />
         </div>
     );

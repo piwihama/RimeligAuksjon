@@ -246,3 +246,33 @@ input[type="file"] {
         font-size: 0.9em; /* Further reduce icon size */
     }
 }
+
+
+
+.image-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    gap: 5px;
+}
+
+.image-controls button {
+    padding: 5px 10px;
+    font-size: 0.9em;
+    background-color: #005050;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.image-controls button:hover {
+    background-color: #003838;
+}
+
+.image-controls button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
