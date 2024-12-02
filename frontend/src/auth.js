@@ -30,7 +30,7 @@ const startInactivityTimer = () => {
 
   inactivityTimer = setTimeout(() => {
     refreshAuthToken(); // Forny token etter inaktivitet
-  }, 1 * 60 * 1000); // Forny token 1 minutt før utløp (hvis tokenet er 15 minutter langt)
+  }, 60 * 60 * 1000); // Forny token 1 minutt før utløp (hvis tokenet er 15 minutter langt)
 };
 
 // Forny accessToken ved hjelp av refreshToken
