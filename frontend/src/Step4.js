@@ -48,7 +48,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
         const newIndex = index + direction;
 
         if (newIndex >= 0 && newIndex < newPreviews.length) {
-            // Swap the images
+            // Bytt plass på bildene
             [newPreviews[index], newPreviews[newIndex]] = [newPreviews[newIndex], newPreviews[index]];
             setPreviewImages(newPreviews);
             setFormData({ ...formData, previewImages: newPreviews });
