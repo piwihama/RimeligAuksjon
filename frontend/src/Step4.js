@@ -6,8 +6,7 @@ import Header from './Header';
 import Footer from './Footer';
 
 const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
-    const [previewImages, setPreviewImages] = useState(formData.previewImages || []);
-    const [modalImage, setModalImage] = useState(null);
+    const [previewImages, setPreviewImages] = useState(formData.previewImages || []); // Forhåndsviste bilder
 
     const validationSchema = Yup.object({
         description: Yup.string().required('Beskrivelse er påkrevd'),
@@ -15,53 +14,48 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
         images: Yup.array().min(1, 'Minst ett bilde er påkrevd')
     });
 
-    // Funksjon for å flytte bilder opp eller ned
+    // Håndter opplastning av bilder fra PC-en
+    const handleImageChange = async (event, setFieldValue) => {
+        const files = Array.from(event.target.files); // Hent ut filene
+        const previews = await Promise.all(files.map(file => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file); // Konverter til base64
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }));
+        const updatedImages = [...(formData.images || []), ...files]; // Legg til nye filer
+        const updatedPreviews = [...previewImages, ...previews]; // Legg til nye forhåndsvisninger
+
+        setFieldValue('images', updatedImages); // Oppdater formdata
+        setPreviewImages(updatedPreviews);
+        setFormData({ ...formData, images: updatedImages, previewImages: updatedPreviews });
+    };
+
+    // Flytt bilder opp eller ned
     const moveImage = (index, direction) => {
         const newPreviews = [...previewImages];
         const newIndex = index + direction;
 
         if (newIndex >= 0 && newIndex < newPreviews.length) {
-            [newPreviews[index], newPreviews[newIndex]] = [newPreviews[newIndex], newPreviews[index]];
+            [newPreviews[index], newPreviews[newIndex]] = [newPreviews[newIndex], newPreviews[index]]; // Bytt plass
             setPreviewImages(newPreviews);
             setFormData({ ...formData, previewImages: newPreviews });
         }
     };
 
-    const handleImageChange = async (event, setFieldValue) => {
-        const files = Array.from(event.target.files);
-        const previews = await Promise.all(files.map(file => {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-            });
-        }));
-        const allFiles = [...(formData.images || []), ...previews];
-        const allPreviews = [...previewImages, ...previews];
-
-        setFieldValue('images', allFiles);
-        setPreviewImages(allPreviews);
-        setFormData({ ...formData, images: allFiles, previewImages: allPreviews });
-    };
-
+    // Fjern et bilde
     const removeImage = (index, setFieldValue) => {
-        const newPreviews = [...previewImages];
-        newPreviews.splice(index, 1);
-        setPreviewImages(newPreviews);
+        const updatedPreviews = [...previewImages];
+        updatedPreviews.splice(index, 1);
 
-        const newFiles = [...formData.images];
-        newFiles.splice(index, 1);
-        setFieldValue('images', newFiles);
-        setFormData({ ...formData, images: newFiles, previewImages: newPreviews });
-    };
+        const updatedImages = [...formData.images];
+        updatedImages.splice(index, 1);
 
-    const openModal = (image) => {
-        setModalImage(image);
-    };
-
-    const closeModal = () => {
-        setModalImage(null);
+        setPreviewImages(updatedPreviews);
+        setFieldValue('images', updatedImages);
+        setFormData({ ...formData, images: updatedImages, previewImages: updatedPreviews });
     };
 
     return (
@@ -148,16 +142,6 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                     )}
                 </Formik>
             </div>
-
-            {modalImage && (
-                <div className="modal" style={{ display: 'block' }} onClick={closeModal}>
-                    <span className="close" onClick={closeModal}>&times;</span>
-                    <div className="modal-content">
-                        <img src={modalImage} alt="Full screen preview" />
-                    </div>
-                </div>
-            )}
-
             <Footer />
         </div>
     );

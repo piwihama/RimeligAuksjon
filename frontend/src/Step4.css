@@ -249,9 +249,17 @@ input[type="file"] {
 
 
 
+
+
+
+
+
+
+
+
 .image-controls {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     margin-top: 5px;
     gap: 5px;
 }
@@ -275,3 +283,4 @@ input[type="file"] {
     background-color: #ccc;
     cursor: not-allowed;
 }
+
