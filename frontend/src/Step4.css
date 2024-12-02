@@ -72,34 +72,33 @@
   
 
 
-
-
 /* Container for hele bildeopplastingsseksjonen */
 .step4-container {
-    width: 80%; /* Holder konstant bredde */
+    width: 80%;
     margin: 20px auto;
     text-align: center;
     background-color: #f9f9f9;
     border-radius: 10px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    overflow-y: auto; /* Rullefelt for vertikal scrolling */
-    max-height: calc(100vh - 50px); /* Maks høyde er skjermen minus margin */
-  }
-  
-  /* Grid for bildeforhåndsvisninger */
-  .step4-image-preview-container {
+    overflow-y: auto;
+    max-height: calc(100vh - 50px);
+}
+
+/* Grid for bildeforhåndsvisninger */
+.step4-image-preview-container {
     display: flex;
-    flex-direction: column; /* Plasser bildene vertikalt */
-    align-items: center;
+    flex-wrap: wrap; /* Sørger for flere bilder i rad */
     gap: 20px;
-    padding-bottom: 20px; /* Litt avstand i bunnen */
-  }
-  
-  /* Stil for hvert bildebeholder */
-  .image-preview {
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Stil for hvert bildebeholder */
+.image-preview {
     position: relative;
-    width: 300px; /* Konstant bredde for alle bilder */
+    width: 250px; /* Passelig bredde for bildene */
+    height: 300px; /* Fast høyde for bilde og knapper sammen */
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: #f9f9f9;
@@ -107,30 +106,28 @@
     flex-direction: column;
     align-items: center;
     padding: 10px;
-    margin: 0 auto; /* Sentrer bildebeholderen */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Bildene i forhåndsvisning */
-  .image-preview img {
+}
+
+/* Bildene i forhåndsvisning */
+.image-preview img {
     width: 100%; /* Fyll beholderens bredde */
-    height: auto; /* Behold bildeforhold */
-    max-height: 200px; /* Begrens høyden */
+    height: 200px; /* Fast høyde for bildene */
     object-fit: cover; /* Sørger for at bildet ikke forvrenges */
     border-radius: 5px;
-    margin-bottom: 10px;
-  }
-  
-  /* Knapper under hvert bilde */
-  .button-container {
+}
+
+/* Knapper under hvert bilde */
+.button-container {
     display: flex;
     flex-direction: row;
     gap: 10px; /* Mellomrom mellom knappene */
     justify-content: center;
-  }
-  
-  /* Stil for knappene */
-  .button-container button {
+    margin-top: 10px;
+}
+
+/* Stil for knappene */
+.button-container button {
     padding: 8px 12px;
     background-color: #005050;
     color: white;
@@ -139,19 +136,21 @@
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s ease;
-  }
-  
-  .button-container button:hover {
+    height: 35px; /* Sørger for at knappene er små nok */
+    width: 40px; /* Sørger for en standard størrelse */
+}
+
+.button-container button:hover {
     background-color: #003838;
-  }
-  
-  .button-container button:disabled {
+}
+
+.button-container button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
-  }
-  
-  /* Opplastingsområdet */
-  .step4-image-upload-label {
+}
+
+/* Stil for opplastingsområdet */
+.step4-image-upload-label {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -164,21 +163,56 @@
     margin: 20px auto;
     transition: background-color 0.3s ease, border-color 0.3s ease;
     color: #555;
-  }
-  
-  .step4-image-upload-label:hover {
+}
+
+.step4-image-upload-label:hover {
     background-color: #f0f0f0;
     border-color: #005050;
-  }
-  
-  .step4-image-upload-label input[type="file"] {
+}
+
+.step4-image-upload-label input[type="file"] {
     display: none;
-  }
-  
-  .step4-image-upload-label::after {
+}
+
+.step4-image-upload-label::after {
     content: "Last opp bilder";
     font-size: 1rem;
     font-weight: bold;
     color: #051a1a;
-  }
-  
+}
+
+/* Feilmelding */
+.step4-error {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* Navigasjonsknapper */
+.step4-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.step4-btn-primary {
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: white;
+    background-color: #005050;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.step4-btn-primary:hover {
+    background-color: #003838;
+    transform: scale(1.05);
+}
+
+.step4-btn-primary:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
