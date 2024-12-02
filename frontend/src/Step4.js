@@ -7,7 +7,6 @@ import Footer from './Footer';
 
 const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     const [previewImages, setPreviewImages] = useState(formData.previewImages || []);
-    const [modalImage, setModalImage] = useState(null); // State to handle modal image display
 
     const validationSchema = Yup.object({
         description: Yup.string().required('Beskrivelse er påkrevd'),
@@ -44,12 +43,16 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
         setFormData({ ...formData, images: newFiles, previewImages: newPreviews });
     };
 
-    const openModal = (image) => {
-        setModalImage(image);
-    };
+    const moveImage = (index, direction) => {
+        const newPreviews = [...previewImages];
+        const newIndex = index + direction;
 
-    const closeModal = () => {
-        setModalImage(null);
+        if (newIndex >= 0 && newIndex < newPreviews.length) {
+            // Swap the images
+            [newPreviews[index], newPreviews[newIndex]] = [newPreviews[newIndex], newPreviews[index]];
+            setPreviewImages(newPreviews);
+            setFormData({ ...formData, previewImages: newPreviews });
+        }
     };
 
     return (
@@ -81,12 +84,33 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                                 <label htmlFor='images'>Bilder</label>
                                 <div className="step4-image-preview-container">
                                     {previewImages.map((src, index) => (
-                                        <div key={index} className="image-preview" onClick={() => openModal(src)}>
+                                        <div key={index} className="image-preview">
                                             <img src={src} alt={`Preview ${index}`} />
-                                            <span className="remove-icon" onClick={(e) => {
-                                                e.stopPropagation(); // Prevent opening modal on remove click
-                                                removeImage(index, setFieldValue);
-                                            }}>×</span>
+                                            <div className="image-controls">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => moveImage(index, -1)}
+                                                    disabled={index === 0}
+                                                >
+                                                    Opp
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => moveImage(index, 1)}
+                                                    disabled={index === previewImages.length - 1}
+                                                >
+                                                    Ned
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        removeImage(index, setFieldValue);
+                                                    }}
+                                                >
+                                                    Fjern
+                                                </button>
+                                            </div>
                                         </div>
                                     ))}
                                     <label htmlFor='images' className='step4-image-upload-label'>
@@ -115,17 +139,6 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                     )}
                 </Formik>
             </div>
-
-            {/* Modal */}
-            {modalImage && (
-                <div className="modal" style={{ display: 'block' }} onClick={closeModal}>
-                    <span className="close" onClick={closeModal}>&times;</span>
-                    <div className="modal-content">
-                        <img src={modalImage} alt="Full screen preview" />
-                    </div>
-                </div>
-            )}
-
             <Footer />
         </div>
     );

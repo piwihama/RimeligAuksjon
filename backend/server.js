@@ -96,8 +96,8 @@ const io = socketIo(server, {
   },
 });
 
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: '500mb' }));
+app.use(express.urlencoded({ limit: '500mb', extended: true }));
 
 const uri = 'mongodb+srv://peiwast124:Heipiwi18.@cluster0.xfxhgbf.mongodb.net/'; // Gjør det mer sikkert med miljøvariabler
 const client = new MongoClient(uri, {
@@ -423,7 +423,7 @@ async function connectDB() {
         }
     
         // Generer tokens
-        const accessToken = jwt.sign({ userId: user._id, role: user.role }, 'your_jwt_secret', { expiresIn: '15m' });
+        const accessToken = jwt.sign({ userId: user._id, role: user.role }, 'your_jwt_secret', { expiresIn: '5h' });
         const refreshToken = jwt.sign({ userId: user._id, role: user.role }, 'your_refresh_secret', { expiresIn: '7d' });
     
         // Sett refreshToken som en HTTP-only cookie
