@@ -15,7 +15,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
         images: Yup.array().min(1, 'Minst ett bilde er påkrevd')
     });
 
-    // Funksjon for å håndtere bildeflytting
+    // Funksjon for å flytte bilder opp eller ned
     const moveImage = (index, direction) => {
         const newPreviews = [...previewImages];
         const newIndex = index + direction;
@@ -149,7 +149,6 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                 </Formik>
             </div>
 
-            {/* Modal */}
             {modalImage && (
                 <div className="modal" style={{ display: 'block' }} onClick={closeModal}>
                     <span className="close" onClick={closeModal}>&times;</span>
