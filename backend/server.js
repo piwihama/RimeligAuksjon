@@ -476,7 +476,7 @@ async function connectDB() {
     
         console.log('Token verified successfully:', user);
     
-        const newAccessToken = jwt.sign({ userId: user.userId, role: user.role }, 'your_jwt_secret', { expiresIn: '15m' });
+        const newAccessToken = jwt.sign({ userId: user.userId, role: user.role }, 'your_jwt_secret', { expiresIn: '7d' });
         const newRefreshToken = jwt.sign({ userId: user.userId, role: user.role }, 'your_refresh_secret', { expiresIn: '7d' });
     
         res.cookie('refreshToken', newRefreshToken, {
