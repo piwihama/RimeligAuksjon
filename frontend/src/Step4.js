@@ -16,27 +16,22 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
 
   // Håndter bildeopplasting
   const handleImageUpload = async (event, setFieldValue) => {
-    const files = Array.from(event.target.files); // Konverter FileList til Array
-    const validFiles = files.filter((file) => file.type.startsWith("image/")); // Filtrer kun bilder
-    if (validFiles.length !== files.length) {
-      alert("Kun bildefiler er tillatt.");
-    }
-
+    const files = Array.from(event.target.files);
     const newImages = await Promise.all(
-      validFiles.map((file) =>
-        new Promise((resolve, reject) => {
+      files.map((file) =>
+        new Promise((resolve) => {
           const reader = new FileReader();
           reader.readAsDataURL(file); // Konverter til base64
+          reader.readAsDataURL(file);
           reader.onload = () => resolve({ id: file.name, src: reader.result });
-          reader.onerror = (error) => reject(error); // Feilhåndtering
         })
       )
     );
 
     const updatedImages = [...previewImages, ...newImages];
-    setPreviewImages(updatedImages); // Oppdater lokalt
-    setFieldValue('images', updatedImages.map((image) => image.src)); // Oppdater skjemaets verdi
-    setFormData({ ...formData, previewImages: updatedImages }); // Oppdater formdata
+    setPreviewImages(updatedImages);
+    setFieldValue('images', updatedImages.map((image) => image.src));
+    setFormData({ ...formData, previewImages: updatedImages });
   };
 
   // Flytt bilder opp
@@ -53,6 +48,26 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     if (index === previewImages.length - 1) return; // Kan ikke flyttes ned hvis det allerede er nederst
     const reorderedImages = [...previewImages];
     [reorderedImages[index + 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index + 1]];
+    setPreviewImages(reorderedImages);
+    setFormData({ ...formData, previewImages: reorderedImages });
+  };
+
+  // Flytt bilde til toppen
+  const moveImageToTop = (index) => {
+    if (index === 0) return;
+    const reorderedImages = [...previewImages];
+    const [image] = reorderedImages.splice(index, 1);
+    reorderedImages.unshift(image);
+    setPreviewImages(reorderedImages);
+    setFormData({ ...formData, previewImages: reorderedImages });
+  };
+
+  // Flytt bilde til bunnen
+  const moveImageToBottom = (index) => {
+    if (index === previewImages.length - 1) return;
+    const reorderedImages = [...previewImages];
+    const [image] = reorderedImages.splice(index, 1);
+    reorderedImages.push(image);
     setPreviewImages(reorderedImages);
     setFormData({ ...formData, previewImages: reorderedImages });
   };
@@ -96,14 +111,47 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                   {previewImages.map((image, index) => (
                     <div key={image.id} className="image-preview">
                       <img src={image.src} alt={`Preview ${index}`} />
+            
                       <div className="button-container">
-                        <button type="button" onClick={() => moveImageUp(index)} disabled={index === 0}>
+                        <button
+                          type="button"
+                          onClick={() => moveImageToTop(index)}
+                          disabled={index === 0}
+                          title="Flytt til toppen"
+                        >
+                          ⬆⬆
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => moveImageUp(index)}
+                          disabled={index === 0}
+                          title="Flytt opp"
+                        >
                           ⬆
                         </button>
-                        <button type="button" onClick={() => moveImageDown(index)} disabled={index === previewImages.length - 1}>
+                        <button
+                          type="button"
+                          onClick={() => moveImageDown(index)}
+                          disabled={index === previewImages.length - 1}
+                          title="Flytt ned"
+                        >
                           ⬇
                         </button>
-                        <button type="button" onClick={() => handleDeleteImage(index, setFieldValue)}>
+                        <button
+                          type="button"
+                          onClick={() => moveImageToBottom(index)}
+                          disabled={index === previewImages.length - 1}
+                          title="Flytt til bunnen"
+                        >
+
+
+                          ⬇⬇
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteImage(index, setFieldValue)}
+                          title="Slett bilde"
+                        >
                           🗑️
                         </button>
                       </div>
@@ -125,17 +173,26 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                 <ErrorMessage name="images" component="div" className="step4-error" />
               </div>
               <div className="step4-navigation">
+
+                
                 <button type="button" onClick={prevStep} className="step4-btn-primary">
                   Tilbake
                 </button>
+
                 <button type="submit" className="step4-btn-primary">
                   Neste
+                  
                 </button>
+
+                
               </div>
+
+
             </Form>
           )}
         </Formik>
       </div>
+
       <Footer />
     </div>
   );
