@@ -70,46 +70,51 @@
     cursor: not-allowed;
   }
   
-  /* Bilder og knapp-layout */
-  .step4-image-preview-container {
+  /* Container for bilder */
+.step4-image-preview-container {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
     justify-content: center;
     margin-top: 20px;
-  }
-  
-  .image-preview {
+}
+
+/* Hver bildeforhåndsvisning */
+.image-preview {
     position: relative;
-    width: 220px; /* Bredde på hver bildecontainer */
-    background-color: #f9f9f9;
+    width: 200px;
     border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 10px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Lett skygge */
-  }
-  
-  .image-preview img {
-    max-width: 100%;
+    padding: 10px;
+    margin: 10px;
+}
+
+/* Forhåndsvisning av bilde */
+.image-preview img {
+    width: 100%;
+    height: auto;
     max-height: 150px;
-    margin-bottom: 10px;
+    object-fit: cover;
     border-radius: 5px;
-    object-fit: contain; /* Sikrer riktig bildevisning */
-  }
-  
-  .button-container {
+    margin-bottom: 10px;
+}
+
+/* Knapper under bildet */
+.button-container {
     display: flex;
-    flex-wrap: wrap;
     gap: 5px;
     justify-content: center;
-  }
-  
-  .button-container button {
-    padding: 8px 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+/* Knappene for flytting og sletting */
+.button-container button {
+    padding: 8px 12px;
     background-color: #005050;
     color: white;
     border: none;
@@ -117,83 +122,49 @@
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s ease;
-  }
-  
-  .button-container button:hover {
+}
+
+.button-container button:hover {
     background-color: #003838;
-  }
-  
-  .button-container button:disabled {
+}
+
+.button-container button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
-  }
-  
-  /* Filopplastingsseksjon */
-  .step4-image-upload-label {
+}
+
+/* Filopplastingsområdet */
+.step4-image-upload-label {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 20px;
-    background-color: #f9f9f9; /* Lys bakgrunnsfarge */
-    border: 2px dashed #ccc; /* Dash-bordert */
+    background-color: #f9f9f9;
+    border: 2px dashed #ccc;
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease, border-color 0.3s ease;
     text-align: center;
-    color: #555; /* Nøytral tekstfarge */
-  }
-  
-  .step4-image-upload-label:hover {
-    background-color: #f0f0f0; /* Lysere farge ved hover */
-    border-color: #005050; /* Teal farge ved hover */
-  }
-  
-  .step4-image-upload-label input[type="file"] {
-    display: none; /* Skjuler standard filopplastingsknapp */
-  }
-  
-  .step4-image-upload-label::after {
+    color: #555;
+    margin: 20px 0;
+}
+
+.step4-image-upload-label:hover {
+    background-color: #f0f0f0;
+    border-color: #005050;
+}
+
+.step4-image-upload-label input[type="file"] {
+    display: none;
+}
+
+.step4-image-upload-label::after {
     content: "Last opp bilder";
     font-size: 1rem;
     font-weight: bold;
     color: #051a1a;
     margin-top: 10px;
-  }
-  
-  /* Feilmelding */
-  .step4-error {
-    color: red;
-    font-size: 0.9rem;
-    margin-top: 10px;
-    text-align: center;
-  }
-  
-  /* Navigasjonsknapper */
-  .step4-navigation {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-  }
-  
-  .step4-btn-primary {
-    padding: 10px 20px;
-    font-size: 1rem;
-    color: white;
-    background-color: #005050;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
-  
-  .step4-btn-primary:hover {
-    background-color: #003838; /* Mørkere grønn ved hover */
-    transform: scale(1.05); /* Zoom-effekt ved hover */
-  }
-  
-  .step4-btn-primary:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
+}
+
   
