@@ -59,6 +59,7 @@
 .thumbnail-image.active {
   border: 3px solid gray;
   transform: scale(1.1);
+  z-index: -1;
 }
 
 .thumbnail-image:hover {
