@@ -2,125 +2,49 @@
     width: 80%;
     margin: 20px auto;
     text-align: center;
-    background-color: #f9f9f9; /* Lys bakgrunnsfarge */
-    border-radius: 10px; /* Myke kanter */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Diskret skygge */
-    padding: 20px;
-  }
-  
-  .step4-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px; /* Mellomrom mellom feltene */
-  }
-  
-  .step4-group {
-    text-align: left;
-  }
-  
-  .step4-group label {
-    font-size: 1rem; /* Større skrift for etiketter */
-    font-weight: bold;
-    color: #011010; /* Teal farge for etiketter */
-    margin-bottom: 5px;
-    display: block;
-  }
-  
-  .step4-control {
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-    border: 1px solid #ccc; /* Lys grense */
-    border-radius: 5px;
-    background-color: #fff;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Lett innvendig skygge */
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .step4-control:focus {
-    border-color: #005050; /* Fokusfarge */
-    box-shadow: 0 0 5px rgba(0, 80, 80, 0.5); /* Glød-effekt */
-    outline: none; /* Fjern standard fokusramme */
-  }
-  
-  .step4-error {
-    color: red;
-    font-size: 0.9rem;
-    margin-top: 5px;
-  }
-  
-  .step4-btn-primary {
-    padding: 10px 20px;
-    font-size: 1rem;
-    color: #fff;
-    background-color: #005050;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
-  
-  .step4-btn-primary:hover {
-    background-color: #003838; /* Mørkere farge ved hover */
-    transform: scale(1.05); /* Lett zoom-effekt */
-  }
-  
-  .step4-btn-primary:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
-  
-
-
-/* Container for hele bildeopplastingsseksjonen */
-.step4-container {
-    width: 80%;
-    margin: 20px auto;
-    text-align: center;
     background-color: #f9f9f9;
     border-radius: 10px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     padding: 20px;
     overflow-y: auto;
-    max-height: calc(100vh - 50px);
+    max-height: calc(100vh - 50px); /* Juster høyde i forhold til skjermen */
 }
 
 /* Grid for bildeforhåndsvisninger */
 .step4-image-preview-container {
-    display: flex;
-    flex-wrap: wrap; /* Sørger for flere bilder i rad */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
-    justify-content: center;
+    justify-items: center; /* Sentraliser bilder */
     margin-top: 20px;
 }
 
 /* Stil for hvert bildebeholder */
 .image-preview {
-    position: relative;
-    width: 250px; /* Passelig bredde for bildene */
-    height: 300px; /* Fast høyde for bilde og knapper sammen */
+    width: 250px;
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: #f9f9f9;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px;
+    justify-content: space-between;
+    padding: 15px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Bildene i forhåndsvisning */
 .image-preview img {
-    width: 100%; /* Fyll beholderens bredde */
+    width: 100%;
     height: 200px; /* Fast høyde for bildene */
-    object-fit: cover; /* Sørger for at bildet ikke forvrenges */
+    object-fit: cover;
     border-radius: 5px;
 }
 
 /* Knapper under hvert bilde */
 .button-container {
     display: flex;
-    flex-direction: row;
+    flex-wrap: wrap;
     gap: 10px; /* Mellomrom mellom knappene */
     justify-content: center;
     margin-top: 10px;
@@ -136,8 +60,8 @@
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s ease;
-    height: 35px; /* Sørger for at knappene er små nok */
-    width: 40px; /* Sørger for en standard størrelse */
+    width: 45px; /* Standard størrelse for knappene */
+    height: 35px;
 }
 
 .button-container button:hover {
@@ -163,6 +87,7 @@
     margin: 20px auto;
     transition: background-color 0.3s ease, border-color 0.3s ease;
     color: #555;
+    width: 300px; /* Juster bredde for jevn layout */
 }
 
 .step4-image-upload-label:hover {
@@ -216,3 +141,4 @@
     background-color: #ccc;
     cursor: not-allowed;
 }
+/*hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh*/
