@@ -16,7 +16,6 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
 
   const handleImageUpload = async (event, setFieldValue) => {
     const files = Array.from(event.target.files);
-
     if (files.length === 0) return;
 
     try {
@@ -66,10 +65,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
       'images',
       updatedImages.map((image) => image.src)
     );
-    setFormData({ 
-        ...formData, 
-        images: updatedImages.map((image) => image.src) 
-    });
+    setFormData({ ...formData, previewImages: updatedImages });
   };
 
   return (
