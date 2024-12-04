@@ -81,11 +81,16 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     const updatedImages = previewImages.filter((_, i) => i !== index);
     setPreviewImages(updatedImages);
     setFieldValue(
-      'images',
-      updatedImages.map((image) => image.src)
+        'images',
+        updatedImages.map((image) => image.src)
     );
-    setFormData({ ...formData, previewImages: updatedImages });
-  };
+    // Oppdater formData.images for permanent sletting
+    setFormData({ 
+        ...formData, 
+        images: updatedImages.map((image) => image.src) 
+    });
+};
+
 
   return (
     <div>

@@ -130,14 +130,16 @@ const Summary = ({ formData, prevStep }) => {
           <p><strong>Minstepris:</strong> {formData.reservePrice}</p>
           <p><strong>Selges uten minstepris:</strong> {formData.auctionWithoutReserve ? 'Ja' : 'Nei'}</p>
         </div>
+
         <div className="summary-section">
-          <h3>Bilder</h3>
-          <div className="image-preview-container">
-            {formData.previewImages && formData.previewImages.map((img, index) => (
-              <img key={index} src={img} alt={`Bilde ${index + 1}`} className="image-preview" />
+           <h3>Bilder</h3>
+             <div className="image-preview-container">
+               {formData.images && formData.images.map((img, index) => (
+            <img key={index} src={img} alt={`Bilde ${index + 1}`} className="image-preview" />
             ))}
           </div>
-        </div>
+       </div>
+
         <div className="form-navigation">
           <button type="button" onClick={prevStep} className="btn btn-secondary">Tilbake</button>
           <button type="button" onClick={handleClick} className="btn btn-primary" disabled={isLoading}>

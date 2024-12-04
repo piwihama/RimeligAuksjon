@@ -96,28 +96,28 @@
     margin-top: 25px;
 }
 
-/* Stil for hver bildeforhåndsvisning */
 .image-preview {
-    width: 600px; /* Øk bredden for bildet */
+    width: 100%; /* Bruk containerens bredde */
+    max-width: 400px; /* Maks bredde for bildene */
+    padding: 10px;
+    margin: auto;
     border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #ffffff;
+    border-radius: 5px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 15px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 10px;
+    justify-content: center;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Bildene i forhåndsvisning */
 .image-preview img {
-    width: 100%; /* Fyll beholderens bredde */
-    height: auto;
-    max-height: 800px; /* Øk høyden */
-    object-fit: cover; /* Sørg for at bildet ikke blir forvrengt */
+    width: 100%; /* Skaler bildet */
+    max-height: 300px; /* Juster høyden */
+    object-fit: cover; /* Sørg for god proporsjon */
     border-radius: 5px;
 }
+
 
 /* Knapper under bildet */
 .button-container {
