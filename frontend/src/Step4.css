@@ -90,15 +90,15 @@
 .step4-image-preview-container {
     display: flex;
     flex-direction: column; /* Vertikal layout */
-    gap: 20px; /* Mellomrom mellom hvert bilde */
-    width: 100%;
+    gap: 30px; /* Mellomrom mellom hvert bilde */
+    width: 500px;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 25px;
 }
 
 /* Stil for hver bildeforhåndsvisning */
 .image-preview {
-    width: 400px; /* Øk bredden for bildet */
+    width: 600px; /* Øk bredden for bildet */
     border: 1px solid #ccc;
     border-radius: 10px;
     background-color: #ffffff;
@@ -114,7 +114,7 @@
 .image-preview img {
     width: 100%; /* Fyll beholderens bredde */
     height: auto;
-    max-height: 300px; /* Øk høyden */
+    max-height: 800px; /* Øk høyden */
     object-fit: cover; /* Sørg for at bildet ikke blir forvrengt */
     border-radius: 5px;
 }
