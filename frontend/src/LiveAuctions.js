@@ -81,38 +81,38 @@ function LiveAuctions() {
 
   useEffect(() => {
     fetchLiveAuctions();
-  }, [debouncedFilters, page, sortOption]);
+}, [debouncedFilters, page, sortOption]);
 
-  const fetchLiveAuctions = useCallback(async () => {
+const fetchLiveAuctions = useCallback(async () => {
     setLoading(true);
     try {
-      const activeFilters = Object.fromEntries(
-        Object.entries(debouncedFilters).filter(
-          ([, value]) => value && (Array.isArray(value) ? value.length > 0 : true)
-        )
-      );
+        const activeFilters = Object.fromEntries(
+            Object.entries(debouncedFilters).filter(
+                ([, value]) => value && (Array.isArray(value) ? value.length > 0 : true)
+            )
+        );
 
-      const queryParams = { page, limit: 10, ...activeFilters };
-      const token = localStorage.getItem('accessToken');
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+        const queryParams = { page, limit: 10, ...activeFilters };
+        const token = localStorage.getItem('accessToken');
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-      const response = await axios.get(
-        'https://rimelig-auksjon-backend.vercel.app/api/liveauctions/filter',
-        { params: queryParams, headers }
-      );
+        const response = await axios.get(
+            'https://rimelig-auksjon-backend.vercel.app/api/liveauctions/filter',
+            { params: queryParams, headers }
+        );
 
-      setLiveAuctions(response.data);
-      setVisibleAuctions([]); // Resetter synlige elementer
-      setTimeout(() => {
+        setLiveAuctions(response.data);
+        // Oppdater synlige auksjoner umiddelbart
         setVisibleAuctions(response.data.map((auction) => auction._id));
-      }, 100); // Forsinkelse for fade-in effekt
-      setError(null);
+        setError(null);
     } catch (error) {
-      console.error('Error fetching live auctions:', error);
-      setError('Kunne ikke hente live auksjoner. Prøv igjen senere.');
+        console.error('Error fetching live auctions:', error);
+        setError('Kunne ikke hente live auksjoner. Prøv igjen senere.');
     }
     setLoading(false);
-  }, [filters, page]);
+}, [debouncedFilters, page, sortOption]);
+
+
 
   const handleCheckboxChange = (e) => {
     const { name, value, checked } = e.target;

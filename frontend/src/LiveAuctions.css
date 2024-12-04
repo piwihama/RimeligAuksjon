@@ -141,14 +141,21 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     transition: opacity 0.3s ease, transform 0.3s ease;
-    border: 1px solid #ccc; /* Thicker, visible border */
-    opacity: 0;
-    transform: translateY(10px);
+    border: 1px solid #ccc;
+    opacity: 1; /* Vis som standard */
+    transform: translateY(0); /* Ingen forskyvning som standard */
 }
+
 .auction-item.visible {
     opacity: 1;
     transform: translateY(0);
 }
+
+.auction-item.hidden {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
 
 .auction-item:hover {
     transform: translateY(-5px);
