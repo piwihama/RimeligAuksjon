@@ -126,9 +126,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                       <div className="button-container">
 
 
-                       {/* <button type="button" onClick={() => moveImageToTop(index)} disabled={index === 0}>
-                          ⬆⬆
-                        </button>  */}
+                       
 
 
                         <button type="button" onClick={() => moveImageUp(index)} disabled={index === 0}>
@@ -139,9 +137,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                         </button>
 
 
-                        {/*<button type="button" onClick={() => moveImageToBottom(index)} disabled={index === previewImages.length - 1}>
-                          ⬇⬇
-                        </button>  */}
+                    
 
 
                         <button type="button" onClick={() => handleDeleteImage(index, setFieldValue)}>
