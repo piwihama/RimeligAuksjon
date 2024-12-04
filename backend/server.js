@@ -558,56 +558,71 @@ async function connectDB() {
 
     app.get('/api/liveauctions/counts', async (req, res) => {
       try {
-        const { category } = req.query; // Get the category from the request query
-        const cacheKey = `liveAuctionsCounts-${category || 'all'}`; // Include category in the cache key
-        let counts = await redis.get(cacheKey);
+        const { category } = req.query;
     
-        if (!counts) {
-          console.log('Cache miss. Calculating counts.');
+        const matchStage = category ? { $match: { category } } : { $match: {} };
     
-          counts = {
-            karosseri: {},
-            brand: {},
-            location: {},
-            fuel: {},
-            gearType: {},
-            driveType: {},
-            model: {}
-          };
+        const pipeline = [
+          matchStage,
+          {
+            $facet: {
+              karosseri: [
+                { $group: { _id: '$karosseri', count: { $sum: 1 } } },
+              ],
+              brand: [
+                { $group: { _id: '$brand', count: { $sum: 1 } } },
+              ],
+              location: [
+                { $group: { _id: '$location', count: { $sum: 1 } } },
+              ],
+              fuel: [
+                { $group: { _id: '$fuel', count: { $sum: 1 } } },
+              ],
+              gearType: [
+                { $group: { _id: '$gearType', count: { $sum: 1 } } },
+              ],
+              driveType: [
+                { $group: { _id: '$driveType', count: { $sum: 1 } } },
+              ],
+              model: [
+                { $group: { _id: '$model', count: { $sum: 1 } } },
+              ],
+            },
+          },
+        ];
     
-          const karosserier = ['Stasjonsvogn', 'Cabriolet', 'Kombi 5-dørs', 'Flerbruksbil', 'Pickup', 'Kombi 3-dørs', 'Sedan', 'Coupe', 'SUV/Offroad', 'Kasse'];
-          const brands = ['AUDI', 'BMW', 'BYD', 'CHEVROLET', 'CHRYSLER', 'CITROEN', 'DODGE', 'FERRARI', 'FIAT', 'FORD', 'HONDA', 'HYUNDAI', 'JAGUAR', 'JEEP', 'KIA', 'LAMBORGHINI', 'LAND ROVER', 'LEXUS', 'MASERATI', 'MAZDA', 'MERCEDES-BENZ', 'MINI', 'MITSUBISHI', 'NISSAN', 'OPEL', 'PEUGEOT', 'PORSCHE', 'RENAULT', 'ROLLS ROYCE', 'SAAB', 'SEAT', 'SKODA', 'SUBARU', 'SUZUKI', 'TESLA', 'TOYOTA', 'VOLKSWAGEN', 'VOLVO'];
-          const locations = ['Akershus', 'Aust-Agder', 'Buskerud', 'Finnmark', 'Hedmark', 'Hordaland', 'Møre og Romsdal', 'Nordland', 'Nord-Trøndelag', 'Oppland', 'Oslo', 'Rogaland', 'Sogn og Fjordane', 'Sør-Trøndelag', 'Telemark', 'Troms', 'Vest-Agder', 'Vestfold', 'Østfold'];
-          const fuelTypes = ['Bensin', 'Diesel', 'Elektrisitet', 'Hybrid'];
-          const gearTypes = ['Automat', 'Manuell'];
-          const driveTypes = ['Bakhjulstrekk', 'Firehjulstrekk', 'Framhjulstrekk'];
+        const [result] = await liveAuctionCollection.aggregate(pipeline).toArray();
     
-          const calculateCounts = async (field, values) => {
-            for (const value of values) {
-              // Include category in the query if provided
-              const query = { [field]: value };
-              if (category) {
-                query.category = category;
-              }
-              counts[field][value] = await liveAuctionCollection.countDocuments(query);
-            }
-          };
-    // Hei
-          await calculateCounts('karosseri', karosserier);
-          await calculateCounts('brand', brands);
-          await calculateCounts('location', locations);
-          await calculateCounts('fuel', fuelTypes);
-          await calculateCounts('gearType', gearTypes);
-          await calculateCounts('driveType', driveTypes);
-    
-          const models = await liveAuctionCollection.distinct('model', category ? { category } : {}); // Filter models by category if provided
-          await calculateCounts('model', models);
-    
-          await redis.set(cacheKey, JSON.stringify(counts), 'EX', 600);
-        } else {
-          console.log('Cache hit! Returning cached counts.');
-          counts = JSON.parse(counts);
-        }
+        const counts = {
+          karosseri: result.karosseri.reduce((acc, item) => {
+            acc[item._id] = item.count;
+            return acc;
+          }, {}),
+          brand: result.brand.reduce((acc, item) => {
+            acc[item._id] = item.count;
+            return acc;
+          }, {}),
+          location: result.location.reduce((acc, item) => {
+            acc[item._id] = item.count;
+            return acc;
+          }, {}),
+          fuel: result.fuel.reduce((acc, item) => {
+            acc[item._id] = item.count;
+            return acc;
+          }, {}),
+          gearType: result.gearType.reduce((acc, item) => {
+            acc[item._id] = item.count;
+            return acc;
+          }, {}),
+          driveType: result.driveType.reduce((acc, item) => {
+            acc[item._id] = item.count;
+            return acc;
+          }, {}),
+          model: result.model.reduce((acc, item) => {
+            acc[item._id] = item.count;
+            return acc;
+          }, {}),
+        };
     
         res.json(counts);
       } catch (err) {
