@@ -59,38 +59,18 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     setFormData({ ...formData, previewImages: reorderedImages });
   };
 
-  const moveImageToTop = (index) => {
-    if (index === 0) return;
-    const reorderedImages = [...previewImages];
-    const [image] = reorderedImages.splice(index, 1);
-    reorderedImages.unshift(image);
-    setPreviewImages(reorderedImages);
-    setFormData({ ...formData, previewImages: reorderedImages });
-  };
-
-  const moveImageToBottom = (index) => {
-    if (index === previewImages.length - 1) return;
-    const reorderedImages = [...previewImages];
-    const [image] = reorderedImages.splice(index, 1);
-    reorderedImages.push(image);
-    setPreviewImages(reorderedImages);
-    setFormData({ ...formData, previewImages: reorderedImages });
-  };
-
   const handleDeleteImage = (index, setFieldValue) => {
     const updatedImages = previewImages.filter((_, i) => i !== index);
     setPreviewImages(updatedImages);
     setFieldValue(
-        'images',
-        updatedImages.map((image) => image.src)
+      'images',
+      updatedImages.map((image) => image.src)
     );
-    // Oppdater formData.images for permanent sletting
     setFormData({ 
         ...formData, 
         images: updatedImages.map((image) => image.src) 
     });
-};
-
+  };
 
   return (
     <div>
@@ -124,22 +104,12 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                     <div key={image.id} className="image-preview">
                       <img src={image.src} alt={`Preview ${index}`} />
                       <div className="button-container">
-
-
-                       
-
-
                         <button type="button" onClick={() => moveImageUp(index)} disabled={index === 0}>
                           ⬆
                         </button>
                         <button type="button" onClick={() => moveImageDown(index)} disabled={index === previewImages.length - 1}>
                           ⬇
                         </button>
-
-
-                    
-
-
                         <button type="button" onClick={() => handleDeleteImage(index, setFieldValue)}>
                           🗑️
                         </button>
