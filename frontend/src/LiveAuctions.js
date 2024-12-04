@@ -102,8 +102,15 @@ const fetchLiveAuctions = useCallback(async () => {
         );
 
         setLiveAuctions(response.data);
-        // Oppdater synlige auksjoner umiddelbart
-        setVisibleAuctions(response.data.map((auction) => auction._id));
+
+        // Legg til animasjon med en forsinkelse for hvert element
+        setVisibleAuctions([]);
+        response.data.forEach((auction, index) => {
+            setTimeout(() => {
+                setVisibleAuctions((prev) => [...prev, auction._id]);
+            }, index * 100); // Forsinkelse på 100ms per element
+        });
+
         setError(null);
     } catch (error) {
         console.error('Error fetching live auctions:', error);

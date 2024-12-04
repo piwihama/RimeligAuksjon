@@ -140,15 +140,15 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: opacity 0.5s ease, transform 0.5s ease;
     border: 1px solid #ccc;
-    opacity: 1; /* Vis som standard */
-    transform: translateY(0); /* Ingen forskyvning som standard */
+    opacity: 0; /* Start usynlig */
+    transform: translateY(20px); /* Start med en liten forskyvning */
 }
 
 .auction-item.visible {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: 1; /* Bli synlig */
+    transform: translateY(0); /* Sett tilbake til sin opprinnelige posisjon */
 }
 
 .auction-item.hidden {
