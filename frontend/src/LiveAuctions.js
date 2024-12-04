@@ -26,6 +26,7 @@ function LiveAuctions() {
   const [showFilters, setShowFilters] = useState(false);
   const [filterCounts, setFilterCounts] = useState({});
   const [filters, setFilters] = useState({
+    
     brand: [],
     model: '',
     year: '',
@@ -45,7 +46,6 @@ function LiveAuctions() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sortOption, setSortOption] = useState('avsluttes-forst');
-  const [visibleAuctions, setVisibleAuctions] = useState([]); // For smooth animations
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -99,16 +99,9 @@ function LiveAuctions() {
         { params: queryParams, headers }
       );
 
-      setLiveAuctions(response.data);
-
-      // Add smooth animation for items
-      setVisibleAuctions([]);
-      response.data.forEach((auction, index) => {
-        setTimeout(() => {
-          setVisibleAuctions((prev) => [...prev, auction._id]);
-        }, index * 100); // Delay of 100ms per item
-      });
-
+      setLiveAuctions((prevAuctions) =>
+        page === 1 ? response.data : [...prevAuctions, ...response.data]
+      );
       setError(null);
     } catch (error) {
       console.error('Error fetching live auctions:', error);
@@ -155,32 +148,34 @@ function LiveAuctions() {
     }
     return { days: 0, hours: 0, minutes: 0, seconds: 0 };
   };
-
+ 
   const handleSortChange = (e) => {
     setSortOption(e.target.value);
     setPage(1);
     setLiveAuctions([]); // Clear auctions on sort change
   };
+  // Oppdatert fetchFilterCounts funksjon
+const fetchFilterCounts = useCallback(async () => {
+  try {
+    const token = localStorage.getItem('accessToken');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-  const fetchFilterCounts = useCallback(async () => {
-    try {
-      const token = localStorage.getItem('accessToken');
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    // Send gjeldende kategori som en parameter
+    const response = await axios.get(
+      'https://rimelig-auksjon-backend.vercel.app/api/liveauctions/counts',
+      { params: { category: filters.category }, headers }
+    );
 
-      const response = await axios.get(
-        'https://rimelig-auksjon-backend.vercel.app/api/liveauctions/counts',
-        { params: { category: filters.category }, headers }
-      );
+    setFilterCounts(response.data); // Forvent at backend returnerer en struktur som matcher filterCounts
+  } catch (error) {
+    console.error('Error fetching filter counts:', error);
+  }
+}, [filters.category]);
 
-      setFilterCounts(response.data);
-    } catch (error) {
-      console.error('Error fetching filter counts:', error);
-    }
-  }, [filters.category]);
-
-  useEffect(() => {
-    fetchFilterCounts();
-  }, [filters.category, fetchFilterCounts]);
+// Kall fetchFilterCounts når kategori eller filtre oppdateres
+useEffect(() => {
+  fetchFilterCounts();
+}, [filters.category, fetchFilterCounts]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -196,13 +191,10 @@ function LiveAuctions() {
     return () => clearInterval(interval);
   }, [liveAuctions]);
 
+  
   return (
     <div>
-      <Header
-        onCategorySelect={(category) =>
-          handleFilterChange({ target: { name: 'category', value: category } })
-        }
-      />
+      <Header onCategorySelect={(category) => handleFilterChange({ target: { name: 'category', value: category } })} />
       <div className="whole-container">
         <div className="live-auctions-container">
           <aside className="filters-section">
@@ -232,15 +224,15 @@ function LiveAuctions() {
                   </div>
                 ))}
               </div>
-              {/* Other filter groups */}
+              {/* Other filter groups like Brand, GearType, Fuel, etc. */}
               <div className="filter-group">
                 <h3>Merke</h3>
                 {[
-                  'Audi', 'BMW', 'BYD', 'Chevrolet', 'Chrysler', 'Citroen', 'Dodge', 'Ferrari', 'Fiat', 'Ford',
-                  'Honda', 'Hyundai', 'Jaguar', 'Jeep', 'Kia', 'Lamborghini', 'Land Rover', 'Lexus', 'Maserati',
-                  'Mazda', 'Mercedes-Benz', 'Mini', 'Mitsubishi', 'Nissan', 'Opel', 'Peugeot', 'Porsche', 'Renault',
+                  'Audi', 'BMW', 'BYD', 'Chevrolet', 'Chrysler', 'Citroen', 'Dodge', 'Ferrari', 'Fiat', 'Ford', 
+                  'Honda', 'Hyundai', 'Jaguar', 'Jeep', 'Kia', 'Lamborghini', 'Land Rover', 'Lexus', 'Maserati', 
+                  'Mazda', 'Mercedes-Benz', 'Mini', 'Mitsubishi', 'Nissan', 'Opel', 'Peugeot', 'Porsche', 'Renault', 
                   'Rolls Royce', 'Saab', 'Seat', 'Skoda', 'Subaru', 'Suzuki', 'Tesla', 'Toyota', 'Volkswagen', 'Volvo'
-                ].map((brand) => (
+                ].map(brand => (
                   <div key={brand}>
                     <input
                       type="checkbox"
@@ -275,8 +267,64 @@ function LiveAuctions() {
                 />
               </div>
               <div className="filter-group">
+                <h3>Fylke</h3>
+                {['Akershus', 'Aust-Agder', 'Buskerud', 'Finnmark', 'Hedmark', 'Hordaland', 'Møre og Romsdal', 'Nordland', 'Nord-Trøndelag', 'Oppland', 'Oslo', 'Rogaland', 'Sogn og Fjordane', 'Sør-Trøndelag', 'Telemark', 'Troms', 'Vest-Agder', 'Vestfold', 'Østfold'].map(location => (
+                  <div key={location}>
+                    <input
+                      type="checkbox"
+                      id={location}
+                      name="location"
+                      value={location}
+                      checked={filters.location.includes(location)}
+                      onChange={handleCheckboxChange}
+                    />
+                    <label htmlFor={location}>{location} ({filterCounts.location?.[location] || 0})</label>
+                  </div>
+                ))}
+              </div>
+              <div className="filter-group">
+                <label htmlFor="minPrice">Min Pris</label>
+                <input
+                  type="number"
+                  id="minPrice"
+                  name="minPrice"
+                  value={filters.minPrice}
+                  onChange={handleFilterChange}
+                />
+              </div>
+              <div className="filter-group">
+                <label htmlFor="maxPrice">Max Pris</label>
+                <input
+                  type="number"
+                  id="maxPrice"
+                  name="maxPrice"
+                  value={filters.maxPrice}
+                  onChange={handleFilterChange}
+                />
+              </div>
+              <div className="filter-group">
+                <label htmlFor="auctionWithoutReserve">Uten Minstepris</label>
+                <input
+                  type="checkbox"
+                  id="auctionWithoutReserve"
+                  name="auctionWithoutReserve"
+                  checked={filters.auctionWithoutReserve}
+                  onChange={handleFilterChange}
+                />
+              </div>
+              <div className="filter-group">
+                <label htmlFor="auctionDuration">Auksjonsvarighet (dager)</label>
+                <input
+                  type="number"
+                  id="auctionDuration"
+                  name="auctionDuration"
+                  value={filters.auctionDuration}
+                  onChange={handleFilterChange}
+                />
+              </div>
+              <div className="filter-group">
                 <h3>Drivstoff</h3>
-                {['Bensin', 'Diesel', 'Elektrisitet', 'Hybrid'].map((fuel) => (
+                {['Bensin', 'Diesel', 'Elektrisitet', 'Hybrid'].map(fuel => (
                   <div key={fuel}>
                     <input
                       type="checkbox"
@@ -292,7 +340,7 @@ function LiveAuctions() {
               </div>
               <div className="filter-group">
                 <h3>Girtype</h3>
-                {['Automat', 'Manuell'].map((gearType) => (
+                {['Automat', 'Manuell'].map(gearType => (
                   <div key={gearType}>
                     <input
                       type="checkbox"
@@ -308,7 +356,7 @@ function LiveAuctions() {
               </div>
               <div className="filter-group">
                 <h3>Hjuldrift</h3>
-                {['Bakhjulstrekk', 'Firehjulstrekk', 'Framhjulstrekk'].map((driveType) => (
+                {['Bakhjulstrekk', 'Firehjulstrekk', 'Framhjulstrekk'].map(driveType => (
                   <div key={driveType}>
                     <input
                       type="checkbox"
@@ -322,7 +370,7 @@ function LiveAuctions() {
                   </div>
                 ))}
               </div>
-            </form>
+              </form>
           </aside>
           <section className="auctions-section">
             <div className="sort-options">
@@ -343,46 +391,37 @@ function LiveAuctions() {
               <p>Ingen aktive auksjoner for øyeblikket</p>
             ) : (
               liveAuctions.map((auction) => {
-                const isVisible = visibleAuctions.includes(auction._id);
                 const timeLeft = calculateTimeLeft(auction.endDate);
+                const formattedDate = new Date(auction.endDate).toLocaleDateString('no-NO', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                });
                 return (
-                  <div
-                    key={auction._id}
-                    className={`auction-item ${isVisible ? 'visible' : ''}`}
-                    onClick={() => navigate(`/liveauctions/${auction._id}`)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <img
-                      src={
-                        auction.imageUrls && auction.imageUrls.length > 0
-                          ? auction.imageUrls[0]
-                          : '/path-to-default-image.jpg'
-                      }
-                      alt={`${auction.brand} ${auction.model}`}
-                      className="auction-image"
-                    />
+                  <div key={auction._id} className="auction-item" onClick={() => navigate(`/liveauctions/${auction._id}`)} style={{ cursor: 'pointer' }}>
+                    <img src={auction.imageUrls && auction.imageUrls.length > 0 ? auction.imageUrls[0] : '/path-to-default-image.jpg'} alt={`${auction.brand} ${auction.model} `} className="auction-image" />
                     <div className="auction-info">
-                      <h2>
-                        {auction.brand.toUpperCase()} {auction.model.toUpperCase()} - {auction.year} -{' '}
-                        {auction.mileage}
-                      </h2>
+                      <h2>{auction.brand.toUpperCase()} {auction.model.toUpperCase()} - {auction.year} - {auction.mileage}</h2>
+
                       <div className="auction-detail">
-                        <span className="left-text"><strong>Avsluttes:</strong></span>
-                        <span className="right-text">
-                          {new Date(auction.endDate).toLocaleDateString('no-NO', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                          })}
-                        </span>
-                      </div>
+    <span className="left-text"><strong>Avsluttes:</strong></span>
+    <span className="right-text" style={{ color: 'rgb(211, 13, 13)', fontWeight: 'bold' }}>
+        {new Date(auction.endDate).toLocaleDateString('no-NO', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        })}
+    </span>
+</div>
+
+
                       <div className="auction-detail">
                         <span className="left-text"><strong>Gjenstår:</strong></span>
-                        <span className="right-text">{`${timeLeft.days} dager ${timeLeft.hours}t ${timeLeft.minutes}min ${timeLeft.seconds}sek`}</span>
+                        <span className="right-text" style={{ color: 'rgb(211, 13, 13)', fontWeight: 'bold' }}>{timeLeft.days} Dager {timeLeft.hours}t {timeLeft.minutes}min {timeLeft.seconds}sek</span>
                       </div>
                       <div className="auction-detail">
                         <span className="left-text"><strong>Høyeste Bud:</strong></span>
-                        <span className="right-text">{auction.highestBid},-</span>
+                        <span className="right-text" style={{ color: 'rgb(211, 13, 13)', fontWeight: 'bold' }}>{auction.highestBid},-</span>
                       </div>
                       <div className="auction-detail">
                         <span className="left-text"><strong>Sted:</strong></span>
