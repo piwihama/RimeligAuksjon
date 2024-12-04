@@ -25,6 +25,7 @@ function LiveAuctions() {
   const [timeLeftMap, setTimeLeftMap] = useState({});
   const [showFilters, setShowFilters] = useState(false);
   const [filterCounts, setFilterCounts] = useState({});
+  
   const [filters, setFilters] = useState({
     
     brand: [],
@@ -46,6 +47,7 @@ function LiveAuctions() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sortOption, setSortOption] = useState('avsluttes-forst');
+  const [visibleAuctions, setVisibleAuctions] = useState([]); // Ny tilstand for synlige elementer
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -99,16 +101,18 @@ function LiveAuctions() {
         { params: queryParams, headers }
       );
 
-      setLiveAuctions((prevAuctions) =>
-        page === 1 ? response.data : [...prevAuctions, ...response.data]
-      );
+      setLiveAuctions(response.data);
+      setVisibleAuctions([]); // Resetter synlige elementer
+      setTimeout(() => {
+        setVisibleAuctions(response.data.map((auction) => auction._id));
+      }, 100); // Forsinkelse for fade-in effekt
       setError(null);
     } catch (error) {
       console.error('Error fetching live auctions:', error);
       setError('Kunne ikke hente live auksjoner. Prøv igjen senere.');
     }
     setLoading(false);
-  }, [debouncedFilters, page, sortOption]);
+  }, [filters, page]);
 
   const handleCheckboxChange = (e) => {
     const { name, value, checked } = e.target;

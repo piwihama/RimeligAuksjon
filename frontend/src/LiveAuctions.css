@@ -140,8 +140,14 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    transition: transform 0.3s;
+    transition: opacity 0.3s ease, transform 0.3s ease;
     border: 1px solid #ccc; /* Thicker, visible border */
+    opacity: 0;
+    transform: translateY(10px);
+}
+.auction-item.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .auction-item:hover {
