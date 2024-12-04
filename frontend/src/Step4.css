@@ -7,23 +7,23 @@
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     padding: 20px;
     overflow-y: auto;
-    max-height: calc(100vh - 50px); /* Juster høyde i forhold til skjermen */
+    max-height: calc(100vh - 50px);
 }
 
 /* Grid for bildeforhåndsvisninger */
 .step4-image-preview-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    justify-items: center; /* Sentraliser bilder */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* To kolonner */
+    gap: 20px; /* Mellomrom mellom bilder */
+    justify-content: center;
     margin-top: 20px;
 }
 
 /* Stil for hvert bildebeholder */
 .image-preview {
-    width: 250px;
+    width: 100%; /* Full bredde av kolonnen */
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 10px;
     background-color: #f9f9f9;
     display: flex;
     flex-direction: column;
@@ -36,16 +36,17 @@
 /* Bildene i forhåndsvisning */
 .image-preview img {
     width: 100%;
-    height: 200px; /* Fast høyde for bildene */
+    height: 300px; /* Større høyde for bildene */
     object-fit: cover;
-    border-radius: 5px;
+    border-radius: 10px;
+    margin-bottom: 15px;
 }
 
 /* Knapper under hvert bilde */
 .button-container {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px; /* Mellomrom mellom knappene */
+    flex-wrap: nowrap;
+    gap: 10px;
     justify-content: center;
     margin-top: 10px;
 }
@@ -60,7 +61,7 @@
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s ease;
-    width: 45px; /* Standard størrelse for knappene */
+    width: 45px;
     height: 35px;
 }
 
@@ -87,7 +88,7 @@
     margin: 20px auto;
     transition: background-color 0.3s ease, border-color 0.3s ease;
     color: #555;
-    width: 300px; /* Juster bredde for jevn layout */
+    width: 300px;
 }
 
 .step4-image-upload-label:hover {
@@ -141,4 +142,3 @@
     background-color: #ccc;
     cursor: not-allowed;
 }
-/*hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh*/
