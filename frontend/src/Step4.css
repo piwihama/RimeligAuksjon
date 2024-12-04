@@ -1,28 +1,28 @@
 /* Container for hele seksjonen */
 .step4-container {
-    width: 90%; /* Mer plass til layout */
+    width: 100%; /* Fyll bredden av skjermen */
     margin: 20px auto;
     text-align: center;
     background-color: #f9f9f9;
     border-radius: 10px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    overflow-y: auto;
-    max-height: calc(100vh - 50px);
+    overflow-y: auto; /* Tillater scrolling */
+    max-height: calc(100vh - 50px); /* Maks høyde for skjermen */
 }
 
-/* Grid for bildeforhåndsvisning */
+/* Vertikal layout for bildene */
 .step4-image-preview-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Rutenett for å tilpasse skjermbredden */
-    gap: 20px; /* Mellomrom mellom bilder */
-    justify-content: center;
+    display: flex;
+    flex-direction: column; /* Sørger for vertikal layout */
+    gap: 20px; /* Mellomrom mellom hver bildeforhåndsvisning */
+    align-items: center;
     margin-top: 20px;
 }
 
-/* Stil for hvert bildebeholder */
+/* Stil for hver bildeforhåndsvisning */
 .image-preview {
-    width: 100%; /* Tilpass kolonnens bredde */
+    width: 80%; /* Bredde for bildene */
     border: 1px solid #ccc;
     border-radius: 10px;
     background-color: #ffffff;
@@ -35,17 +35,17 @@
 
 /* Bildene i forhåndsvisning */
 .image-preview img {
-    width: 100%; /* Fyll beholderens bredde */
-    max-height: 250px; /* Større bilder */
-    object-fit: cover;
+    width: 100%; /* Fyll bredden av beholderen */
+    max-height: 300px; /* Begrens høyden */
+    object-fit: cover; /* Sørger for at bildet ikke blir forvrengt */
     border-radius: 5px;
-    margin-bottom: 10px; /* Mellomrom mellom bildet og knappene */
+    margin-bottom: 10px; /* Avstand mellom bildet og knappene */
 }
 
-/* Knapper under hvert bilde */
+/* Knapper under bildet */
 .button-container {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 10px; /* Mellomrom mellom knappene */
     justify-content: center;
     margin-top: 10px;
@@ -61,8 +61,8 @@
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s ease;
-    height: 40px; /* For bedre utseende */
-    width: 50px; /* Lik størrelse for alle knapper */
+    height: 40px;
+    width: 100px; /* Knappene har fast bredde */
 }
 
 .button-container button:hover {
