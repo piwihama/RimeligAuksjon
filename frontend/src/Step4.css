@@ -98,7 +98,7 @@
 
 /* Stil for hver bildeforhåndsvisning */
 .image-preview {
-    width: 300px; /* Fast bredde for bildet */
+    width: 400px; /* Øk bredden for bildet */
     border: 1px solid #ccc;
     border-radius: 10px;
     background-color: #ffffff;
@@ -114,7 +114,7 @@
 .image-preview img {
     width: 100%; /* Fyll beholderens bredde */
     height: auto;
-    max-height: 250px; /* Begrens høyden */
+    max-height: 300px; /* Øk høyden */
     object-fit: cover; /* Sørg for at bildet ikke blir forvrengt */
     border-radius: 5px;
 }
@@ -122,23 +122,23 @@
 /* Knapper under bildet */
 .button-container {
     display: flex;
-    gap: 10px; /* Mellomrom mellom knappene */
+    gap: 5px; /* Mindre mellomrom mellom knappene */
     justify-content: center;
     margin-top: 10px;
 }
 
 /* Stil for knappene */
 .button-container button {
-    padding: 8px 12px;
+    padding: 6px 8px; /* Mindre padding for knappene */
     background-color: #005050;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 3px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 12px; /* Mindre tekst for knappene */
     transition: background-color 0.3s ease;
-    height: 40px;
-    width: 80px; /* Lik bredde for alle knappene */
+    height: 30px; /* Mindre høyde */
+    width: 60px; /* Mindre bredde */
 }
 
 .button-container button:hover {
