@@ -61,6 +61,8 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
 
   const handleDeleteImage = (index, setFieldValue) => {
     const updatedImages = previewImages.filter((_, i) => i !== index);
+  
+    // Oppdater 'previewImages' og 'images' i formData
     setPreviewImages(updatedImages);
     setFieldValue(
       'images',
@@ -69,8 +71,10 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     setFormData({
       ...formData,
       previewImages: updatedImages,
+      images: updatedImages.map((image) => image.src), // Hold images oppdatert
     });
   };
+  
 
   return (
     <div>
