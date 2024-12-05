@@ -66,7 +66,10 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
       'images',
       updatedImages.map((image) => image.src)
     );
-    setFormData({ ...formData, previewImages: updatedImages });
+    setFormData({
+      ...formData,
+      previewImages: updatedImages,
+    });
   };
 
   return (
@@ -83,7 +86,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
         >
           {({ setFieldValue }) => (
             <Form className="step4-form">
-              <h2 className="step4-title">Detaljer om Auksjon</h2>
+              <h2>Detaljer om Auksjon</h2>
               <div className="step4-group">
                 <label htmlFor="description">Beskrivelse av det du skal selge</label>
                 <Field as="textarea" id="description" name="description" className="step4-control" />
@@ -101,24 +104,13 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                     <div key={image.id} className="image-preview">
                       <img src={image.src} alt={`Preview ${index}`} />
                       <div className="button-container">
-                        <button
-                          type="button"
-                          onClick={() => moveImageUp(index)}
-                          disabled={index === 0}
-                        >
+                        <button type="button" onClick={() => moveImageUp(index)} disabled={index === 0}>
                           Opp
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => moveImageDown(index)}
-                          disabled={index === previewImages.length - 1}
-                        >
+                        <button type="button" onClick={() => moveImageDown(index)} disabled={index === previewImages.length - 1}>
                           Ned
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteImage(index, setFieldValue)}
-                        >
+                        <button type="button" onClick={() => handleDeleteImage(index, setFieldValue)}>
                           Slett
                         </button>
                       </div>
@@ -131,11 +123,9 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                     id="images"
                     name="images"
                     onChange={(event) => handleImageUpload(event, setFieldValue)}
-                    className="step4-control"
                     multiple
                     accept="image/*"
                   />
-                  Last opp bilder
                 </label>
                 <ErrorMessage name="images" component="div" className="step4-error" />
               </div>
