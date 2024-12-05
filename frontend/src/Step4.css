@@ -57,38 +57,38 @@
   .step4-image-preview-container {
     display: flex;
     flex-direction: column;
-    gap: 40px; /* Økt avstand mellom bildene */
-    align-items: center; /* Sentrert innhold */
+    gap: 30px; /* Avstand mellom bildene */
+    align-items: center;
   }
   
+  /* Stil for hvert bildebeholder */
   .image-preview {
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: 600px; /* Økt bredde for større bilder */
-    width: 100%;
+    width: 100%; /* Tilpass bredde */
+    max-width: 700px; /* Økt maksimal bredde for store skjermer */
     margin: 0 auto;
   }
   
-  /* Fjernet ramme og økt bildestørrelse */
+  /* Bildene */
   .image-preview img {
-    width: 100%;
-    max-width: 600px;
+    width: 100%; /* Full bredde innen containeren */
+    max-width: 700px; /* Maksimal bredde for bilde */
     height: auto;
-    max-height: 450px; /* Økt høyde for bedre visning */
-    object-fit: cover;
+    object-fit: cover; /* Sørg for at bildet ikke forvrenges */
+    margin-bottom: 15px; /* Avstand til knappene */
   }
   
   /* Knappene */
   .button-container {
     display: flex;
     justify-content: center;
-    gap: 20px; /* Økt avstand mellom knappene */
-    width: 100%;
+    gap: 15px; /* Avstand mellom knappene */
   }
   
   .button-container button {
-    padding: 12px 16px;
+    padding: 10px 15px;
     background-color: #005050;
     color: white;
     border: none;
@@ -177,7 +177,7 @@
   
     .image-preview img {
       max-width: 100%;
-      max-height: 300px;
+      max-height: 400px;
     }
   
     .button-container {
@@ -193,7 +193,7 @@
   /* Små skjermer */
   @media (max-width: 480px) {
     .image-preview img {
-      max-height: 250px;
+      max-height: 300px;
     }
   
     .button-container button {
