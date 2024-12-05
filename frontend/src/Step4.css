@@ -122,3 +122,30 @@
     }
   }
   
+  .step4-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .step4-navigation button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: white;
+    background-color: #005050;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .step4-navigation button:hover {
+    background-color: #003838;
+    transform: scale(1.05);
+  }
+  
+  .step4-navigation button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  

@@ -98,7 +98,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                 <ErrorMessage name="conditionDescription" component="div" className="step4-error" />
               </div>
               <div className="step4-group">
-                <label htmlFor="images">Bilder</label>
+                <label htmlFor="images">Laste opp biler </label>
                 <div className="step4-image-preview-container">
                   {previewImages.map((image, index) => (
                     <div key={image.id} className="image-preview">
