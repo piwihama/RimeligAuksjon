@@ -57,50 +57,44 @@
   .step4-image-preview-container {
     display: flex;
     flex-direction: column;
-    gap: 30px; /* Økt avstand mellom bildene */
+    gap: 40px; /* Økt avstand mellom bildene */
+    align-items: center; /* Sentrert innhold */
   }
   
   .image-preview {
     display: flex;
     flex-direction: column;
     align-items: center;
+    max-width: 600px; /* Økt bredde for større bilder */
     width: 100%;
-    max-width: 500px; /* Økt bredde for større bilder */
     margin: 0 auto;
-    padding: 10px;
-    border: 1px solid #ddd; /* Ramme rundt hver bildecontainer */
-    border-radius: 10px;
-    background-color: #fdfdfd;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
   }
   
-  /* Økt bildestørrelse */
+  /* Fjernet ramme og økt bildestørrelse */
   .image-preview img {
     width: 100%;
-    max-width: 450px;
+    max-width: 600px;
     height: auto;
-    max-height: 350px; /* Økt høyde for bedre visning */
+    max-height: 450px; /* Økt høyde for bedre visning */
     object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 10px;
   }
   
   /* Knappene */
   .button-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 20px; /* Økt avstand mellom knappene */
     width: 100%;
-    gap: 10px;
   }
   
   .button-container button {
-    padding: 10px 15px;
+    padding: 12px 16px;
     background-color: #005050;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 16px;
     transition: background-color 0.3s ease;
   }
   
@@ -181,18 +175,14 @@
       padding: 15px;
     }
   
-    .image-preview {
-      max-width: 90%;
-    }
-  
     .image-preview img {
       max-width: 100%;
-      max-height: 250px;
+      max-height: 300px;
     }
   
     .button-container {
       flex-wrap: wrap;
-      gap: 5px;
+      gap: 10px;
     }
   
     .step4-btn-primary {
@@ -203,12 +193,12 @@
   /* Små skjermer */
   @media (max-width: 480px) {
     .image-preview img {
-      max-height: 200px;
+      max-height: 250px;
     }
   
     .button-container button {
-      font-size: 12px;
-      padding: 6px 10px;
+      font-size: 14px;
+      padding: 8px 12px;
     }
   }
   
