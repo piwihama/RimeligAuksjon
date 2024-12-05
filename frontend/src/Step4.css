@@ -57,7 +57,7 @@
   .step4-image-preview-container {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 30px; /* Økt avstand mellom bildene */
   }
   
   .image-preview {
@@ -65,35 +65,40 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 400px;
+    max-width: 500px; /* Økt bredde for større bilder */
     margin: 0 auto;
+    padding: 10px;
+    border: 1px solid #ddd; /* Ramme rundt hver bildecontainer */
+    border-radius: 10px;
+    background-color: #fdfdfd;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
   }
   
+  /* Økt bildestørrelse */
   .image-preview img {
     width: 100%;
-    max-width: 400px;
+    max-width: 450px;
     height: auto;
-    max-height: 300px;
+    max-height: 350px; /* Økt høyde for bedre visning */
     object-fit: cover;
     border-radius: 8px;
-    border: 1px solid #ccc;
     margin-bottom: 10px;
   }
   
   /* Knappene */
   .button-container {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    width: 100%;
     gap: 10px;
-    margin-top: 10px;
   }
   
   .button-container button {
-    padding: 8px 12px;
+    padding: 10px 15px;
     background-color: #005050;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s ease;
@@ -174,6 +179,10 @@
     .step4-container {
       width: 95%;
       padding: 15px;
+    }
+  
+    .image-preview {
+      max-width: 90%;
     }
   
     .image-preview img {
