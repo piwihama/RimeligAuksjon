@@ -1,134 +1,26 @@
-/* Containeren */
 .step4-container {
     width: 90%;
-    margin: 20px auto;
+    margin: 0 auto;
     text-align: center;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     padding: 20px;
   }
   
-  /* Form-layout */
-  .step4-form {
-    display: flex;
-    flex-direction: column;
+  .step4-image-preview-container {
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 20px;
   }
   
-  /* Skrivefeltene */
-  .step4-group label {
-    font-size: 1rem;
-    font-weight: bold;
-    color: #011010;
-    margin-bottom: 5px;
-    display: block;
-  }
-  
-  .step4-control {
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #fff;
-  }
-  
-  /* Bilder og knapper */
-  .step4-image-preview-container {
-    display: flex;
-    flex-direction: column;
-    gap: 40px; /* Mellomrom mellom bildene */
-    align-items: center;
-  }
-  
-  /* Hver bildeseksjon */
-  .image-preview {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-width: 700px; /* Gjør bildene større */
-    width: 100%; /* Sørg for at bildene fyller containeren */
-  }
-  
-  /* Bildene */
   .image-preview img {
-    width: 100%; /* Full bredde */
-    height: auto; /* Bevar proporsjonene */
-    max-width: 700px; /* Maksimal bredde for store skjermer */
-    object-fit: cover; /* Ingen forvrengning */
-    margin-bottom: 20px; /* Mer avstand til knappene */
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: contain;
   }
   
-  /* Knappene */
   .button-container {
     display: flex;
+    gap: 10px;
     justify-content: center;
-    gap: 15px; /* Avstand mellom knappene */
-  }
-  
-  .button-container button {
-    padding: 10px 15px;
-    background-color: #005050;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .button-container button:hover {
-    background-color: #003838;
-  }
-  
-  /* Filopplastingsområdet */
-  .step4-image-upload-label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 20px auto;
-    padding: 20px;
-    border: 2px dashed #ccc;
-    border-radius: 10px;
-    background-color: #f9f9f9;
-    cursor: pointer;
-  }
-  
-  .step4-image-upload-label:hover {
-    background-color: #f0f0f0;
-    border-color: #005050;
-  }
-  
-  /* Navigasjonsknapper */
-  .step4-navigation {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-  }
-  
-  .step4-btn-primary {
-    padding: 10px 20px;
-    font-size: 1rem;
-    color: white;
-    background-color: #005050;
-    border: none;
-    border-radius: 5px;
-  }
-  
-  /* RESPONSIV DESIGN */
-  
-  /* Mobilvisning */
-  @media (max-width: 768px) {
-    .image-preview img {
-      max-width: 100%; /* Tilpass bredden til skjermen */
-      max-height: 400px; /* Tilpass høyden */
-    }
-  
-    .button-container {
-      flex-wrap: wrap;
-      gap: 10px;
-    }
   }
   

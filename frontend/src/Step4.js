@@ -16,6 +16,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
 
   const handleImageUpload = async (event, setFieldValue) => {
     const files = Array.from(event.target.files);
+
     if (files.length === 0) return;
 
     try {
@@ -101,13 +102,13 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                       <img src={image.src} alt={`Preview ${index}`} />
                       <div className="button-container">
                         <button type="button" onClick={() => moveImageUp(index)} disabled={index === 0}>
-                          ⬆
+                          Opp
                         </button>
                         <button type="button" onClick={() => moveImageDown(index)} disabled={index === previewImages.length - 1}>
-                          ⬇
+                          Ned
                         </button>
                         <button type="button" onClick={() => handleDeleteImage(index, setFieldValue)}>
-                          🗑️
+                          Slett
                         </button>
                       </div>
                     </div>
@@ -119,7 +120,6 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                     id="images"
                     name="images"
                     onChange={(event) => handleImageUpload(event, setFieldValue)}
-                    className="step4-control"
                     multiple
                     accept="image/*"
                   />
