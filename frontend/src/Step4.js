@@ -101,6 +101,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
       <div className="step4-container">
         <Formik
           initialValues={formData}
+          enableReinitialize
           validationSchema={validationSchema}
           onSubmit={(values) => {
             setFormData({ ...formData, ...values });
