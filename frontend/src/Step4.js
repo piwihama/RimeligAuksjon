@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import Sortable from 'react-sortablejs';
+import { Sortable } from 'react-sortablejs';
 import * as Yup from 'yup';
 import './Step4.css';
 import Header from './Header';
@@ -17,7 +17,6 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
 
   const handleImageUpload = async (event, setFieldValue) => {
     const files = Array.from(event.target.files);
-
     if (files.length === 0) return;
 
     try {
@@ -32,12 +31,9 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
         )
       );
 
-      const updatedImages = [...previewImages, ...newImages];
+      const updatedImages = [...previewImages, ...newImages].filter(image => image && image.id && image.src);
       setPreviewImages(updatedImages);
-      setFieldValue(
-        'images',
-        updatedImages.map((image) => image.src)
-      );
+      setFieldValue('images', updatedImages.map((image) => image.src));
       setFormData({ ...formData, previewImages: updatedImages });
     } catch (error) {
       console.error('Feil ved opplasting av bilder:', error);
@@ -47,10 +43,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
   const handleDeleteImage = (index, setFieldValue) => {
     const updatedImages = previewImages.filter((_, i) => i !== index);
     setPreviewImages(updatedImages);
-    setFieldValue(
-      'images',
-      updatedImages.map((image) => image.src)
-    );
+    setFieldValue('images', updatedImages.map((image) => image.src));
     setFormData({ ...formData, previewImages: updatedImages });
   };
 
@@ -69,7 +62,6 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
           {({ setFieldValue }) => (
             <Form className="step4-form">
               <h2>Detaljer om Auksjon</h2>
-
               <div className="step4-group">
                 <label htmlFor="description">Beskrivelse av det du skal selge</label>
                 <Field as="textarea" id="description" name="description" className="step4-control" />
@@ -90,7 +82,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                   onChange={(order) => {
                     const sortedImages = order.map((id) =>
                       previewImages.find((image) => image.id === id)
-                    ).filter(Boolean);
+                    ).filter(image => image);
                     setPreviewImages(sortedImages);
                     setFormData({ ...formData, previewImages: sortedImages });
                   }}
@@ -99,11 +91,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                     <div key={image.id} data-id={image.id} className="image-preview">
                       <span className="drag-handle">☰</span>
                       <img src={image.src} alt={`Preview ${index}`} />
-                      <button
-                        type="button"
-                        className="delete-button"
-                        onClick={() => handleDeleteImage(index, setFieldValue)}
-                      >
+                      <button type="button" className="delete-button" onClick={() => handleDeleteImage(index, setFieldValue)}>
                         Slett
                       </button>
                     </div>
@@ -141,4 +129,3 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
 };
 
 export default Step4;
-//
