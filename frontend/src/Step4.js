@@ -21,7 +21,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     if (sortableContainerRef.current) {
       Sortable.create(sortableContainerRef.current, {
         animation: 150,
-        handle: '.drag-handle',
+        handle: '.step4-drag-handle',
         onEnd: (evt) => {
           if (evt.oldIndex === undefined || evt.newIndex === undefined) return;
 
@@ -73,24 +73,6 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     setKey((prevKey) => prevKey + 1); // Tving rerender
   };
 
-  const moveImageUp = (index) => {
-    if (index === 0) return;
-    const reorderedImages = [...previewImages];
-    [reorderedImages[index - 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index - 1]];
-    setPreviewImages(reorderedImages);
-    setFormData({ ...formData, previewImages: reorderedImages });
-    setKey((prevKey) => prevKey + 1); // Tving rerender
-  };
-
-  const moveImageDown = (index) => {
-    if (index === previewImages.length - 1) return;
-    const reorderedImages = [...previewImages];
-    [reorderedImages[index + 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index + 1]];
-    setPreviewImages(reorderedImages);
-    setFormData({ ...formData, previewImages: reorderedImages });
-    setKey((prevKey) => prevKey + 1); // Tving rerender
-  };
-
   return (
     <div>
       <Header />
@@ -123,10 +105,10 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                 <label htmlFor="images">Last opp bilder</label>
                 <div ref={sortableContainerRef} key={key} className="step4-image-preview-container">
                   {previewImages.map((image, index) => (
-                    <div key={image.id} data-id={image.id} className="image-preview">
-                      <span className="drag-handle">☰</span>
+                    <div key={image.id} data-id={image.id} className="step4-image-preview">
+                      <span className="step4-drag-handle">☰</span>
                       <img src={image.src} alt={`Preview ${index}`} />
-                      <div className="button-container">
+                      <div className="step4-button-container">
                         <button type="button" onClick={() => moveImageUp(index)} disabled={index === 0}>
                           Opp
                         </button>

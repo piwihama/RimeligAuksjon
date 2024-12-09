@@ -42,7 +42,7 @@
 }
 
 /* Image preview container */
-.image-preview {
+.step4-image-preview {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -52,32 +52,32 @@
   border-radius: 5px;
   background-color: #f4f4f4;
   width: 100%;
-  max-width: 400px; /* Redusert bredde på boksen */
-  height: 100px;    /* Redusert høyde på boksen */
+  max-width: 400px;
+  height: 100px;
 }
 
 /* Større bilde */
-.image-preview img {
-  width: 100px;
-  height: 80px;
+.step4-image-preview img {
+  width: 120px;
+  height: 100px;
   object-fit: cover;
   border-radius: 5px;
 }
 
 /* Drag-handle styling */
-.drag-handle {
+.step4-drag-handle {
   cursor: grab;
   font-size: 1.5rem;
   color: #555;
 }
 
 /* Button container */
-.button-container {
+.step4-button-container {
   display: flex;
   gap: 5px;
 }
 
-.button-container button {
+.step4-button-container button {
   padding: 5px 10px;
   font-size: 0.9rem;
   color: white;
@@ -87,7 +87,7 @@
   cursor: pointer;
 }
 
-.button-container button:hover {
+.step4-button-container button:hover {
   background-color: #003838;
 }
 
@@ -139,17 +139,17 @@
     padding: 15px;
   }
 
-  .image-preview {
+  .step4-image-preview {
     max-width: 100%;
     height: auto;
   }
 
-  .image-preview img {
-    width: 80px;
-    height: 60px;
+  .step4-image-preview img {
+    width: 100px;
+    height: 80px;
   }
 
-  .button-container button {
+  .step4-button-container button {
     padding: 5px 10px;
     font-size: 0.8rem;
   }
