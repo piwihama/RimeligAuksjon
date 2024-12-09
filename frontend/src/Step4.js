@@ -21,7 +21,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     if (sortableContainerRef.current) {
       Sortable.create(sortableContainerRef.current, {
         animation: 150,
-        handle: '.drag-handle',
+        handle: '.step4-drag-handle',
         onEnd: (evt) => {
           if (evt.oldIndex === undefined || evt.newIndex === undefined) return;
 
@@ -124,7 +124,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                 <div ref={sortableContainerRef} key={key} className="step4-image-preview-container">
                   {previewImages.map((image, index) => (
                     <div key={image.id} data-id={image.id} className="step4-image-preview">
-                      <span className="drag-handle">☰</span>
+                      <span className="step4-drag-handle">☰</span>
                       <img src={image.src} alt={`Preview ${index}`} />
                       <div className="step4-button-container">
                         <button type="button" onClick={() => moveImageUp(index)} disabled={index === 0}>
