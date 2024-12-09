@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { Sortable, MultiDrag, Swap } from 'sortablejs';
+import { Sortable, SortableContainer, SortableElement } from 'react-sortablejs';
 import * as Yup from 'yup';
 import './Step4.css';
 import Header from './Header';
 import Footer from './Footer';
-
-Sortable.mount(new MultiDrag(), new Swap());
 
 const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
   const [previewImages, setPreviewImages] = useState(formData.previewImages || []);
@@ -27,7 +25,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
         files.map((file) =>
           new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onload = () => resolve({ id: file.name, src: reader.result });
+            reader.onload = () => resolve({ id: `${file.name}-${Date.now()}`, src: reader.result });
             reader.onerror = (error) => reject(error);
             reader.readAsDataURL(file);
           })
@@ -56,11 +54,8 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     setFormData({ ...formData, previewImages: updatedImages });
   };
 
-  const handleSort = (event) => {
-    const items = Array.from(event.to.children);
-    const sortedImages = items.map((item) =>
-      previewImages.find((image) => image.id === item.dataset.id)
-    );
+  const handleSort = (order) => {
+    const sortedImages = order.map((id) => previewImages.find((image) => image.id === id));
     setPreviewImages(sortedImages);
     setFormData({ ...formData, previewImages: sortedImages });
   };
@@ -95,30 +90,27 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
 
               <div className="step4-group">
                 <label htmlFor="images">Last opp bilder</label>
-                <div
+                <Sortable
+                  tag="div"
                   className="step4-image-preview-container"
-                  ref={(el) => {
-                    if (el) {
-                      new Sortable(el, {
-                        animation: 150,
-                        onEnd: handleSort,
-                      });
-                    }
-                  }}
+                  onChange={(order) => handleSort(order)}
                 >
                   {previewImages.map((image, index) => (
                     <div key={image.id} data-id={image.id} className="image-preview">
                       <img src={image.src} alt={`Preview ${index}`} />
-                      <button
-                        type="button"
-                        className="delete-button"
-                        onClick={() => handleDeleteImage(index, setFieldValue)}
-                      >
-                        Slett
-                      </button>
+                      <div className="button-container">
+                        <button type="button" className="move-button">↕</button>
+                        <button
+                          type="button"
+                          className="delete-button"
+                          onClick={() => handleDeleteImage(index, setFieldValue)}
+                        >
+                          Slett
+                        </button>
+                      </div>
                     </div>
                   ))}
-                </div>
+                </Sortable>
                 <label htmlFor="images" className="step4-image-upload-label">
                   <input
                     type="file"
