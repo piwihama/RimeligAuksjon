@@ -17,6 +17,11 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     images: Yup.array().min(1, 'Minst ett bilde er påkrevd'),
   });
 
+  // Oppdater previewImages når formData.previewImages endres
+  useEffect(() => {
+    setPreviewImages(formData.previewImages || []);
+  }, [formData.previewImages]);
+
   useEffect(() => {
     if (sortableContainerRef.current) {
       Sortable.create(sortableContainerRef.current, {
