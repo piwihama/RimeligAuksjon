@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { Sortable } from 'react-sortablejs';
+import Sortable from 'sortablejs';
 import * as Yup from 'yup';
 import './Step4.css';
 import Header from './Header';
@@ -8,12 +8,28 @@ import Footer from './Footer';
 
 const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
   const [previewImages, setPreviewImages] = useState(formData.previewImages || []);
+  const sortableContainerRef = useRef(null);
 
   const validationSchema = Yup.object({
     description: Yup.string().required('Beskrivelse er påkrevd'),
     conditionDescription: Yup.string().required('Beskrivelse av egenerklæring/tilstand er påkrevd'),
     images: Yup.array().min(1, 'Minst ett bilde er påkrevd'),
   });
+
+  useEffect(() => {
+    if (sortableContainerRef.current) {
+      Sortable.create(sortableContainerRef.current, {
+        animation: 150,
+        onEnd: (evt) => {
+          const newOrder = [...previewImages];
+          const [movedItem] = newOrder.splice(evt.oldIndex, 1);
+          newOrder.splice(evt.newIndex, 0, movedItem);
+          setPreviewImages(newOrder);
+          setFormData({ ...formData, previewImages: newOrder });
+        },
+      });
+    }
+  }, [previewImages, setFormData]);
 
   const handleImageUpload = async (event, setFieldValue) => {
     const files = Array.from(event.target.files);
@@ -31,7 +47,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
         )
       );
 
-      const updatedImages = [...previewImages, ...newImages].filter(image => image && image.id && image.src);
+      const updatedImages = [...previewImages, ...newImages];
       setPreviewImages(updatedImages);
       setFieldValue('images', updatedImages.map((image) => image.src));
       setFormData({ ...formData, previewImages: updatedImages });
@@ -62,6 +78,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
           {({ setFieldValue }) => (
             <Form className="step4-form">
               <h2>Detaljer om Auksjon</h2>
+
               <div className="step4-group">
                 <label htmlFor="description">Beskrivelse av det du skal selge</label>
                 <Field as="textarea" id="description" name="description" className="step4-control" />
@@ -76,19 +93,9 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
 
               <div className="step4-group">
                 <label htmlFor="images">Last opp bilder</label>
-                <Sortable
-                  tag="div"
-                  className="step4-image-preview-container"
-                  onChange={(order) => {
-                    const sortedImages = order.map((id) =>
-                      previewImages.find((image) => image.id === id)
-                    ).filter(image => image);
-                    setPreviewImages(sortedImages);
-                    setFormData({ ...formData, previewImages: sortedImages });
-                  }}
-                >
+                <div ref={sortableContainerRef} className="step4-image-preview-container">
                   {previewImages.map((image, index) => (
-                    <div key={image.id} data-id={image.id} className="image-preview">
+                    <div key={image.id} className="image-preview">
                       <span className="drag-handle">☰</span>
                       <img src={image.src} alt={`Preview ${index}`} />
                       <button type="button" className="delete-button" onClick={() => handleDeleteImage(index, setFieldValue)}>
@@ -96,7 +103,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                       </button>
                     </div>
                   ))}
-                </Sortable>
+                </div>
                 <label htmlFor="images" className="step4-image-upload-label">
                   <input
                     type="file"

@@ -7,7 +7,7 @@
     "react-helmet": "^6.1.0",
     "react-sortablejs": "^6.0.0",
     "redis": "^4.7.0",
-    "sortablejs": "^1.15.0",
+    "sortablejs": "^1.15.6",
     "ws": "^8.18.0"
   },
   "devDependencies": {
