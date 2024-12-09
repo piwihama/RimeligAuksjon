@@ -9,7 +9,7 @@ import Footer from './Footer';
 const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
   const [previewImages, setPreviewImages] = useState(formData.previewImages || []);
   const sortableContainerRef = useRef(null);
-  const [key, setKey] = useState(0); // Tving rerender etter endring
+  const [key, setKey] = useState(0); // For å tvinge rerender etter endringer
 
   const validationSchema = Yup.object({
     description: Yup.string().required('Beskrivelse er påkrevd'),
@@ -64,7 +64,6 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
       setPreviewImages(updatedImages);
       setFieldValue('images', updatedImages.map((image) => image.src));
       setFormData({ ...formData, previewImages: updatedImages });
-      setKey((prevKey) => prevKey + 1); // Tving rerender
     } catch (error) {
       console.error('Feil ved opplasting av bilder:', error);
     }
@@ -84,7 +83,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     [reorderedImages[index - 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index - 1]];
     setPreviewImages(reorderedImages);
     setFormData({ ...formData, previewImages: reorderedImages });
-    setKey((prevKey) => prevKey + 1); // Tving rerender
+    setKey((prevKey) => prevKey + 1);
   };
 
   const moveImageDown = (index) => {
@@ -93,7 +92,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     [reorderedImages[index + 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index + 1]];
     setPreviewImages(reorderedImages);
     setFormData({ ...formData, previewImages: reorderedImages });
-    setKey((prevKey) => prevKey + 1); // Tving rerender
+    setKey((prevKey) => prevKey + 1);
   };
 
   return (
