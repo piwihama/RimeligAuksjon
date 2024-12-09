@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Sortable, MultiDrag, Swap } from 'sortablejs';
 import * as Yup from 'yup';
 import './Step4.css';
 import Header from './Header';
 import Footer from './Footer';
+
+Sortable.mount(new MultiDrag(), new Swap());
 
 const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
   const [previewImages, setPreviewImages] = useState(formData.previewImages || []);
@@ -43,38 +46,24 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     }
   };
 
-  const moveImageUp = (index) => {
-    if (index === 0) return;
-    const reorderedImages = [...previewImages];
-    [reorderedImages[index - 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index - 1]];
-    setPreviewImages(reorderedImages);
-    setFormData({ ...formData, previewImages: reorderedImages });
-  };
-
-  const moveImageDown = (index) => {
-    if (index === previewImages.length - 1) return;
-    const reorderedImages = [...previewImages];
-    [reorderedImages[index + 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index + 1]];
-    setPreviewImages(reorderedImages);
-    setFormData({ ...formData, previewImages: reorderedImages });
-  };
-
   const handleDeleteImage = (index, setFieldValue) => {
     const updatedImages = previewImages.filter((_, i) => i !== index);
-  
-    // Oppdater 'previewImages' og 'images' i formData
     setPreviewImages(updatedImages);
     setFieldValue(
       'images',
       updatedImages.map((image) => image.src)
     );
-    setFormData({
-      ...formData,
-      previewImages: updatedImages,
-      images: updatedImages.map((image) => image.src), // Hold images oppdatert
-    });
+    setFormData({ ...formData, previewImages: updatedImages });
   };
-  
+
+  const handleSort = (event) => {
+    const items = Array.from(event.to.children);
+    const sortedImages = items.map((item) =>
+      previewImages.find((image) => image.id === item.dataset.id)
+    );
+    setPreviewImages(sortedImages);
+    setFormData({ ...formData, previewImages: sortedImages });
+  };
 
   return (
     <div>
@@ -91,33 +80,42 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
           {({ setFieldValue }) => (
             <Form className="step4-form">
               <h2>Detaljer om Auksjon</h2>
+
               <div className="step4-group">
                 <label htmlFor="description">Beskrivelse av det du skal selge</label>
                 <Field as="textarea" id="description" name="description" className="step4-control" />
                 <ErrorMessage name="description" component="div" className="step4-error" />
               </div>
+
               <div className="step4-group">
                 <label htmlFor="conditionDescription">Beskrivelse av egenerklæring / tilstand</label>
                 <Field as="textarea" id="conditionDescription" name="conditionDescription" className="step4-control" />
                 <ErrorMessage name="conditionDescription" component="div" className="step4-error" />
               </div>
+
               <div className="step4-group">
-                <label htmlFor="images">Laste opp biler </label>
-                <div className="step4-image-preview-container">
+                <label htmlFor="images">Last opp bilder</label>
+                <div
+                  className="step4-image-preview-container"
+                  ref={(el) => {
+                    if (el) {
+                      new Sortable(el, {
+                        animation: 150,
+                        onEnd: handleSort,
+                      });
+                    }
+                  }}
+                >
                   {previewImages.map((image, index) => (
-                    <div key={image.id} className="image-preview">
+                    <div key={image.id} data-id={image.id} className="image-preview">
                       <img src={image.src} alt={`Preview ${index}`} />
-                      <div className="button-container">
-                        <button type="button" onClick={() => moveImageUp(index)} disabled={index === 0}>
-                          Opp
-                        </button>
-                        <button type="button" onClick={() => moveImageDown(index)} disabled={index === previewImages.length - 1}>
-                          Ned
-                        </button>
-                        <button type="button" onClick={() => handleDeleteImage(index, setFieldValue)}>
-                          Slett
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        className="delete-button"
+                        onClick={() => handleDeleteImage(index, setFieldValue)}
+                      >
+                        Slett
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -130,9 +128,11 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                     multiple
                     accept="image/*"
                   />
+                  Klikk for å laste opp bilder
                 </label>
                 <ErrorMessage name="images" component="div" className="step4-error" />
               </div>
+
               <div className="step4-navigation">
                 <button type="button" onClick={prevStep} className="step4-btn-primary">
                   Tilbake
