@@ -21,19 +21,21 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
       Sortable.create(sortableContainerRef.current, {
         animation: 150,
         onEnd: (evt) => {
-          const newOrder = [...previewImages];
+          if (evt.oldIndex === undefined || evt.newIndex === undefined) return;
+  
+          const newOrder = Array.from(previewImages);
           const [movedItem] = newOrder.splice(evt.oldIndex, 1);
-          newOrder.splice(evt.newIndex, 0, movedItem);
-  
-          // Filtrer ut eventuelle undefined elementer
-          const filteredOrder = newOrder.filter((item) => item !== undefined);
-  
-          setPreviewImages(filteredOrder);
-          setFormData({ ...formData, previewImages: filteredOrder });
+          
+          if (movedItem) {
+            newOrder.splice(evt.newIndex, 0, movedItem);
+            setPreviewImages(newOrder);
+            setFormData({ ...formData, previewImages: newOrder });
+          }
         },
       });
     }
   }, [previewImages, setFormData]);
+  
   
 
   const handleImageUpload = async (event, setFieldValue) => {
