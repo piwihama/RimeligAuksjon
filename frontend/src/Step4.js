@@ -25,10 +25,9 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
           const [movedItem] = newOrder.splice(evt.oldIndex, 1);
           newOrder.splice(evt.newIndex, 0, movedItem);
 
-          // Filtrer ut undefined elementer
-          const validImages = newOrder.filter((image) => image !== undefined);
-          setPreviewImages(validImages);
-          setFormData({ ...formData, previewImages: validImages });
+          // Oppdater bildene med gyldige referanser
+          setPreviewImages(newOrder);
+          setFormData({ ...formData, previewImages: newOrder });
         },
       });
     }
@@ -43,7 +42,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
         files.map((file) =>
           new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onload = () => resolve({ id: file.name, src: reader.result });
+            reader.onload = () => resolve({ id: `${file.name}-${Date.now()}`, src: reader.result });
             reader.onerror = (error) => reject(error);
             reader.readAsDataURL(file);
           })
