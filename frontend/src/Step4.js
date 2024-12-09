@@ -9,6 +9,7 @@ import Footer from './Footer';
 const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
   const [previewImages, setPreviewImages] = useState(formData.previewImages || []);
   const sortableContainerRef = useRef(null);
+  const [key, setKey] = useState(0); // For å tvinge rerender etter endringer
 
   const validationSchema = Yup.object({
     description: Yup.string().required('Beskrivelse er påkrevd'),
@@ -36,6 +37,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
             newOrder.splice(evt.newIndex, 0, movedItem);
             setPreviewImages(newOrder);
             setFormData({ ...formData, previewImages: newOrder });
+            setKey((prevKey) => prevKey + 1); // Tving rerender
           }
         },
       });
@@ -60,8 +62,8 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
 
       const updatedImages = [...previewImages, ...newImages];
       setPreviewImages(updatedImages);
-      setFormData({ ...formData, previewImages: updatedImages });
       setFieldValue('images', updatedImages.map((image) => image.src));
+      setFormData({ ...formData, previewImages: updatedImages });
     } catch (error) {
       console.error('Feil ved opplasting av bilder:', error);
     }
@@ -70,8 +72,27 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
   const handleDeleteImage = (index, setFieldValue) => {
     const updatedImages = previewImages.filter((_, i) => i !== index);
     setPreviewImages(updatedImages);
-    setFormData({ ...formData, previewImages: updatedImages });
     setFieldValue('images', updatedImages.map((image) => image.src));
+    setFormData({ ...formData, previewImages: updatedImages });
+    setKey((prevKey) => prevKey + 1); // Tving rerender
+  };
+
+  const moveImageUp = (index) => {
+    if (index === 0) return;
+    const reorderedImages = [...previewImages];
+    [reorderedImages[index - 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index - 1]];
+    setPreviewImages(reorderedImages);
+    setFormData({ ...formData, previewImages: reorderedImages });
+    setKey((prevKey) => prevKey + 1);
+  };
+
+  const moveImageDown = (index) => {
+    if (index === previewImages.length - 1) return;
+    const reorderedImages = [...previewImages];
+    [reorderedImages[index + 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index + 1]];
+    setPreviewImages(reorderedImages);
+    setFormData({ ...formData, previewImages: reorderedImages });
+    setKey((prevKey) => prevKey + 1);
   };
 
   return (
@@ -104,12 +125,18 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
 
               <div className="step4-group">
                 <label htmlFor="images">Last opp bilder</label>
-                <div ref={sortableContainerRef} className="step4-image-preview-container">
+                <div ref={sortableContainerRef} key={key} className="step4-image-preview-container">
                   {previewImages.map((image, index) => (
                     <div key={image.id} data-id={image.id} className="step4-image-preview">
                       <span className="step4-drag-handle">☰</span>
                       <img src={image.src} alt={`Preview ${index}`} />
                       <div className="step4-button-container">
+                        <button type="button" onClick={() => moveImageUp(index)} disabled={index === 0}>
+                          Opp
+                        </button>
+                        <button type="button" onClick={() => moveImageDown(index)} disabled={index === previewImages.length - 1}>
+                          Ned
+                        </button>
                         <button type="button" onClick={() => handleDeleteImage(index, setFieldValue)}>
                           Slett
                         </button>
