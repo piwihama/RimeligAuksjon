@@ -24,14 +24,17 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
           const newOrder = [...previewImages];
           const [movedItem] = newOrder.splice(evt.oldIndex, 1);
           newOrder.splice(evt.newIndex, 0, movedItem);
-
-          // Oppdater bildene med gyldige referanser
-          setPreviewImages(newOrder);
-          setFormData({ ...formData, previewImages: newOrder });
+  
+          // Filtrer ut eventuelle undefined elementer
+          const filteredOrder = newOrder.filter((item) => item !== undefined);
+  
+          setPreviewImages(filteredOrder);
+          setFormData({ ...formData, previewImages: filteredOrder });
         },
       });
     }
   }, [previewImages, setFormData]);
+  
 
   const handleImageUpload = async (event, setFieldValue) => {
     const files = Array.from(event.target.files);
