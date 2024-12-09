@@ -11,35 +11,33 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
   const sortableContainerRef = useRef(null);
   const [key, setKey] = useState(0);
 
-
   const validationSchema = Yup.object({
     description: Yup.string().required('Beskrivelse er påkrevd'),
     conditionDescription: Yup.string().required('Beskrivelse av egenerklæring/tilstand er påkrevd'),
     images: Yup.array().min(1, 'Minst ett bilde er påkrevd'),
   });
+
   useEffect(() => {
     if (sortableContainerRef.current) {
       Sortable.create(sortableContainerRef.current, {
         animation: 150,
+        handle: '.drag-handle',
         onEnd: (evt) => {
           if (evt.oldIndex === undefined || evt.newIndex === undefined) return;
-  
+
           const newOrder = Array.from(previewImages);
           const [movedItem] = newOrder.splice(evt.oldIndex, 1);
-  
+
           if (movedItem) {
             newOrder.splice(evt.newIndex, 0, movedItem);
             setPreviewImages(newOrder);
             setFormData({ ...formData, previewImages: newOrder });
-            setKey((prevKey) => prevKey + 1); // Oppdater nøkkelen for å tvinge rerender
+            setKey((prevKey) => prevKey + 1); // Tving rerender
           }
         },
       });
     }
   }, [previewImages, setFormData]);
-  
-  
-  
 
   const handleImageUpload = async (event, setFieldValue) => {
     const files = Array.from(event.target.files);
@@ -73,6 +71,22 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     setFormData({ ...formData, previewImages: updatedImages });
   };
 
+  const moveImageUp = (index) => {
+    if (index === 0) return;
+    const reorderedImages = [...previewImages];
+    [reorderedImages[index - 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index - 1]];
+    setPreviewImages(reorderedImages);
+    setFormData({ ...formData, previewImages: reorderedImages });
+  };
+
+  const moveImageDown = (index) => {
+    if (index === previewImages.length - 1) return;
+    const reorderedImages = [...previewImages];
+    [reorderedImages[index + 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index + 1]];
+    setPreviewImages(reorderedImages);
+    setFormData({ ...formData, previewImages: reorderedImages });
+  };
+
   return (
     <div>
       <Header />
@@ -104,17 +118,21 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
               <div className="step4-group">
                 <label htmlFor="images">Last opp bilder</label>
                 <div ref={sortableContainerRef} key={key} className="step4-image-preview-container">
-                {previewImages.map((image, index) => (
+                  {previewImages.map((image, index) => (
                     <div key={image.id} data-id={image.id} className="image-preview">
                       <span className="drag-handle">☰</span>
                       <img src={image.src} alt={`Preview ${index}`} />
-                      <button
-                        type="button"
-                        className="delete-button"
-                        onClick={() => handleDeleteImage(index, setFieldValue)}
-                      >
-                        Slett
-                      </button>
+                      <div className="button-container">
+                        <button type="button" onClick={() => moveImageUp(index)} disabled={index === 0}>
+                          Opp
+                        </button>
+                        <button type="button" onClick={() => moveImageDown(index)} disabled={index === previewImages.length - 1}>
+                          Ned
+                        </button>
+                        <button type="button" onClick={() => handleDeleteImage(index, setFieldValue)}>
+                          Slett
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
