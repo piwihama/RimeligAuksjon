@@ -9,13 +9,14 @@ import Footer from './Footer';
 const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
   const [previewImages, setPreviewImages] = useState(formData.previewImages || []);
   const sortableContainerRef = useRef(null);
+  const [key, setKey] = useState(0);
+
 
   const validationSchema = Yup.object({
     description: Yup.string().required('Beskrivelse er påkrevd'),
     conditionDescription: Yup.string().required('Beskrivelse av egenerklæring/tilstand er påkrevd'),
     images: Yup.array().min(1, 'Minst ett bilde er påkrevd'),
   });
-
   useEffect(() => {
     if (sortableContainerRef.current) {
       Sortable.create(sortableContainerRef.current, {
@@ -25,16 +26,18 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
   
           const newOrder = Array.from(previewImages);
           const [movedItem] = newOrder.splice(evt.oldIndex, 1);
-          
+  
           if (movedItem) {
             newOrder.splice(evt.newIndex, 0, movedItem);
             setPreviewImages(newOrder);
             setFormData({ ...formData, previewImages: newOrder });
+            setKey((prevKey) => prevKey + 1); // Oppdater nøkkelen for å tvinge rerender
           }
         },
       });
     }
   }, [previewImages, setFormData]);
+  
   
   
 
@@ -100,8 +103,8 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
 
               <div className="step4-group">
                 <label htmlFor="images">Last opp bilder</label>
-                <div ref={sortableContainerRef} className="step4-image-preview-container">
-                  {previewImages.map((image, index) => (
+                <div ref={sortableContainerRef} key={key} className="step4-image-preview-container">
+                {previewImages.map((image, index) => (
                     <div key={image.id} data-id={image.id} className="image-preview">
                       <span className="drag-handle">☰</span>
                       <img src={image.src} alt={`Preview ${index}`} />
