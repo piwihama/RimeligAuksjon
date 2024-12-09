@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { Sortable } from 'react-sortablejs';
+import Sortable from 'react-sortablejs';
 import * as Yup from 'yup';
 import './Step4.css';
 import Header from './Header';
@@ -99,13 +99,15 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                     <div key={image.id} data-id={image.id} className="image-preview">
                       <span className="drag-handle">☰</span>
                       <img src={image.src} alt={`Preview ${index}`} />
-                      <button
-                        type="button"
-                        className="delete-button"
-                        onClick={() => handleDeleteImage(index, setFieldValue)}
-                      >
-                        Slett
-                      </button>
+                      <div className="button-container">
+                        <button
+                          type="button"
+                          className="move-button"
+                          onClick={() => handleDeleteImage(index, setFieldValue)}
+                        >
+                          Slett
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </Sortable>
