@@ -24,8 +24,11 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
           const newOrder = [...previewImages];
           const [movedItem] = newOrder.splice(evt.oldIndex, 1);
           newOrder.splice(evt.newIndex, 0, movedItem);
-          setPreviewImages(newOrder);
-          setFormData({ ...formData, previewImages: newOrder });
+
+          // Filtrer ut undefined elementer
+          const validImages = newOrder.filter((image) => image !== undefined);
+          setPreviewImages(validImages);
+          setFormData({ ...formData, previewImages: validImages });
         },
       });
     }
@@ -95,10 +98,14 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                 <label htmlFor="images">Last opp bilder</label>
                 <div ref={sortableContainerRef} className="step4-image-preview-container">
                   {previewImages.map((image, index) => (
-                    <div key={image.id} className="image-preview">
+                    <div key={image.id} data-id={image.id} className="image-preview">
                       <span className="drag-handle">☰</span>
                       <img src={image.src} alt={`Preview ${index}`} />
-                      <button type="button" className="delete-button" onClick={() => handleDeleteImage(index, setFieldValue)}>
+                      <button
+                        type="button"
+                        className="delete-button"
+                        onClick={() => handleDeleteImage(index, setFieldValue)}
+                      >
                         Slett
                       </button>
                     </div>
