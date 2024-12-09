@@ -90,7 +90,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                   onChange={(order) => {
                     const sortedImages = order.map((id) =>
                       previewImages.find((image) => image.id === id)
-                    );
+                    ).filter(Boolean);
                     setPreviewImages(sortedImages);
                     setFormData({ ...formData, previewImages: sortedImages });
                   }}
@@ -99,15 +99,13 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                     <div key={image.id} data-id={image.id} className="image-preview">
                       <span className="drag-handle">☰</span>
                       <img src={image.src} alt={`Preview ${index}`} />
-                      <div className="button-container">
-                        <button
-                          type="button"
-                          className="move-button"
-                          onClick={() => handleDeleteImage(index, setFieldValue)}
-                        >
-                          Slett
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        className="delete-button"
+                        onClick={() => handleDeleteImage(index, setFieldValue)}
+                      >
+                        Slett
+                      </button>
                     </div>
                   ))}
                 </Sortable>
