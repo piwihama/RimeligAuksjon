@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { Sortable, SortableContainer, SortableElement } from 'react-sortablejs';
+import { Sortable } from 'react-sortablejs';
 import * as Yup from 'yup';
 import './Step4.css';
 import Header from './Header';
@@ -25,7 +25,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
         files.map((file) =>
           new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onload = () => resolve({ id: `${file.name}-${Date.now()}`, src: reader.result });
+            reader.onload = () => resolve({ id: file.name, src: reader.result });
             reader.onerror = (error) => reject(error);
             reader.readAsDataURL(file);
           })
@@ -52,12 +52,6 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
       updatedImages.map((image) => image.src)
     );
     setFormData({ ...formData, previewImages: updatedImages });
-  };
-
-  const handleSort = (order) => {
-    const sortedImages = order.map((id) => previewImages.find((image) => image.id === id));
-    setPreviewImages(sortedImages);
-    setFormData({ ...formData, previewImages: sortedImages });
   };
 
   return (
@@ -93,21 +87,25 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                 <Sortable
                   tag="div"
                   className="step4-image-preview-container"
-                  onChange={(order) => handleSort(order)}
+                  onChange={(order) => {
+                    const sortedImages = order.map((id) =>
+                      previewImages.find((image) => image.id === id)
+                    );
+                    setPreviewImages(sortedImages);
+                    setFormData({ ...formData, previewImages: sortedImages });
+                  }}
                 >
                   {previewImages.map((image, index) => (
                     <div key={image.id} data-id={image.id} className="image-preview">
+                      <span className="drag-handle">☰</span>
                       <img src={image.src} alt={`Preview ${index}`} />
-                      <div className="button-container">
-                        <button type="button" className="move-button">↕</button>
-                        <button
-                          type="button"
-                          className="delete-button"
-                          onClick={() => handleDeleteImage(index, setFieldValue)}
-                        >
-                          Slett
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        className="delete-button"
+                        onClick={() => handleDeleteImage(index, setFieldValue)}
+                      >
+                        Slett
+                      </button>
                     </div>
                   ))}
                 </Sortable>
