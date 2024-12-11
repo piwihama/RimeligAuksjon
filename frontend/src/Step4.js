@@ -10,6 +10,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
   const [previewImages, setPreviewImages] = useState(formData.previewImages || []);
   const sortableContainerRef = useRef(null);
   const [key, setKey] = useState(0); // For å tvinge rerender etter endringer
+  const setFieldValueRef = useRef(null); // Referanse til setFieldValue
 
   const validationSchema = Yup.object({
     description: Yup.string().required('Beskrivelse er påkrevd'),
@@ -46,6 +47,12 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
         sortable.destroy();
       }
     };
+  }, [previewImages]);
+
+  useEffect(() => {
+    if (setFieldValueRef.current) {
+      setFieldValueRef.current('images', previewImages.map((image) => image.src));
+    }
   }, [previewImages]);
 
   const handleImageUpload = async (event, setFieldValue) => {
@@ -109,9 +116,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
           }}
         >
           {({ setFieldValue }) => {
-            useEffect(() => {
-              setFieldValue('images', previewImages.map((image) => image.src));
-            }, [previewImages, setFieldValue]);
+            setFieldValueRef.current = setFieldValue; // Oppdater referansen til setFieldValue
 
             return (
               <Form className="step4-form">
