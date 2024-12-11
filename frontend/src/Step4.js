@@ -9,8 +9,7 @@ import Footer from './Footer';
 const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
   const [previewImages, setPreviewImages] = useState(formData.previewImages || []);
   const sortableContainerRef = useRef(null);
-  const [key, setKey] = useState(0); // For å tvinge rerender etter endringer
-  const setFieldValueRef = useRef(null); // Referanse til setFieldValue
+  const setFieldValueRef = useRef(null);
 
   const validationSchema = Yup.object({
     description: Yup.string().required('Beskrivelse er påkrevd'),
@@ -19,8 +18,10 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
   });
 
   useEffect(() => {
-    setFormData((prevData) => ({ ...prevData, previewImages }));
-  }, [previewImages, setFormData]);
+    if (setFieldValueRef.current) {
+      setFieldValueRef.current('images', previewImages.map((image) => image.src));
+    }
+  }, [previewImages]);
 
   useEffect(() => {
     let sortable;
@@ -47,15 +48,9 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
         sortable.destroy();
       }
     };
-  }, [previewImages]);
+  }, []);
 
-  useEffect(() => {
-    if (setFieldValueRef.current) {
-      setFieldValueRef.current('images', previewImages.map((image) => image.src));
-    }
-  }, [previewImages]);
-
-  const handleImageUpload = async (event, setFieldValue) => {
+  const handleImageUpload = async (event) => {
     const files = Array.from(event.target.files);
     if (files.length === 0) return;
 
@@ -64,42 +59,21 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
         files.map((file) =>
           new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onload = () => resolve({ id: `${file.name}-${Date.now()}`, src: reader.result });
+            reader.onload = () => resolve({ id: `${file.name}-${Date.now()}-${Math.random()}`, src: reader.result });
             reader.onerror = (error) => reject(error);
             reader.readAsDataURL(file);
           })
         )
       );
 
-      const updatedImages = [...previewImages, ...newImages];
-      setPreviewImages(updatedImages);
-      setFieldValue('images', updatedImages.map((image) => image.src));
+      setPreviewImages((prevImages) => [...prevImages, ...newImages]);
     } catch (error) {
       console.error('Feil ved opplasting av bilder:', error);
     }
   };
 
-  const handleDeleteImage = (index, setFieldValue) => {
-    const updatedImages = previewImages.filter((_, i) => i !== index);
-    setPreviewImages(updatedImages);
-    setFieldValue('images', updatedImages.map((image) => image.src));
-    setKey((prevKey) => prevKey + 1); // Tving rerender
-  };
-
-  const moveImageUp = (index) => {
-    if (index === 0) return;
-    const reorderedImages = [...previewImages];
-    [reorderedImages[index - 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index - 1]];
-    setPreviewImages(reorderedImages);
-    setKey((prevKey) => prevKey + 1);
-  };
-
-  const moveImageDown = (index) => {
-    if (index === previewImages.length - 1) return;
-    const reorderedImages = [...previewImages];
-    [reorderedImages[index + 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index + 1]];
-    setPreviewImages(reorderedImages);
-    setKey((prevKey) => prevKey + 1);
+  const handleDeleteImage = (index) => {
+    setPreviewImages((prevImages) => prevImages.filter((_, i) => i !== index));
   };
 
   return (
@@ -108,7 +82,6 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
       <div className="step4-container">
         <Formik
           initialValues={{ ...formData, images: previewImages.map((image) => image.src) }}
-          enableReinitialize
           validationSchema={validationSchema}
           onSubmit={(values) => {
             setFormData({ ...values, previewImages });
@@ -116,7 +89,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
           }}
         >
           {({ setFieldValue }) => {
-            setFieldValueRef.current = setFieldValue; // Oppdater referansen til setFieldValue
+            setFieldValueRef.current = setFieldValue;
 
             return (
               <Form className="step4-form">
@@ -136,21 +109,13 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
 
                 <div className="step4-group">
                   <label htmlFor="images">Last opp bilder</label>
-                  <div ref={sortableContainerRef} key={key} className="step4-image-preview-container">
+                  <div ref={sortableContainerRef} className="step4-image-preview-container">
                     {previewImages.map((image, index) => (
-                      <div key={image.id} data-id={image.id} className="step4-image-preview">
+                      <div key={image.id} className="step4-image-preview">
                         <span className="step4-drag-handle">☰</span>
                         <img src={image.src} alt={`Preview ${index}`} />
                         <div className="step4-button-container">
-                          <button type="button" onClick={() => moveImageUp(index)} disabled={index === 0}>
-                            Opp
-                          </button>
-                          <button type="button" onClick={() => moveImageDown(index)} disabled={index === previewImages.length - 1}>
-                            Ned
-                          </button>
-                          <button type="button" onClick={() => handleDeleteImage(index, setFieldValue)}>
-                            Slett
-                          </button>
+                          <button type="button" onClick={() => handleDeleteImage(index)}>Slett</button>
                         </div>
                       </div>
                     ))}
@@ -159,7 +124,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                     type="file"
                     id="images"
                     name="images"
-                    onChange={(event) => handleImageUpload(event, setFieldValue)}
+                    onChange={handleImageUpload}
                     multiple
                     accept="image/*"
                   />
