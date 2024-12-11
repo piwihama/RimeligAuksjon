@@ -1,10 +1,9 @@
-// Step2.js
 import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import './Step2.css';
 import Header from './Header';
-import Footer from './Footer';  // Juster stien hvis Footeren ligger et annet sted
+import Footer from './Footer';
 
 const Step2 = ({ formData, setFormData, nextStep, prevStep }) => {
   const validationSchema = Yup.object({
@@ -27,13 +26,27 @@ const Step2 = ({ formData, setFormData, nextStep, prevStep }) => {
     omregistreringsavgift: Yup.string(),
     lastEUApproval: Yup.string().required('Sist EU-godkjent er påkrevd'),
     nextEUControl: Yup.string().required('Neste frist for EU-kontroll er påkrevd'),
-    mileage: Yup.string().required('Kilometerstand er påkrevd'), // Nytt felt for kilometerstand
+    mileage: Yup.string().required('Kilometerstand er påkrevd'),
   });
 
   return (
     <div>
       <Header />
       <div className="step2-container">
+        <h2 className="step-title">Steg 2: Teknisk Informasjon</h2>
+        <p className="step-info">
+          Fyll inn bilens tekniske informasjon. Feltene blir automatisk fylt inn dersom data er hentet fra Statens Vegvesen. Dobbeltsjekk informasjonen og fyll inn eventuelle manglende detaljer.
+        </p>
+
+        <div className="info-box">
+          <p><strong>Tips:</strong></p>
+          <ul>
+            <li>Merke og modell finner du i bilens vognkort.</li>
+            <li>Chassisnummeret er unikt for hvert kjøretøy.</li>
+            <li>Oppgi korrekt kilometerstand for å unngå tvil hos kjøpere.</li>
+          </ul>
+        </div>
+
         <Formik
           initialValues={formData}
           validationSchema={validationSchema}
@@ -42,60 +55,45 @@ const Step2 = ({ formData, setFormData, nextStep, prevStep }) => {
             nextStep();
           }}
         >
-        <Form className="step2-form">
-  <h2 className="step-title">Steg 2: Teknisk Informasjon</h2>
-  <p className="step-info">
-    Fyll inn bilens tekniske informasjon. Dette er viktig for å gi potensielle kjøpere nøyaktige detaljer.
-  </p>
+          <Form className="step2-form">
+            {[
+              { name: 'brand', label: 'Merke' },
+              { name: 'model', label: 'Modell' },
+              { name: 'year', label: 'År' },
+              { name: 'chassisNumber', label: 'Chassisnummer' },
+              { name: 'taxClass', label: 'Avgiftsklasse' },
+              { name: 'fuel', label: 'Drivstoff' },
+              { name: 'gearType', label: 'Girtype' },
+              { name: 'driveType', label: 'Driftstype' },
+              { name: 'mainColor', label: 'Hovedfarge' },
+              { name: 'power', label: 'Effekt' },
+              { name: 'seats', label: 'Antall seter' },
+              { name: 'owners', label: 'Antall eiere' },
+              { name: 'firstRegistration', label: '1. gang registrert' },
+              { name: 'doors', label: 'Antall dører' },
+              { name: 'weight', label: 'Egenvekt' },
+              { name: 'co2', label: 'CO2-utslipp' },
+              { name: 'omregistreringsavgift', label: 'Omregistreringsavgift' },
+              { name: 'lastEUApproval', label: 'Sist EU-godkjent' },
+              { name: 'nextEUControl', label: 'Neste frist for EU-kontroll' },
+              { name: 'mileage', label: 'Kilometerstand' },
+            ].map((field) => (
+              <div className="step2-group" key={field.name}>
+                <label htmlFor={field.name}>{field.label}</label>
+                <Field name={field.name} type="text" className="step2-control" />
+                <ErrorMessage name={field.name} component="div" className="step2-error" />
+              </div>
+            ))}
 
-  <div className="info-box">
-    <p><strong>Tips:</strong></p>
-    <ul>
-      <li>Merke og modell finner du i bilens vognkort.</li>
-      <li>Chassisnummeret er unikt for hvert kjøretøy.</li>
-      <li>Oppgi korrekt kilometerstand for å unngå tvil hos kjøpere.</li>
-    </ul>
-  </div>
-
-  {[
-    { name: 'brand', label: 'Merke' },
-    { name: 'model', label: 'Modell' },
-    { name: 'year', label: 'År' },
-    { name: 'chassisNumber', label: 'Chassisnummer' },
-    { name: 'taxClass', label: 'Avgiftsklasse' },
-    { name: 'fuel', label: 'Drivstoff' },
-    { name: 'gearType', label: 'Girtype' },
-    { name: 'driveType', label: 'Driftstype' },
-    { name: 'mainColor', label: 'Hovedfarge' },
-    { name: 'power', label: 'Effekt' },
-    { name: 'seats', label: 'Antall seter' },
-    { name: 'owners', label: 'Antall eiere' },
-    { name: 'firstRegistration', label: '1. gang registrert' },
-    { name: 'doors', label: 'Antall dører' },
-    { name: 'weight', label: 'Egenvekt' },
-    { name: 'co2', label: 'CO2-utslipp' },
-    { name: 'omregistreringsavgift', label: 'Omregistreringsavgift' },
-    { name: 'lastEUApproval', label: 'Sist EU-godkjent' },
-    { name: 'nextEUControl', label: 'Neste frist for EU-kontroll' },
-    { name: 'mileage', label: 'Kilometerstand' },
-  ].map((field) => (
-    <div className="step2-group" key={field.name}>
-      <label htmlFor={field.name}>{field.label}</label>
-      <Field name={field.name} type="text" className="step2-control" />
-      <ErrorMessage name={field.name} component="div" className="step2-error" />
-    </div>
-  ))}
-
-  <div className="step2-navigation">
-    <button type="button" onClick={prevStep} className="step2-btn-primary">
-      Tilbake
-    </button>
-    <button type="submit" className="step2-btn-primary">
-      Neste
-    </button>
-  </div>
-</Form>
-
+            <div className="step2-navigation">
+              <button type="button" onClick={prevStep} className="step2-btn-primary">
+                Tilbake
+              </button>
+              <button type="submit" className="step2-btn-primary">
+                Neste
+              </button>
+            </div>
+          </Form>
         </Formik>
       </div>
       <Footer />
