@@ -16,9 +16,9 @@ const Step1 = ({ formData, setFormData, nextStep }) => {
       <div className="bil-container">
         <h2 className="step-title">Steg 1: Registrer Bilen Din</h2>
         <p className="step-info">
-          Vennligst skriv inn registreringsnummeret på bilen du ønsker å selge. Dette vil hjelpe oss med å hente
-          tekniske detaljer om bilen fra Statens Vegvesen.
+          Vennligst skriv inn registreringsnummeret på bilen du ønsker å selge. Dette vil hjelpe oss med å hente tekniske detaljer om bilen fra Statens Vegvesen.
         </p>
+
         <Formik
           initialValues={formData}
           validationSchema={validationSchema}
@@ -41,14 +41,43 @@ const Step1 = ({ formData, setFormData, nextStep }) => {
                   ...formData,
                   ...values,
                   brand:
-                    Array.isArray(tekniskeData.generelt?.merke) && tekniskeData.generelt.merke.length > 0
-                      ? tekniskeData.generelt.merke[0]?.merke || ''
-                      : '',
+                    tekniskeData.generelt?.merke?.[0]?.merke || '',
                   model:
-                    Array.isArray(tekniskeData.generelt?.handelsbetegnelse) &&
-                    tekniskeData.generelt.handelsbetegnelse.length > 0
-                      ? tekniskeData.generelt.handelsbetegnelse[0] || ''
-                      : '',
+                    tekniskeData.generelt?.handelsbetegnelse?.[0] || '',
+                  year:
+                    carInfo.godkjenning?.forstegangsGodkjenning?.forstegangRegistrertDato?.split('-')[0] || '',
+                  chassisNumber:
+                    carInfo.kjoretoyId?.understellsnummer || '',
+                  taxClass:
+                    carInfo.godkjenning?.tekniskGodkjenning?.kjoretoyklassifisering?.beskrivelse || '',
+                  fuel:
+                    tekniskeData.miljodata?.miljoOgDrivstoffGruppe?.[0]?.drivstoffKodeMiljodata?.kodeNavn || '',
+                  gearType:
+                    tekniskeData.motorOgDrivverk?.girkassetype?.kodeBeskrivelse || '',
+                  driveType:
+                    tekniskeData.motorOgDrivverk?.kjoresystem?.kodeBeskrivelse || '',
+                  mainColor:
+                    tekniskeData.karosseriOgLasteplan?.rFarge?.[0]?.kodeNavn || '',
+                  power:
+                    tekniskeData.motorOgDrivverk?.motor?.[0]?.maksNettoEffekt || '',
+                  seats:
+                    tekniskeData.persontall?.sitteplasserTotalt || '',
+                  owners:
+                    carInfo.eierskap?.antall || '',
+                  firstRegistration:
+                    carInfo.godkjenning?.forstegangsGodkjenning?.forstegangRegistrertDato || '',
+                  doors:
+                    tekniskeData.karosseriOgLasteplan?.antallDorer?.[0] || '',
+                  weight:
+                    tekniskeData.vekter?.egenvekt || '',
+                  co2:
+                    tekniskeData.miljodata?.forbrukOgUtslipp?.[0]?.co2BlandetKjoring || '',
+                  omregistreringsavgift:
+                    carInfo.omregistreringsavgift || '',
+                  lastEUApproval:
+                    carInfo.periodiskKjoretoyKontroll?.sistGodkjent || '',
+                  nextEUControl:
+                    carInfo.periodiskKjoretoyKontroll?.kontrollfrist || '',
                 };
 
                 setFormData(updatedFormData);
