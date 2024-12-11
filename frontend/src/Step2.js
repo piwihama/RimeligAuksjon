@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+// Step2.js
+import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import './Step2.css';
 import Header from './Header';
-import Footer from './Footer';
+import Footer from './Footer';  // Juster stien hvis Footeren ligger et annet sted
 
 const Step2 = ({ formData, setFormData, nextStep, prevStep }) => {
   const validationSchema = Yup.object({
@@ -26,33 +27,13 @@ const Step2 = ({ formData, setFormData, nextStep, prevStep }) => {
     omregistreringsavgift: Yup.string(),
     lastEUApproval: Yup.string().required('Sist EU-godkjent er påkrevd'),
     nextEUControl: Yup.string().required('Neste frist for EU-kontroll er påkrevd'),
-    mileage: Yup.string().required('Kilometerstand er påkrevd'),
+    mileage: Yup.string().required('Kilometerstand er påkrevd'), // Nytt felt for kilometerstand
   });
-
-  useEffect(() => {
-    if (formData.autoFilledData) {
-      setFormData((prevData) => ({ ...prevData, ...formData.autoFilledData }));
-    }
-  }, [formData.autoFilledData, setFormData]);
 
   return (
     <div>
       <Header />
       <div className="step2-container">
-        <h2 className="step-title">Steg 2: Teknisk Informasjon</h2>
-        <p className="step-info">
-          Informasjonen nedenfor er automatisk hentet fra Statens Vegvesen. Dobbeltsjekk detaljene og fyll inn eventuelle manglende felter.
-        </p>
-
-        <div className="info-box">
-          <p><strong>Tips:</strong></p>
-          <ul>
-            <li>Merke og modell finner du i bilens vognkort.</li>
-            <li>Chassisnummeret er unikt for hvert kjøretøy.</li>
-            <li>Oppgi korrekt kilometerstand for å unngå tvil hos kjøpere.</li>
-          </ul>
-        </div>
-
         <Formik
           initialValues={formData}
           validationSchema={validationSchema}
@@ -62,6 +43,7 @@ const Step2 = ({ formData, setFormData, nextStep, prevStep }) => {
           }}
         >
           <Form className="step2-form">
+            <h2>Teknisk informasjon</h2>
             {[
               { name: 'brand', label: 'Merke' },
               { name: 'model', label: 'Modell' },
@@ -82,7 +64,7 @@ const Step2 = ({ formData, setFormData, nextStep, prevStep }) => {
               { name: 'omregistreringsavgift', label: 'Omregistreringsavgift' },
               { name: 'lastEUApproval', label: 'Sist EU-godkjent' },
               { name: 'nextEUControl', label: 'Neste frist for EU-kontroll' },
-              { name: 'mileage', label: 'Kilometerstand' },
+              { name: 'mileage', label: 'Kilometerstand' }, // Nytt felt for kilometerstand
             ].map((field) => (
               <div className="step2-group" key={field.name}>
                 <label htmlFor={field.name}>{field.label}</label>
@@ -90,7 +72,6 @@ const Step2 = ({ formData, setFormData, nextStep, prevStep }) => {
                 <ErrorMessage name={field.name} component="div" className="step2-error" />
               </div>
             ))}
-
             <div className="step2-navigation">
               <button type="button" onClick={prevStep} className="step2-btn-primary">
                 Tilbake
