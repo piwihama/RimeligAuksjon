@@ -7,48 +7,48 @@ import Footer from './Footer';
 
 const Step1 = ({ formData, setFormData, nextStep }) => {
   const validationSchema = Yup.object({
-    regNumber: Yup.string().required('Registreringsnummer er påkrevd')
+    regNumber: Yup.string().required('Registreringsnummer er påkrevd'),
   });
 
   return (
     <div>
       <Header />
       <div className="bil-container">
+        <h2 className="step-title">Steg 1: Registrer Bilen Din</h2>
+        <p className="step-info">
+          Vennligst skriv inn registreringsnummeret på bilen du ønsker å selge. Dette vil hjelpe oss med å hente
+          tekniske detaljer om bilen fra Statens Vegvesen.
+        </p>
         <Formik
           initialValues={formData}
           validationSchema={validationSchema}
           onSubmit={async (values) => {
             try {
-              const response = await fetch(`https://proxyservervegvesen.onrender.com/vehicle-data/${values.regNumber}`);
+              const response = await fetch(
+                `https://proxyservervegvesen.onrender.com/vehicle-data/${values.regNumber}`
+              );
 
               const contentType = response.headers.get('content-type');
               if (contentType && contentType.indexOf('application/json') !== -1) {
                 const carData = await response.json();
-                const carInfo = Array.isArray(carData.kjoretoydataListe) && carData.kjoretoydataListe.length > 0 ? carData.kjoretoydataListe[0] : {};
+                const carInfo =
+                  Array.isArray(carData.kjoretoydataListe) && carData.kjoretoydataListe.length > 0
+                    ? carData.kjoretoydataListe[0]
+                    : {};
                 const tekniskeData = carInfo.godkjenning?.tekniskGodkjenning?.tekniskeData || {};
 
                 const updatedFormData = {
                   ...formData,
                   ...values,
-                  brand: Array.isArray(tekniskeData.generelt?.merke) && tekniskeData.generelt.merke.length > 0 ? tekniskeData.generelt.merke[0]?.merke || '' : '',
-                  model: Array.isArray(tekniskeData.generelt?.handelsbetegnelse) && tekniskeData.generelt.handelsbetegnelse.length > 0 ? tekniskeData.generelt.handelsbetegnelse[0] || '' : '',
-                  year: carInfo.godkjenning?.forstegangsGodkjenning?.forstegangRegistrertDato?.split('-')[0] || '',
-                  chassisNumber: carInfo.kjoretoyId?.understellsnummer || '',
-                  taxClass: carInfo.godkjenning?.tekniskGodkjenning?.kjoretoyklassifisering?.beskrivelse || '',
-                  fuel: Array.isArray(tekniskeData.miljodata?.miljoOgDrivstoffGruppe) && tekniskeData.miljodata.miljoOgDrivstoffGruppe.length > 0 ? tekniskeData.miljodata.miljoOgDrivstoffGruppe[0]?.drivstoffKodeMiljodata?.kodeNavn || '' : '',
-                  gearType: tekniskeData.motorOgDrivverk?.girkassetype?.kodeBeskrivelse || '',
-                  driveType: tekniskeData.motorOgDrivverk?.kjoresystem?.kodeBeskrivelse || '',
-                  mainColor: Array.isArray(tekniskeData.karosseriOgLasteplan?.rFarge) && tekniskeData.karosseriOgLasteplan.rFarge.length > 0 ? tekniskeData.karosseriOgLasteplan.rFarge[0]?.kodeNavn || '' : '',
-                  power: Array.isArray(tekniskeData.motorOgDrivverk?.motor) && tekniskeData.motorOgDrivverk.motor.length > 0 ? tekniskeData.motorOgDrivverk.motor[0]?.maksNettoEffekt || '' : '',
-                  seats: tekniskeData.persontall?.sitteplasserTotalt || '',
-                  owners: carInfo.eierskap?.antall || '',
-                  firstRegistration: carInfo.godkjenning?.forstegangsGodkjenning?.forstegangRegistrertDato || '',
-                  doors: Array.isArray(tekniskeData.karosseriOgLasteplan?.antallDorer) && tekniskeData.karosseriOgLasteplan.antallDorer.length > 0 ? tekniskeData.karosseriOgLasteplan.antallDorer[0] || '' : '',
-                  weight: tekniskeData.vekter?.egenvekt || '',
-                  co2: Array.isArray(tekniskeData.miljodata?.forbrukOgUtslipp) && tekniskeData.miljodata.forbrukOgUtslipp.length > 0 ? tekniskeData.miljodata.forbrukOgUtslipp[0]?.co2BlandetKjoring || '' : '',
-                  omregistreringsavgift: carInfo.omregistreringsavgift || '',
-                  lastEUApproval: carInfo.periodiskKjoretoyKontroll?.sistGodkjent || '',
-                  nextEUControl: carInfo.periodiskKjoretoyKontroll?.kontrollfrist || '',
+                  brand:
+                    Array.isArray(tekniskeData.generelt?.merke) && tekniskeData.generelt.merke.length > 0
+                      ? tekniskeData.generelt.merke[0]?.merke || ''
+                      : '',
+                  model:
+                    Array.isArray(tekniskeData.generelt?.handelsbetegnelse) &&
+                    tekniskeData.generelt.handelsbetegnelse.length > 0
+                      ? tekniskeData.generelt.handelsbetegnelse[0] || ''
+                      : '',
                 };
 
                 setFormData(updatedFormData);
@@ -64,13 +64,26 @@ const Step1 = ({ formData, setFormData, nextStep }) => {
           }}
         >
           <Form className="bil-form">
-            <h2>Registreringsnummer</h2>
             <div className="form-group">
-              <label htmlFor="regNumber">Vennligst skriv registreringsnummeret på bilen du ønsker å selge.</label>
-              <Field name="regNumber" type="text" className="form-control" />
+              <label htmlFor="regNumber">Registreringsnummer:</label>
+              <Field name="regNumber" type="text" className="form-control" placeholder="F.eks. AB12345" />
               <ErrorMessage name="regNumber" component="div" className="error" />
             </div>
-            <button type="submit" className="btn btn-primary fetch-button">Neste</button>
+
+            <div className="info-box">
+              <p>
+                <strong>Eksempel på gyldige registreringsnummer:</strong>
+              </p>
+              <ul>
+                <li>AB12345</li>
+                <li>XY98765</li>
+                <li>CD67890</li>
+              </ul>
+            </div>
+
+            <button type="submit" className="btn btn-primary fetch-button">
+              Neste
+            </button>
           </Form>
         </Formik>
       </div>
