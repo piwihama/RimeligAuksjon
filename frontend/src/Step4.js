@@ -23,24 +23,27 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
 
   useEffect(() => {
     if (sortableContainerRef.current) {
-      Sortable.create(sortableContainerRef.current, {
+      const sortable = Sortable.create(sortableContainerRef.current, {
         animation: 150,
         handle: '.step4-drag-handle',
         onEnd: (evt) => {
           if (evt.oldIndex === undefined || evt.newIndex === undefined) return;
-
-          const newOrder = Array.from(previewImages);
-          const [movedItem] = newOrder.splice(evt.oldIndex, 1);
-
-          if (movedItem) {
+  
+          setPreviewImages((prevImages) => {
+            const newOrder = Array.from(prevImages);
+            const [movedItem] = newOrder.splice(evt.oldIndex, 1);
             newOrder.splice(evt.newIndex, 0, movedItem);
-            setPreviewImages(newOrder);
-            setKey((prevKey) => prevKey + 1); // Tving rerender
-          }
+            return newOrder;
+          });
+  
+          setKey((prevKey) => prevKey + 1); // Tving rerender
         },
       });
+  
+      return () => sortable.destroy(); // Rydd opp for å unngå flere instanser av Sortable
     }
-  }, [previewImages]);
+  }, []);
+  
 
   const handleImageUpload = async (event, setFieldValue) => {
     const files = Array.from(event.target.files);
