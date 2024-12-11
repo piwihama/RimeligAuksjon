@@ -22,8 +22,10 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
   }, [previewImages, setFormData]);
 
   useEffect(() => {
+    let sortable;
+  
     if (sortableContainerRef.current) {
-      const sortable = Sortable.create(sortableContainerRef.current, {
+      sortable = Sortable.create(sortableContainerRef.current, {
         animation: 150,
         handle: '.step4-drag-handle',
         onEnd: (evt) => {
@@ -39,10 +41,15 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
           setKey((prevKey) => prevKey + 1); // Tving rerender
         },
       });
-  
-      return () => sortable.destroy(); // Rydd opp for å unngå flere instanser av Sortable
     }
-  }, []);
+  
+    // Rydd opp for å unngå flere instanser av Sortable
+    return () => {
+      if (sortable) {
+        sortable.destroy();
+      }
+    };
+  }, [previewImages]); // Lytt på endringer i previewImages
   
 
   const handleImageUpload = async (event, setFieldValue) => {
