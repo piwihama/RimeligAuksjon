@@ -57,7 +57,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
         files.map((file) =>
           new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onload = () => resolve({ id: `${file.name}-${Date.now()}`, src: reader.result });
+            reader.onload = () => resolve({ id: `${file.name}-${Date.now()}-${Math.random()}`, src: reader.result });
             reader.onerror = (error) => reject(error);
             reader.readAsDataURL(file);
           })
@@ -109,7 +109,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
             nextStep();
           }}
         >
-          {({ setFieldValue }) => {
+          {({ setFieldValue, values }) => {
             setFieldValueRef.current = setFieldValue;
 
             return (
