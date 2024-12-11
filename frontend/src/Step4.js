@@ -9,8 +9,8 @@ import Footer from './Footer';
 const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
   const [previewImages, setPreviewImages] = useState(formData.previewImages || []);
   const sortableContainerRef = useRef(null);
-  const [key, setKey] = useState(0); // For å tvinge rerender etter endringer
-  const setFieldValueRef = useRef(null); // Referanse til setFieldValue
+  const [key, setKey] = useState(0);
+  const setFieldValueRef = useRef(null);
 
   const validationSchema = Yup.object({
     description: Yup.string().required('Beskrivelse er påkrevd'),
@@ -74,6 +74,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
       const updatedImages = [...previewImages, ...newImages];
       setPreviewImages(updatedImages);
       setFieldValue('images', updatedImages.map((image) => image.src));
+      setKey((prevKey) => prevKey + 1); // Tving rerender for Sortable
     } catch (error) {
       console.error('Feil ved opplasting av bilder:', error);
     }
@@ -83,7 +84,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     const updatedImages = previewImages.filter((_, i) => i !== index);
     setPreviewImages(updatedImages);
     setFieldValue('images', updatedImages.map((image) => image.src));
-    setKey((prevKey) => prevKey + 1); // Tving rerender
+    setKey((prevKey) => prevKey + 1); // Tving rerender for Sortable
   };
 
   const moveImageUp = (index) => {
@@ -116,7 +117,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
           }}
         >
           {({ setFieldValue }) => {
-            setFieldValueRef.current = setFieldValue; // Oppdater referansen til setFieldValue
+            setFieldValueRef.current = setFieldValue;
 
             return (
               <Form className="step4-form">
