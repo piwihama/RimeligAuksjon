@@ -9,7 +9,6 @@ import Footer from './Footer';
 const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
   const [previewImages, setPreviewImages] = useState(formData.previewImages || []);
   const sortableContainerRef = useRef(null);
-  const [key, setKey] = useState(0);
   const setFieldValueRef = useRef(null);
 
   const validationSchema = Yup.object({
@@ -25,38 +24,28 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
   useEffect(() => {
     let sortable;
 
-    const createSortable = () => {
-      if (sortableContainerRef.current) {
-        sortable = Sortable.create(sortableContainerRef.current, {
-          animation: 150,
-          handle: '.step4-drag-handle',
-          onEnd: (evt) => {
-            if (evt.oldIndex === undefined || evt.newIndex === undefined) return;
+    if (sortableContainerRef.current) {
+      sortable = Sortable.create(sortableContainerRef.current, {
+        animation: 150,
+        handle: '.step4-drag-handle',
+        onEnd: (evt) => {
+          if (evt.oldIndex === undefined || evt.newIndex === undefined) return;
 
-            setPreviewImages((prevImages) => {
-              const newOrder = Array.from(prevImages);
-              const [movedItem] = newOrder.splice(evt.oldIndex, 1);
-              newOrder.splice(evt.newIndex, 0, movedItem);
-              return newOrder;
-            });
-          },
-        });
-      }
-    };
-
-    createSortable();
+          setPreviewImages((prevImages) => {
+            const newOrder = Array.from(prevImages);
+            const [movedItem] = newOrder.splice(evt.oldIndex, 1);
+            newOrder.splice(evt.newIndex, 0, movedItem);
+            return newOrder;
+          });
+        },
+      });
+    }
 
     return () => {
       if (sortable) {
         sortable.destroy();
       }
     };
-  }, [previewImages, key]); // Legg til key som avhengighet
-
-  useEffect(() => {
-    if (setFieldValueRef.current) {
-      setFieldValueRef.current('images', previewImages.map((image) => image.src));
-    }
   }, [previewImages]);
 
   const handleImageUpload = async (event, setFieldValue) => {
@@ -78,7 +67,6 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
       const updatedImages = [...previewImages, ...newImages];
       setPreviewImages(updatedImages);
       setFieldValue('images', updatedImages.map((image) => image.src));
-      setKey((prevKey) => prevKey + 1); // Tvinger re-render av Sortable
     } catch (error) {
       console.error('Feil ved opplasting av bilder:', error);
     }
@@ -88,23 +76,24 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     const updatedImages = previewImages.filter((_, i) => i !== index);
     setPreviewImages(updatedImages);
     setFieldValue('images', updatedImages.map((image) => image.src));
-    setKey((prevKey) => prevKey + 1); // Tvinger re-render av Sortable
   };
 
   const moveImageUp = (index) => {
     if (index === 0) return;
-    const reorderedImages = [...previewImages];
-    [reorderedImages[index - 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index - 1]];
-    setPreviewImages(reorderedImages);
-    setKey((prevKey) => prevKey + 1);
+    setPreviewImages((prevImages) => {
+      const reorderedImages = [...prevImages];
+      [reorderedImages[index - 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index - 1]];
+      return reorderedImages;
+    });
   };
 
   const moveImageDown = (index) => {
     if (index === previewImages.length - 1) return;
-    const reorderedImages = [...previewImages];
-    [reorderedImages[index + 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index + 1]];
-    setPreviewImages(reorderedImages);
-    setKey((prevKey) => prevKey + 1);
+    setPreviewImages((prevImages) => {
+      const reorderedImages = [...prevImages];
+      [reorderedImages[index + 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index + 1]];
+      return reorderedImages;
+    });
   };
 
   return (
@@ -141,9 +130,9 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
 
                 <div className="step4-group">
                   <label htmlFor="images">Last opp bilder</label>
-                  <div ref={sortableContainerRef} key={key} className="step4-image-preview-container">
+                  <div ref={sortableContainerRef} className="step4-image-preview-container">
                     {previewImages.map((image, index) => (
-                      <div key={image.id} data-id={image.id} className="step4-image-preview">
+                      <div key={image.id} className="step4-image-preview">
                         <span className="step4-drag-handle">☰</span>
                         <img src={image.src} alt={`Preview ${index}`} />
                         <div className="step4-button-container">
