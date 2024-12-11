@@ -22,6 +22,11 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     setPreviewImages(formData.previewImages || []);
   }, [formData.previewImages]);
 
+  // Oppdater formData automatisk når previewImages endres
+  useEffect(() => {
+    setFormData((prevData) => ({ ...prevData, previewImages }));
+  }, [previewImages, setFormData]);
+
   useEffect(() => {
     if (sortableContainerRef.current) {
       Sortable.create(sortableContainerRef.current, {
@@ -100,11 +105,11 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
       <Header />
       <div className="step4-container">
         <Formik
-          initialValues={formData}
+          initialValues={{ ...formData, images: previewImages.map((image) => image.src) }}
           enableReinitialize
           validationSchema={validationSchema}
           onSubmit={(values) => {
-            setFormData({ ...formData, ...values });
+            setFormData({ ...values, previewImages });
             nextStep();
           }}
         >
@@ -160,7 +165,11 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
               </div>
 
               <div className="step4-navigation">
-                <button type="button" onClick={prevStep} className="step4-btn-primary">
+                <button
+                  type="button"
+                  onClick={() => { setFormData({ ...formData, previewImages }); prevStep(); }}
+                  className="step4-btn-primary"
+                >
                   Tilbake
                 </button>
                 <button type="submit" className="step4-btn-primary">
