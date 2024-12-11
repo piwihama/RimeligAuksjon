@@ -23,34 +23,30 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
 
   useEffect(() => {
     let sortable;
-  
+
     if (sortableContainerRef.current) {
       sortable = Sortable.create(sortableContainerRef.current, {
         animation: 150,
         handle: '.step4-drag-handle',
         onEnd: (evt) => {
           if (evt.oldIndex === undefined || evt.newIndex === undefined) return;
-  
+
           setPreviewImages((prevImages) => {
             const newOrder = Array.from(prevImages);
             const [movedItem] = newOrder.splice(evt.oldIndex, 1);
             newOrder.splice(evt.newIndex, 0, movedItem);
             return newOrder;
           });
-  
-          setKey((prevKey) => prevKey + 1); // Tving rerender
         },
       });
     }
-  
-    // Rydd opp for å unngå flere instanser av Sortable
+
     return () => {
       if (sortable) {
         sortable.destroy();
       }
     };
-  }, [previewImages]); // Lytt på endringer i previewImages
-  
+  }, [previewImages]);
 
   const handleImageUpload = async (event, setFieldValue) => {
     const files = Array.from(event.target.files);
@@ -71,7 +67,6 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
       const updatedImages = [...previewImages, ...newImages];
       setPreviewImages(updatedImages);
       setFieldValue('images', updatedImages.map((image) => image.src));
-      setFormData({ ...formData, previewImages: updatedImages });
     } catch (error) {
       console.error('Feil ved opplasting av bilder:', error);
     }
@@ -81,7 +76,6 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     const updatedImages = previewImages.filter((_, i) => i !== index);
     setPreviewImages(updatedImages);
     setFieldValue('images', updatedImages.map((image) => image.src));
-    setFormData({ ...formData, previewImages: updatedImages });
     setKey((prevKey) => prevKey + 1); // Tving rerender
   };
 
@@ -90,7 +84,6 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     const reorderedImages = [...previewImages];
     [reorderedImages[index - 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index - 1]];
     setPreviewImages(reorderedImages);
-    setFormData({ ...formData, previewImages: reorderedImages });
     setKey((prevKey) => prevKey + 1);
   };
 
@@ -99,7 +92,6 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     const reorderedImages = [...previewImages];
     [reorderedImages[index + 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index + 1]];
     setPreviewImages(reorderedImages);
-    setFormData({ ...formData, previewImages: reorderedImages });
     setKey((prevKey) => prevKey + 1);
   };
 
@@ -116,68 +108,70 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
             nextStep();
           }}
         >
-          {({ setFieldValue }) => (
-            <Form className="step4-form">
-              <h2>Detaljer om Auksjon</h2>
+          {({ setFieldValue }) => {
+            useEffect(() => {
+              setFieldValue('images', previewImages.map((image) => image.src));
+            }, [previewImages, setFieldValue]);
 
-              <div className="step4-group">
-                <label htmlFor="description">Beskrivelse av det du skal selge</label>
-                <Field as="textarea" id="description" name="description" className="step4-control" />
-                <ErrorMessage name="description" component="div" className="step4-error" />
-              </div>
+            return (
+              <Form className="step4-form">
+                <h2>Detaljer om Auksjon</h2>
 
-              <div className="step4-group">
-                <label htmlFor="conditionDescription">Beskrivelse av egenerklæring / tilstand</label>
-                <Field as="textarea" id="conditionDescription" name="conditionDescription" className="step4-control" />
-                <ErrorMessage name="conditionDescription" component="div" className="step4-error" />
-              </div>
-
-              <div className="step4-group">
-                <label htmlFor="images">Last opp bilder</label>
-                <div ref={sortableContainerRef} key={key} className="step4-image-preview-container">
-                  {previewImages.map((image, index) => (
-                    <div key={image.id} data-id={image.id} className="step4-image-preview">
-                      <span className="step4-drag-handle">☰</span>
-                      <img src={image.src} alt={`Preview ${index}`} />
-                      <div className="step4-button-container">
-                        <button type="button" onClick={() => moveImageUp(index)} disabled={index === 0}>
-                          Opp
-                        </button>
-                        <button type="button" onClick={() => moveImageDown(index)} disabled={index === previewImages.length - 1}>
-                          Ned
-                        </button>
-                        <button type="button" onClick={() => handleDeleteImage(index, setFieldValue)}>
-                          Slett
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                <div className="step4-group">
+                  <label htmlFor="description">Beskrivelse av det du skal selge</label>
+                  <Field as="textarea" id="description" name="description" className="step4-control" />
+                  <ErrorMessage name="description" component="div" className="step4-error" />
                 </div>
-                <input
-                  type="file"
-                  id="images"
-                  name="images"
-                  onChange={(event) => handleImageUpload(event, setFieldValue)}
-                  multiple
-                  accept="image/*"
-                />
-                <ErrorMessage name="images" component="div" className="step4-error" />
-              </div>
 
-              <div className="step4-navigation">
-                <button
-                  type="button"
-                  onClick={() => { setFormData({ ...formData, previewImages }); prevStep(); }}
-                  className="step4-btn-primary"
-                >
-                  Tilbake
-                </button>
-                <button type="submit" className="step4-btn-primary">
-                  Neste
-                </button>
-              </div>
-            </Form>
-          )}
+                <div className="step4-group">
+                  <label htmlFor="conditionDescription">Beskrivelse av egenerklæring / tilstand</label>
+                  <Field as="textarea" id="conditionDescription" name="conditionDescription" className="step4-control" />
+                  <ErrorMessage name="conditionDescription" component="div" className="step4-error" />
+                </div>
+
+                <div className="step4-group">
+                  <label htmlFor="images">Last opp bilder</label>
+                  <div ref={sortableContainerRef} key={key} className="step4-image-preview-container">
+                    {previewImages.map((image, index) => (
+                      <div key={image.id} data-id={image.id} className="step4-image-preview">
+                        <span className="step4-drag-handle">☰</span>
+                        <img src={image.src} alt={`Preview ${index}`} />
+                        <div className="step4-button-container">
+                          <button type="button" onClick={() => moveImageUp(index)} disabled={index === 0}>
+                            Opp
+                          </button>
+                          <button type="button" onClick={() => moveImageDown(index)} disabled={index === previewImages.length - 1}>
+                            Ned
+                          </button>
+                          <button type="button" onClick={() => handleDeleteImage(index, setFieldValue)}>
+                            Slett
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <input
+                    type="file"
+                    id="images"
+                    name="images"
+                    onChange={(event) => handleImageUpload(event, setFieldValue)}
+                    multiple
+                    accept="image/*"
+                  />
+                  <ErrorMessage name="images" component="div" className="step4-error" />
+                </div>
+
+                <div className="step4-navigation">
+                  <button type="button" onClick={prevStep} className="step4-btn-primary">
+                    Tilbake
+                  </button>
+                  <button type="submit" className="step4-btn-primary">
+                    Neste
+                  </button>
+                </div>
+              </Form>
+            );
+          }}
         </Formik>
       </div>
       <Footer />
