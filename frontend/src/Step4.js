@@ -76,6 +76,24 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     setPreviewImages((prevImages) => prevImages.filter((_, i) => i !== index));
   };
 
+  const moveImageUp = (index) => {
+    if (index === 0) return;
+    setPreviewImages((prevImages) => {
+      const newOrder = [...prevImages];
+      [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
+      return newOrder;
+    });
+  };
+
+  const moveImageDown = (index) => {
+    if (index === previewImages.length - 1) return;
+    setPreviewImages((prevImages) => {
+      const newOrder = [...prevImages];
+      [newOrder[index + 1], newOrder[index]] = [newOrder[index], newOrder[index + 1]];
+      return newOrder;
+    });
+  };
+
   return (
     <div>
       <Header />
@@ -115,29 +133,20 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                         <span className="step4-drag-handle">☰</span>
                         <img src={image.src} alt={`Preview ${index}`} />
                         <div className="step4-button-container">
+                          <button type="button" onClick={() => moveImageUp(index)} disabled={index === 0}>Opp</button>
+                          <button type="button" onClick={() => moveImageDown(index)} disabled={index === previewImages.length - 1}>Ned</button>
                           <button type="button" onClick={() => handleDeleteImage(index)}>Slett</button>
                         </div>
                       </div>
                     ))}
                   </div>
-                  <input
-                    type="file"
-                    id="images"
-                    name="images"
-                    onChange={handleImageUpload}
-                    multiple
-                    accept="image/*"
-                  />
+                  <input type="file" id="images" name="images" onChange={handleImageUpload} multiple accept="image/*" />
                   <ErrorMessage name="images" component="div" className="step4-error" />
                 </div>
 
                 <div className="step4-navigation">
-                  <button type="button" onClick={prevStep} className="step4-btn-primary">
-                    Tilbake
-                  </button>
-                  <button type="submit" className="step4-btn-primary">
-                    Neste
-                  </button>
+                  <button type="button" onClick={prevStep} className="step4-btn-primary">Tilbake</button>
+                  <button type="submit" className="step4-btn-primary">Neste</button>
                 </div>
               </Form>
             );
