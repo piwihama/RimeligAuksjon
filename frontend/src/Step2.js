@@ -42,45 +42,60 @@ const Step2 = ({ formData, setFormData, nextStep, prevStep }) => {
             nextStep();
           }}
         >
-          <Form className="step2-form">
-            <h2>Teknisk informasjon</h2>
-            {[
-              { name: 'brand', label: 'Merke' },
-              { name: 'model', label: 'Modell' },
-              { name: 'year', label: 'År' },
-              { name: 'chassisNumber', label: 'Chassisnummer' },
-              { name: 'taxClass', label: 'Avgiftsklasse' },
-              { name: 'fuel', label: 'Drivstoff' },
-              { name: 'gearType', label: 'Girtype' },
-              { name: 'driveType', label: 'Driftstype' },
-              { name: 'mainColor', label: 'Hovedfarge' },
-              { name: 'power', label: 'Effekt' },
-              { name: 'seats', label: 'Antall seter' },
-              { name: 'owners', label: 'Antall eiere' },
-              { name: 'firstRegistration', label: '1. gang registrert' },
-              { name: 'doors', label: 'Antall dører' },
-              { name: 'weight', label: 'Egenvekt' },
-              { name: 'co2', label: 'CO2-utslipp' },
-              { name: 'omregistreringsavgift', label: 'Omregistreringsavgift' },
-              { name: 'lastEUApproval', label: 'Sist EU-godkjent' },
-              { name: 'nextEUControl', label: 'Neste frist for EU-kontroll' },
-              { name: 'mileage', label: 'Kilometerstand' }, // Nytt felt for kilometerstand
-            ].map((field) => (
-              <div className="step2-group" key={field.name}>
-                <label htmlFor={field.name}>{field.label}</label>
-                <Field name={field.name} type="text" className="step2-control" />
-                <ErrorMessage name={field.name} component="div" className="step2-error" />
-              </div>
-            ))}
-            <div className="step2-navigation">
-              <button type="button" onClick={prevStep} className="step2-btn-primary">
-                Tilbake
-              </button>
-              <button type="submit" className="step2-btn-primary">
-                Neste
-              </button>
-            </div>
-          </Form>
+        <Form className="step2-form">
+  <h2 className="step-title">Steg 2: Teknisk Informasjon</h2>
+  <p className="step-info">
+    Fyll inn bilens tekniske informasjon. Dette er viktig for å gi potensielle kjøpere nøyaktige detaljer.
+  </p>
+
+  <div className="info-box">
+    <p><strong>Tips:</strong></p>
+    <ul>
+      <li>Merke og modell finner du i bilens vognkort.</li>
+      <li>Chassisnummeret er unikt for hvert kjøretøy.</li>
+      <li>Oppgi korrekt kilometerstand for å unngå tvil hos kjøpere.</li>
+    </ul>
+  </div>
+
+  {[
+    { name: 'brand', label: 'Merke' },
+    { name: 'model', label: 'Modell' },
+    { name: 'year', label: 'År' },
+    { name: 'chassisNumber', label: 'Chassisnummer' },
+    { name: 'taxClass', label: 'Avgiftsklasse' },
+    { name: 'fuel', label: 'Drivstoff' },
+    { name: 'gearType', label: 'Girtype' },
+    { name: 'driveType', label: 'Driftstype' },
+    { name: 'mainColor', label: 'Hovedfarge' },
+    { name: 'power', label: 'Effekt' },
+    { name: 'seats', label: 'Antall seter' },
+    { name: 'owners', label: 'Antall eiere' },
+    { name: 'firstRegistration', label: '1. gang registrert' },
+    { name: 'doors', label: 'Antall dører' },
+    { name: 'weight', label: 'Egenvekt' },
+    { name: 'co2', label: 'CO2-utslipp' },
+    { name: 'omregistreringsavgift', label: 'Omregistreringsavgift' },
+    { name: 'lastEUApproval', label: 'Sist EU-godkjent' },
+    { name: 'nextEUControl', label: 'Neste frist for EU-kontroll' },
+    { name: 'mileage', label: 'Kilometerstand' },
+  ].map((field) => (
+    <div className="step2-group" key={field.name}>
+      <label htmlFor={field.name}>{field.label}</label>
+      <Field name={field.name} type="text" className="step2-control" />
+      <ErrorMessage name={field.name} component="div" className="step2-error" />
+    </div>
+  ))}
+
+  <div className="step2-navigation">
+    <button type="button" onClick={prevStep} className="step2-btn-primary">
+      Tilbake
+    </button>
+    <button type="submit" className="step2-btn-primary">
+      Neste
+    </button>
+  </div>
+</Form>
+
         </Formik>
       </div>
       <Footer />
