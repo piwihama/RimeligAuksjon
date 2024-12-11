@@ -75,6 +75,24 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     setKey((prevKey) => prevKey + 1); // Tving rerender
   };
 
+  const moveImageUp = (index) => {
+    if (index === 0) return;
+    const reorderedImages = [...previewImages];
+    [reorderedImages[index - 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index - 1]];
+    setPreviewImages(reorderedImages);
+    setFormData({ ...formData, previewImages: reorderedImages });
+    setKey((prevKey) => prevKey + 1);
+  };
+
+  const moveImageDown = (index) => {
+    if (index === previewImages.length - 1) return;
+    const reorderedImages = [...previewImages];
+    [reorderedImages[index + 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index + 1]];
+    setPreviewImages(reorderedImages);
+    setFormData({ ...formData, previewImages: reorderedImages });
+    setKey((prevKey) => prevKey + 1);
+  };
+
   return (
     <div>
       <Header />
@@ -111,9 +129,17 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
                     <div key={image.id} data-id={image.id} className="step4-image-preview">
                       <span className="step4-drag-handle">☰</span>
                       <img src={image.src} alt={`Preview ${index}`} />
-                      <button type="button" onClick={() => handleDeleteImage(index, setFieldValue)}>
-                        Slett
-                      </button>
+                      <div className="step4-button-container">
+                        <button type="button" onClick={() => moveImageUp(index)} disabled={index === 0}>
+                          Opp
+                        </button>
+                        <button type="button" onClick={() => moveImageDown(index)} disabled={index === previewImages.length - 1}>
+                          Ned
+                        </button>
+                        <button type="button" onClick={() => handleDeleteImage(index, setFieldValue)}>
+                          Slett
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
