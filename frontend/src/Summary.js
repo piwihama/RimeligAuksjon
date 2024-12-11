@@ -12,19 +12,10 @@ const Summary = ({ formData, prevStep }) => {
     if (isLoading) return;
     setIsLoading(true);
 
-    console.log("Submitting form with fetch...");
-
     try {
-      const token = localStorage.getItem('accessToken'); // Bruker 'accessToken' for konsistens
+      const token = localStorage.getItem('accessToken');
       const images = formData.images || [];
-      const base64Images = images.map(img => {
-        if (typeof img === 'string' && img.startsWith('data:image/')) {
-          return img; 
-        } else {
-          console.error('Invalid image format:', img);
-          return null;
-        }
-      }).filter(img => img !== null);
+      const base64Images = images.map(img => (typeof img === 'string' && img.startsWith('data:image/')) ? img : null).filter(img => img !== null);
 
       const submissionData = { ...formData, images: base64Images };
 
@@ -38,7 +29,6 @@ const Summary = ({ formData, prevStep }) => {
       });
 
       if (response.ok) {
-        console.log("Auction created successfully");
         const data = await response.json();
         setIsSubmitted(true);
 
@@ -51,8 +41,6 @@ const Summary = ({ formData, prevStep }) => {
           },
           body: JSON.stringify({ documentId: data.insertedId })
         });
-
-        console.log("Email sent successfully.");
       } else {
         console.error("Error creating auction:", response.statusText);
       }
@@ -84,61 +72,58 @@ const Summary = ({ formData, prevStep }) => {
   return (
     <div>
       <Header />
+      <div className="summary-container">
+        <h2 className="summary-title">Sammendrag av Auksjon</h2>
+        <p className="summary-info">Vennligst gå gjennom detaljene før du sender inn forespørselen.</p>
 
-      <div className="bil-container">
-        <h2>Sammendrag</h2>
         <div className="summary-section">
           <h3>Bilinformasjon</h3>
-          <p><strong>Registreringsnummer:</strong> {formData.regNumber}</p>
-          <p><strong>Merke:</strong> {formData.brand}</p>
-          <p><strong>Modell:</strong> {formData.model}</p>
-          <p><strong>År:</strong> {formData.year}</p>
-          <p><strong>Chassisnummer:</strong> {formData.chassisNumber}</p>
-          <p><strong>Avgiftsklasse:</strong> {formData.taxClass}</p>
-          <p><strong>Drivstoff:</strong> {formData.fuel}</p>
-          <p><strong>Girtype:</strong> {formData.gearType}</p>
-          <p><strong>Driftstype:</strong> {formData.driveType}</p>
-          <p><strong>Hovedfarge:</strong> {formData.mainColor}</p>
-          <p><strong>Effekt:</strong> {formData.power}</p>
-          <p><strong>Antall seter:</strong> {formData.seats}</p>
-          <p><strong>Antall eiere:</strong> {formData.owners}</p>
-          <p><strong>1. gang registrert:</strong> {formData.firstRegistration}</p>
-          <p><strong>Antall dører:</strong> {formData.doors}</p>
-          <p><strong>Egenvekt:</strong> {formData.weight}</p>
-          <p><strong>CO2-utslipp:</strong> {formData.co2}</p>
-          <p><strong>Omregistreringsavgift:</strong> {formData.omregistreringsavgift}</p>
-          <p><strong>Sist EU-godkjent:</strong> {formData.lastEUApproval}</p>
-          <p><strong>Neste frist for EU-kontroll:</strong> {formData.nextEUControl}</p>
-          <p><strong>Kilometeravstand:</strong> {formData.mileage}</p>
+          <ul className="summary-list">
+            <li><strong>Registreringsnummer:</strong> {formData.regNumber}</li>
+            <li><strong>Merke:</strong> {formData.brand}</li>
+            <li><strong>Modell:</strong> {formData.model}</li>
+            <li><strong>År:</strong> {formData.year}</li>
+            <li><strong>Chassisnummer:</strong> {formData.chassisNumber}</li>
+            <li><strong>Drivstoff:</strong> {formData.fuel}</li>
+            <li><strong>Girtype:</strong> {formData.gearType}</li>
+            <li><strong>Driftstype:</strong> {formData.driveType}</li>
+            <li><strong>Hovedfarge:</strong> {formData.mainColor}</li>
+            <li><strong>Kilometerstand:</strong> {formData.mileage}</li>
+          </ul>
         </div>
+
         <div className="summary-section">
           <h3>Beskrivelse</h3>
           <p><strong>Beskrivelse:</strong> {formData.description}</p>
           <p><strong>Beskrivelse av tilstand:</strong> {formData.conditionDescription}</p>
         </div>
+
         <div className="summary-section">
           <h3>Utstyr</h3>
-          <ul>
+          <ul className="summary-list">
             {formData.equipment && formData.equipment.map((item, index) => (
               <li key={index}>{item}</li>
             ))}
           </ul>
         </div>
+
         <div className="summary-section">
-          <h3>Auksjonsinnstillinger</h3>
-          <p><strong>Auksjonsvarighet:</strong> {formData.auctionDuration} dager</p>
-          <p><strong>Minstepris:</strong> {formData.reservePrice}</p>
-          <p><strong>Selges uten minstepris:</strong> {formData.auctionWithoutReserve ? 'Ja' : 'Nei'}</p>
+          <h3>Bilder</h3>
+          <div className="image-preview-container">
+            {formData.images && formData.images.map((img, index) => (
+              <img key={index} src={img} alt={`Bilde ${index + 1}`} className="image-preview" />
+            ))}
+          </div>
         </div>
 
         <div className="summary-section">
-           <h3>Bilder</h3>
-             <div className="image-preview-container">
-               {formData.images && formData.images.map((img, index) => (
-            <img key={index} src={img} alt={`Bilde ${index + 1}`} className="image-preview" />
-            ))}
-          </div>
-       </div>
+          <h3>Auksjonsinnstillinger</h3>
+          <ul className="summary-list">
+            <li><strong>Auksjonsvarighet:</strong> {formData.auctionDuration} dager</li>
+            <li><strong>Minstepris:</strong> {formData.reservePrice ? `${formData.reservePrice} NOK` : 'Ingen minstepris'}</li>
+            <li><strong>Selges uten minstepris:</strong> {formData.auctionWithoutReserve ? 'Ja' : 'Nei'}</li>
+          </ul>
+        </div>
 
         <div className="form-navigation">
           <button type="button" onClick={prevStep} className="btn btn-secondary">Tilbake</button>
@@ -147,7 +132,6 @@ const Summary = ({ formData, prevStep }) => {
           </button>
         </div>
       </div>
-
       <Footer />
     </div>
   );
