@@ -1,11 +1,10 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import validation from './LoginValidation';
 import axios from 'axios';
 import './Login.css';
 import Header from './Header';
-import React, { useState, useEffect } from 'react';
 
 
 function Login() {
