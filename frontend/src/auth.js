@@ -12,6 +12,7 @@ export const isAuthenticated = () => {
     const currentTime = Date.now() / 1000; // Gjeldende tid i sekunder
 
     if (payload.exp > currentTime) {
+      startInactivityTimer();
       return payload; // Returnerer hele payload, inkludert rollen
     } else {
       localStorage.removeItem('accessToken');
@@ -24,19 +25,15 @@ export const isAuthenticated = () => {
   }
 };
 
-// Kommenter ut eller fjern startInactivityTimer
-/*
 const startInactivityTimer = () => {
   clearTimeout(inactivityTimer);
 
   inactivityTimer = setTimeout(() => {
     refreshAuthToken(); // Forny token etter inaktivitet
-  }, 14 * 60 * 1000); // Forny token 1 minutt før utløp
+  }, 60 * 60 * 1000); // Forny token 1 minutt før utløp (hvis tokenet er 15 minutter langt)
 };
-*/
 
-// Kommenter ut eller fjern refreshAuthToken-funksjonen
-/*
+// Forny accessToken ved hjelp av refreshToken
 export const refreshAuthToken = async () => {
   try {
     console.log("Sending refresh token request...");
@@ -55,7 +52,7 @@ export const refreshAuthToken = async () => {
     return false;
   }
 };
-*/
+
 
 const parseJwt = (token) => {
   const base64Url = token.split('.')[1];
@@ -67,9 +64,7 @@ const parseJwt = (token) => {
   return JSON.parse(jsonPayload);
 };
 
-// Fjern lyttere som kaller startInactivityTimer
-/*
+// Lytt til aktivitet på siden for å reset inaktivitetstimeren
 ['mousemove', 'keydown', 'scroll', 'click'].forEach((event) => {
   window.addEventListener(event, startInactivityTimer);
 });
-*/

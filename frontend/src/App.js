@@ -44,10 +44,11 @@ function App() {
   useEffect(() => {
     const interval = setInterval(() => {
       refreshAuthToken(); // Forny token periodisk
-    }, 10 * 60 * 1000); // Forny hvert 10. minutt (før accessToken utløper)
-
+    }, 7 * 24 * 60 * 60 * 1000); // Forny hver 7. dag (7 dager * 24 timer * 60 minutter * 60 sekunder * 1000 millisekunder)
+  
     return () => clearInterval(interval); // Rydd opp når komponenten unmountes
   }, []);
+  
 
   return (
     <BrowserRouter>
