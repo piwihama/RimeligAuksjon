@@ -107,24 +107,24 @@ body {
 
 /* Primærknapp (Send inn) */
 .summary-btn-primary {
-    background-color: #005050;
-    color: #fff;
-    border: none;
+    background-color: #005050 !important;
+    color: #fff !important;
+    border: none !important;
 }
 
 .summary-btn-primary:hover {
-    background-color: #003838;
+    background-color: #003838 !important;
 }
 
 /* Sekundærknapp (Tilbake) */
 .summary-btn-secondary {
-    background-color: #f4f4f9;
-    color: #005050;
-    border: 1px solid #005050;
+    background-color: #f4f4f9 !important;
+    color: #005050 !important;
+    border: 1px solid #005050 !important;
 }
 
 .summary-btn-secondary:hover {
-    background-color: #ddd;
+    background-color: #ddd !important;
 }
 
 /* Bekreftelsesmelding */
