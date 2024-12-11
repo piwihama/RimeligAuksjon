@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useRef } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import './Step2.css';
@@ -29,11 +29,17 @@ const Step2 = ({ formData, setFormData, nextStep, prevStep }) => {
     mileage: Yup.string().required('Kilometerstand er påkrevd'),
   });
 
-  useEffect(() => {
-    if (formData.autoFilledData) {
-      setFormData((prevData) => ({ ...prevData, ...formData.autoFilledData }));
+  const formRef = useRef(null);
+
+  const scrollToFirstError = (errors) => {
+    const errorFields = Object.keys(errors);
+    if (errorFields.length > 0) {
+      const errorElement = document.getElementById(errorFields[0]);
+      if (errorElement) {
+        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
-  }, [formData.autoFilledData, setFormData]);
+  };
 
   return (
     <div>
@@ -54,52 +60,60 @@ const Step2 = ({ formData, setFormData, nextStep, prevStep }) => {
         </div>
 
         <Formik
+          innerRef={formRef}
           initialValues={formData}
           validationSchema={validationSchema}
-          onSubmit={(values) => {
+          onSubmit={(values, { setSubmitting }) => {
             setFormData({ ...formData, ...values });
             nextStep();
+            setSubmitting(false);
           }}
+          validateOnChange={false}
         >
-          <Form className="step2-form">
-            {[
-              { name: 'brand', label: 'Merke' },
-              { name: 'model', label: 'Modell' },
-              { name: 'year', label: 'År' },
-              { name: 'chassisNumber', label: 'Chassisnummer' },
-              { name: 'taxClass', label: 'Avgiftsklasse' },
-              { name: 'fuel', label: 'Drivstoff' },
-              { name: 'gearType', label: 'Girtype' },
-              { name: 'driveType', label: 'Driftstype' },
-              { name: 'mainColor', label: 'Hovedfarge' },
-              { name: 'power', label: 'Effekt' },
-              { name: 'seats', label: 'Antall seter' },
-              { name: 'owners', label: 'Antall eiere' },
-              { name: 'firstRegistration', label: '1. gang registrert' },
-              { name: 'doors', label: 'Antall dører' },
-              { name: 'weight', label: 'Egenvekt' },
-              { name: 'co2', label: 'CO2-utslipp' },
-              { name: 'omregistreringsavgift', label: 'Omregistreringsavgift' },
-              { name: 'lastEUApproval', label: 'Sist EU-godkjent' },
-              { name: 'nextEUControl', label: 'Neste frist for EU-kontroll' },
-              { name: 'mileage', label: 'Kilometerstand' },
-            ].map((field) => (
-              <div className="step2-group" key={field.name}>
-                <label htmlFor={field.name}>{field.label}</label>
-                <Field name={field.name} type="text" className="step2-control" />
-                <ErrorMessage name={field.name} component="div" className="step2-error" />
-              </div>
-            ))}
+          {({ handleSubmit, errors }) => (
+            <Form className="step2-form" onSubmit={(e) => {
+              handleSubmit(e);
+              scrollToFirstError(errors);
+            }}>
+              {[
+                { name: 'brand', label: 'Merke' },
+                { name: 'model', label: 'Modell' },
+                { name: 'year', label: 'År' },
+                { name: 'chassisNumber', label: 'Chassisnummer' },
+                { name: 'taxClass', label: 'Avgiftsklasse' },
+                { name: 'fuel', label: 'Drivstoff' },
+                { name: 'gearType', label: 'Girtype' },
+                { name: 'driveType', label: 'Driftstype' },
+                { name: 'mainColor', label: 'Hovedfarge' },
+                { name: 'power', label: 'Effekt' },
+                { name: 'seats', label: 'Antall seter' },
+                { name: 'owners', label: 'Antall eiere' },
+                { name: 'firstRegistration', label: '1. gang registrert' },
+                { name: 'doors', label: 'Antall dører' },
+                { name: 'weight', label: 'Egenvekt' },
+                { name: 'co2', label: 'CO2-utslipp' },
+                { name: 'omregistreringsavgift', label: 'Omregistreringsavgift' },
+                { name: 'lastEUApproval', label: 'Sist EU-godkjent' },
+                { name: 'nextEUControl', label: 'Neste frist for EU-kontroll' },
+                { name: 'mileage', label: 'Kilometerstand' },
+              ].map((field) => (
+                <div className="step2-group" key={field.name}>
+                  <label htmlFor={field.name}>{field.label}</label>
+                  <Field name={field.name} type="text" id={field.name} className="step2-control" />
+                  <ErrorMessage name={field.name} component="div" className="step2-error" />
+                </div>
+              ))}
 
-            <div className="step2-navigation">
-              <button type="button" onClick={prevStep} className="step2-btn-primary">
-                Tilbake
-              </button>
-              <button type="submit" className="step2-btn-primary">
-                Neste
-              </button>
-            </div>
-          </Form>
+              <div className="step2-navigation">
+                <button type="button" onClick={prevStep} className="step2-btn-primary">
+                  Tilbake
+                </button>
+                <button type="submit" className="step2-btn-primary">
+                  Neste
+                </button>
+              </div>
+            </Form>
+          )}
         </Formik>
       </div>
       <Footer />
