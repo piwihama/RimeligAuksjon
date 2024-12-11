@@ -62,7 +62,7 @@ const Summary = ({ formData, prevStep }) => {
       <div className="confirmation-message">
         <h2>Auksjonsforespørsel sendt inn!</h2>
         <p>Takk for din forespørsel. En av våre kundebehandlere vil kontakte deg snart.</p>
-        <button type="button" onClick={() => window.location.href = '/home'} className="btn btn-primary">
+        <button type="button" onClick={() => window.location.href = '/home'} className="btn summary-btn-primary">
           Tilbake til hjemmesiden
         </button>
       </div>
@@ -126,8 +126,8 @@ const Summary = ({ formData, prevStep }) => {
         </div>
 
         <div className="form-navigation">
-          <button type="button" onClick={prevStep} className="btn btn-secondary">Tilbake</button>
-          <button type="button" onClick={handleClick} className="btn btn-primary" disabled={isLoading}>
+          <button type="button" onClick={prevStep} className="btn summary-btn-secondary">Tilbake</button>
+          <button type="button" onClick={handleClick} className="btn summary-btn-primary" disabled={isLoading}>
             {isLoading ? 'Sender...' : 'Send inn'}
           </button>
         </div>

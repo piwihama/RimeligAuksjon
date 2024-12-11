@@ -94,8 +94,8 @@ body {
     margin-top: 30px;
 }
 
-.btn-primary,
-.btn-secondary {
+.summary-btn-primary,
+.summary-btn-secondary {
     padding: 10px 20px;
     font-size: 1em;
     border-radius: 5px;
@@ -106,24 +106,24 @@ body {
 }
 
 /* Primærknapp (Send inn) */
-.btn-primary {
+.summary-btn-primary {
     background-color: #005050;
     color: #fff;
     border: none;
 }
 
-.btn-primary:hover {
+.summary-btn-primary:hover {
     background-color: #003838;
 }
 
 /* Sekundærknapp (Tilbake) */
-.btn-secondary {
+.summary-btn-secondary {
     background-color: #f4f4f9;
     color: #005050;
     border: 1px solid #005050;
 }
 
-.btn-secondary:hover {
+.summary-btn-secondary:hover {
     background-color: #ddd;
 }
 
@@ -169,8 +169,8 @@ body {
         height: 80px;
     }
 
-    .btn-primary,
-    .btn-secondary {
+    .summary-btn-primary,
+    .summary-btn-secondary {
         width: 100%;
         text-align: center;
     }
