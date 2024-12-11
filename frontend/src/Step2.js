@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import './Step2.css';
@@ -29,13 +29,19 @@ const Step2 = ({ formData, setFormData, nextStep, prevStep }) => {
     mileage: Yup.string().required('Kilometerstand er påkrevd'),
   });
 
+  useEffect(() => {
+    if (formData.autoFilledData) {
+      setFormData((prevData) => ({ ...prevData, ...formData.autoFilledData }));
+    }
+  }, [formData.autoFilledData, setFormData]);
+
   return (
     <div>
       <Header />
       <div className="step2-container">
         <h2 className="step-title">Steg 2: Teknisk Informasjon</h2>
         <p className="step-info">
-          Fyll inn bilens tekniske informasjon. Feltene blir automatisk fylt inn dersom data er hentet fra Statens Vegvesen. Dobbeltsjekk informasjonen og fyll inn eventuelle manglende detaljer.
+          Informasjonen nedenfor er automatisk hentet fra Statens Vegvesen. Dobbeltsjekk detaljene og fyll inn eventuelle manglende felter.
         </p>
 
         <div className="info-box">
