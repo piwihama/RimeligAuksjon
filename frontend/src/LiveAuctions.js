@@ -425,7 +425,7 @@ useEffect(() => {
                       </div>
                       <div className="auction-detail">
                         <span className="left-text"><strong>Sted:</strong></span>
-                        <span className="right-text">{auction.location}</span>
+                        <span className="right-text">{auction.postkode} {auction.sted}</span>
                       </div>
                     </div>
                   </div>
