@@ -9,7 +9,8 @@ import Footer from './Footer';
 const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
   const [previewImages, setPreviewImages] = useState(formData.previewImages || []);
   const sortableContainerRef = useRef(null);
-  const setFieldValueRef = useRef(null);
+  const [key, setKey] = useState(0); // For å tvinge rerender etter endringer
+  const setFieldValueRef = useRef(null); // Referanse til setFieldValue
 
   const validationSchema = Yup.object({
     description: Yup.string().required('Beskrivelse er påkrevd'),
@@ -48,6 +49,12 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     };
   }, [previewImages]);
 
+  useEffect(() => {
+    if (setFieldValueRef.current) {
+      setFieldValueRef.current('images', previewImages.map((image) => image.src));
+    }
+  }, [previewImages]);
+
   const handleImageUpload = async (event, setFieldValue) => {
     const files = Array.from(event.target.files);
     if (files.length === 0) return;
@@ -57,7 +64,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
         files.map((file) =>
           new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onload = () => resolve({ id: `${file.name}-${Date.now()}-${Math.random()}`, src: reader.result });
+            reader.onload = () => resolve({ id: `${file.name}-${Date.now()}`, src: reader.result });
             reader.onerror = (error) => reject(error);
             reader.readAsDataURL(file);
           })
@@ -76,24 +83,23 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     const updatedImages = previewImages.filter((_, i) => i !== index);
     setPreviewImages(updatedImages);
     setFieldValue('images', updatedImages.map((image) => image.src));
+    setKey((prevKey) => prevKey + 1); // Tving rerender
   };
 
   const moveImageUp = (index) => {
     if (index === 0) return;
-    setPreviewImages((prevImages) => {
-      const reorderedImages = [...prevImages];
-      [reorderedImages[index - 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index - 1]];
-      return reorderedImages;
-    });
+    const reorderedImages = [...previewImages];
+    [reorderedImages[index - 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index - 1]];
+    setPreviewImages(reorderedImages);
+    setKey((prevKey) => prevKey + 1);
   };
 
   const moveImageDown = (index) => {
     if (index === previewImages.length - 1) return;
-    setPreviewImages((prevImages) => {
-      const reorderedImages = [...prevImages];
-      [reorderedImages[index + 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index + 1]];
-      return reorderedImages;
-    });
+    const reorderedImages = [...previewImages];
+    [reorderedImages[index + 1], reorderedImages[index]] = [reorderedImages[index], reorderedImages[index + 1]];
+    setPreviewImages(reorderedImages);
+    setKey((prevKey) => prevKey + 1);
   };
 
   return (
@@ -109,8 +115,8 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
             nextStep();
           }}
         >
-          {({ setFieldValue, values }) => {
-            setFieldValueRef.current = setFieldValue;
+          {({ setFieldValue }) => {
+            setFieldValueRef.current = setFieldValue; // Oppdater referansen til setFieldValue
 
             return (
               <Form className="step4-form">
@@ -130,9 +136,9 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
 
                 <div className="step4-group">
                   <label htmlFor="images">Last opp bilder</label>
-                  <div ref={sortableContainerRef} className="step4-image-preview-container">
+                  <div ref={sortableContainerRef} key={key} className="step4-image-preview-container">
                     {previewImages.map((image, index) => (
-                      <div key={image.id} className="step4-image-preview">
+                      <div key={image.id} data-id={image.id} className="step4-image-preview">
                         <span className="step4-drag-handle">☰</span>
                         <img src={image.src} alt={`Preview ${index}`} />
                         <div className="step4-button-container">
