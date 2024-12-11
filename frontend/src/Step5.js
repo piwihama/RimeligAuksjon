@@ -1,7 +1,7 @@
 import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import './Step5.css'; 
+import './Step5.css';
 import Header from './Header';
 import Footer from './Footer';
 
@@ -16,6 +16,11 @@ const Step5 = ({ formData, setFormData, prevStep, nextStep }) => {
     <div>
       <Header />
       <div className="step5-container">
+        <h2 className="step-title">Steg 5: Auksjonsinnstillinger</h2>
+        <p className="step-info">
+          Her kan du bestemme hvor lenge auksjonen skal vare og om du vil ha en minstepris. Velg nøye for å sikre at du får best mulig resultat for salget ditt.
+        </p>
+
         <Formik
           initialValues={{
             auctionDuration: formData.auctionDuration || '',
@@ -28,9 +33,8 @@ const Step5 = ({ formData, setFormData, prevStep, nextStep }) => {
             nextStep();
           }}
         >
-          {() => (
+          {({ values, setFieldValue }) => (
             <Form className="step5-form">
-              <h2>Auksjonsinnstillinger</h2>
               <div className='step5-group'>
                 <label htmlFor='auctionDuration'>Hvor raskt vil du selge?</label>
                 <Field as='select' id='auctionDuration' name='auctionDuration' className='step5-control'>
@@ -42,44 +46,51 @@ const Step5 = ({ formData, setFormData, prevStep, nextStep }) => {
                 </Field>
                 <ErrorMessage name='auctionDuration' component='div' className='step5-error' />
               </div>
-              
+
+              <div className="info-box">
+                <p><strong>Tips:</strong> Kortere auksjoner kan føre til raskere salg, men gir mindre tid til å tiltrekke budgivere. Lengre auksjoner kan gi høyere bud hvis du kan vente.</p>
+              </div>
+
               <div className='step5-group'>
                 <label>
-                  <Field type='checkbox' name='auctionWithoutReserve' />
-Jeg vil selge uten minstepris                  
+                  <Field
+                    type='checkbox'
+                    name='auctionWithoutReserve'
+                    checked={values.auctionWithoutReserve}
+                    onChange={() => setFieldValue('auctionWithoutReserve', !values.auctionWithoutReserve)}
+                  />
+                  Jeg vil selge uten minstepris
                   <div className="tooltip1">
                     <span className="info-icon">?</span>
-                    <span className="tooltiptext">Å selge uten minstepris betyr at varen din selges uansett hva høyeste bud blir. Dette kan være effektivt for å tiltrekke flere budgivere og øke konkurransen. Uten minstepris risikerer du imidlertid å selge for en lavere pris enn forventet. Dette er ideelt hvis du ønsker et raskt salg og er villig til å akseptere risikoen for et lavere sluttbud. Vurder derfor nøye om denne strategien passer for deg før du velger å selge uten minstepris.
-
-
-
-
-
-
-</span>
+                    <span className="tooltiptext">
+                      Å selge uten minstepris betyr at varen din selges til høyeste bud, uavhengig av beløpet. Dette kan tiltrekke flere budgivere, men innebærer risiko for lavere salgspris.
+                    </span>
                   </div>
                 </label>
-                
               </div>
-              <div className='step5-group'>
-                <label htmlFor='reservePrice'>
-                  Minstepris
-                
-                  <div className="tooltip1">
-                    <span className="info-icon">?</span>
-                    <span className="tooltiptext">Minstepris er den laveste prisen du er villig til å akseptere for varen din. </span>
-                  </div>
-                </label>
-               
-                <Field
-                  type='number'
-                  id='reservePrice'
-                  name='reservePrice'
-                  className='step5-control'
-                  placeholder='Minstepris'
-                />
-                <ErrorMessage name='reservePrice' component='div' className='step5-error' />
-              </div>
+
+              {!values.auctionWithoutReserve && (
+                <div className='step5-group'>
+                  <label htmlFor='reservePrice'>
+                    Minstepris
+                    <div className="tooltip1">
+                      <span className="info-icon">?</span>
+                      <span className="tooltiptext">
+                        Minstepris er den laveste prisen du aksepterer. Hvis budene ikke når denne prisen, blir ikke varen solgt.
+                      </span>
+                    </div>
+                  </label>
+                  <Field
+                    type='number'
+                    id='reservePrice'
+                    name='reservePrice'
+                    className='step5-control'
+                    placeholder='Skriv inn minstepris'
+                  />
+                  <ErrorMessage name='reservePrice' component='div' className='step5-error' />
+                </div>
+              )}
+
               <div className='step5-navigation'>
                 <button type='button' onClick={prevStep} className='step5-btn-primary'>
                   Tilbake
@@ -91,11 +102,9 @@ Jeg vil selge uten minstepris
             </Form>
           )}
         </Formik>
-        
       </div>
       <Footer />
     </div>
-    
   );
 };
 
