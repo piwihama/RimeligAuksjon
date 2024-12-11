@@ -25,29 +25,33 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
   useEffect(() => {
     let sortable;
 
-    if (sortableContainerRef.current) {
-      sortable = Sortable.create(sortableContainerRef.current, {
-        animation: 150,
-        handle: '.step4-drag-handle',
-        onEnd: (evt) => {
-          if (evt.oldIndex === undefined || evt.newIndex === undefined) return;
+    const createSortable = () => {
+      if (sortableContainerRef.current) {
+        sortable = Sortable.create(sortableContainerRef.current, {
+          animation: 150,
+          handle: '.step4-drag-handle',
+          onEnd: (evt) => {
+            if (evt.oldIndex === undefined || evt.newIndex === undefined) return;
 
-          setPreviewImages((prevImages) => {
-            const newOrder = Array.from(prevImages);
-            const [movedItem] = newOrder.splice(evt.oldIndex, 1);
-            newOrder.splice(evt.newIndex, 0, movedItem);
-            return newOrder;
-          });
-        },
-      });
-    }
+            setPreviewImages((prevImages) => {
+              const newOrder = Array.from(prevImages);
+              const [movedItem] = newOrder.splice(evt.oldIndex, 1);
+              newOrder.splice(evt.newIndex, 0, movedItem);
+              return newOrder;
+            });
+          },
+        });
+      }
+    };
+
+    createSortable();
 
     return () => {
       if (sortable) {
         sortable.destroy();
       }
     };
-  }, [previewImages]);
+  }, [previewImages, key]); // Legg til key som avhengighet
 
   useEffect(() => {
     if (setFieldValueRef.current) {
@@ -74,7 +78,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
       const updatedImages = [...previewImages, ...newImages];
       setPreviewImages(updatedImages);
       setFieldValue('images', updatedImages.map((image) => image.src));
-      setKey((prevKey) => prevKey + 1); // Tving rerender for Sortable
+      setKey((prevKey) => prevKey + 1); // Tvinger re-render av Sortable
     } catch (error) {
       console.error('Feil ved opplasting av bilder:', error);
     }
@@ -84,7 +88,7 @@ const Step4 = ({ formData, setFormData, nextStep, prevStep }) => {
     const updatedImages = previewImages.filter((_, i) => i !== index);
     setPreviewImages(updatedImages);
     setFieldValue('images', updatedImages.map((image) => image.src));
-    setKey((prevKey) => prevKey + 1); // Tving rerender for Sortable
+    setKey((prevKey) => prevKey + 1); // Tvinger re-render av Sortable
   };
 
   const moveImageUp = (index) => {
