@@ -158,11 +158,39 @@
   border-bottom: none;
   margin-bottom: 0;
 }
-.signup-link {
-  color: inherit;           /* Arver fargen fra knappen */
-  text-decoration: none;    /* Fjerner understrekning */
-  display: block;           /* Gjør lenken til et blokk-element for å fylle hele knappen */
-  width: 100%;              /* Fyller hele knappens bredde */
-  height: 100%;             /* Fyller hele knappens høyde */
-  text-align: center;       /* Sentraliserer teksten */
+/* Sekundærknapp-stil */
+.signup-btn-secondary {
+  background-color: #f8f9fa;
+  color: #333;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  width: 100%;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  margin-bottom: 10px; /* Avstand til neste element */
+}
+
+/* Hover-effekt for sekundærknapp */
+.signup-btn-secondary:hover {
+  background-color: #e2e6ea;
+  transform: translateY(-2px);
+}
+
+/* Link-stil inni knappen */
+.signup-btn-secondary .signup-link {
+  color: inherit; /* Arver fargen fra knappen */
+  text-decoration: none;
+}
+
+/* Hover-effekt for linken */
+.signup-btn-secondary .signup-link:hover {
+  text-decoration: underline;
 }
