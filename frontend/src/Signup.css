@@ -11,95 +11,104 @@
 /* Stil for registreringsboksen */
 .signup-box {
   background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  max-width: 700px; /* Øker bredden på skjemaet */
   width: 100%;
 }
 
 /* Overskrift */
 .signup-heading {
   text-align: center;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
   color: #333;
-  font-size: 1.5rem;
-  font-weight: 600;
 }
 
-/* Informativ tekst */
+/* Informasjonstekst */
 .signup-info {
   text-align: center;
-  font-size: 0.95rem;
+  margin-bottom: 30px;
+  font-size: 1rem;
   color: #555;
-  background-color: #f8f9fa;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  margin-bottom: 20px;
 }
 
 /* Skjema-grupper */
 .signup-form-group {
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 25px; /* Øker avstanden mellom feltene */
 }
 
+/* Label-stil */
 .signup-form-group label {
-  flex: 0 0 150px;
-  margin-right: 10px;
+  flex: 0 0 200px; /* Øker bredden på label for bedre plass */
+  margin-right: 15px;
   font-weight: bold;
   color: #333;
   text-align: right;
 }
 
+/* Input-felt */
 .signup-form-control {
   flex: 1;
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Fokus-effekt for input-felt */
+.signup-form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+  outline: none;
+}
 
-/* Gruppe for passordfelt og knapp */
+/* Input-gruppe for passord med vis/skjul-knapp */
 .signup-input-group {
   display: flex;
+  align-items: center;
 }
 
-/* Stil for passordknappen */
+.signup-input-group .signup-form-control {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
 .signup-btn-outline-secondary {
+  padding: 12px;
   border: 1px solid #ccc;
-  border-left: none;
-  padding: 8px;
-  background-color: #eee;
-  border-radius: 0 4px 4px 0;
+  background-color: #f1f1f1;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
   cursor: pointer;
-  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
 }
 
 .signup-btn-outline-secondary:hover {
-  background-color: #ddd;
+  background-color: #e2e6ea;
 }
 
-/* Knappestiler */
+/* Stil for knappene */
 .signup-btn {
   padding: 12px;
   border-radius: 6px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: bold;
   width: 100%;
-  cursor: pointer;
   text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-bottom: 15px; /* Avstand mellom knappene */
 }
 
-/* Primær knapp */
 .signup-btn-success {
   background-color: #28a745;
   color: white;
   border: none;
-  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .signup-btn-success:hover {
@@ -107,31 +116,27 @@
   transform: translateY(-2px);
 }
 
-/* Sekundær knapp */
 .signup-btn-default {
-  background-color: #f0f0f0;
-  color: #555;
-  border: none;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  background-color: #f8f9fa;
+  color: #333;
+  border: 1px solid #ccc;
 }
 
 .signup-btn-default:hover {
-  background-color: #e0e0e0;
-  transform: translateY(-2px);
+  background-color: #e2e6ea;
 }
 
-/* Hjelpetekst */
+/* Tekst for vilkår og betingelser */
 .signup-terms-text {
   text-align: center;
   font-size: 0.9rem;
   color: #777;
-  margin-top: 10px;
+  margin-bottom: 20px;
 }
 
-/* Lenke */
+/* Link-stil */
 .signup-link {
-  color: #28a745;
-  font-weight: 600;
+  color: #007bff;
   text-decoration: none;
 }
 
@@ -139,9 +144,15 @@
   text-decoration: underline;
 }
 
-/* Feilmeldinger */
-.signup-text-danger {
-  color: #dc3545;
-  font-size: 0.875rem;
-  margin-top: 5px;
+/* Avstand mellom ulike kategorier i skjemaet */
+.signup-section {
+  margin-bottom: 40px; /* Mer avstand mellom seksjonene */
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Stil for siste kategori (fjerner nederste border) */
+.signup-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
 }
