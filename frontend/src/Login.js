@@ -258,71 +258,98 @@ function Login() {
         {errors.general && <div className="alert alert-danger">{errors.general}</div>}
         <button type="submit" className="login-btn login-btn-success"><strong>Logg inn</strong></button>
         <p className="terms-text">Du godtar våre vilkår og betingelser</p>
-        <Link to="/signup" className="login-btn login-btn-default border login-w-100 bg-light text-decoration-none">Opprett konto</Link>
-        <button type="button" className="login-btn login-btn-default border login-w-100 bg-light text-decoration-none" onClick={handleForgotPassword}>Glemt passord?</button>
-      </form>
+        <Link to="/signup" className="login-btn login-btn-default border login-w-100 bg-light text-decoration-none">
+  <strong>🌟 Opprett en ny konto</strong>
+</Link>
+<p className="login-helper-text">
+  Ny bruker? Klikk her for å lage en konto og begynne å handle med en gang!
+</p>
+<button
+  type="button"
+  className="login-btn login-btn-default border login-w-100 bg-light text-decoration-none"
+  onClick={handleForgotPassword}
+>
+  <strong>🔑 Glemt passord?</strong>
+</button>
+<p className="login-helper-text">
+  Har du glemt passordet ditt? Klikk her for å tilbakestille det enkelt og raskt.
+</p>      </form>
     ) : otpRequired ? (
       <form onSubmit={handleOtpSubmit}>
-        <div className="login-form-group">
-          <label htmlFor="otp"><strong>OTP</strong></label>
-          <input
-            type="text"
-            placeholder="Skriv inn OTP"
-            name="otp"
-            value={otp}
-            onChange={handleInputChange}
-            className="login-form-control"
-            autoComplete="off"
-          />
-          {errors.otp && <span className="text-danger">{errors.otp}</span>}
-        </div>
-        <button type="submit" className="login-btn login-btn-success"><strong>Bekreft OTP</strong></button>
-      </form>
+      <div className="login-form-group">
+        <label htmlFor="otp"><strong>🔒 Engangskode (OTP)</strong></label>
+        <input
+          type="text"
+          placeholder="Skriv inn din engangskode"
+          name="otp"
+          value={otp}
+          onChange={handleInputChange}
+          className="login-form-control"
+          autoComplete="off"
+        />
+        {errors.otp && <span className="text-danger">{errors.otp}</span>}
+      </div>
+      <button type="submit" className="login-btn login-btn-success">
+        <strong>✅ Bekreft kode</strong>
+      </button>
+    </form>
+    
     ) : resetOtpSent ? (
       <form onSubmit={handleResetPasswordSubmit}>
-        <div className="login-form-group">
-          <label htmlFor="resetOtp"><strong>OTP</strong></label>
-          <input
-            type="text"
-            placeholder="Skriv inn OTP"
-            name="resetOtp"
-            value={resetOtp}
-            onChange={handleInputChange}
-            className="login-form-control"
-            autoComplete="off"
-          />
-        </div>
-        <div className="login-form-group">
-          <label htmlFor="newPassword"><strong>Nytt passord</strong></label>
-          <input
-            type="password"
-            placeholder="Nytt passord"
-            name="newPassword"
-            value={newPassword}
-            onChange={handleInputChange}
-            className="login-form-control"
-          />
-        </div>
-        {errors.general && <div className="alert alert-danger">{errors.general}</div>}
-        <button type="submit" className="login-btn login-btn-success"><strong>Tilbakestill passord</strong></button>
-      </form>
+      <div className="login-form-group">
+        <label htmlFor="resetOtp"><strong>🔒 Engangskode (OTP)</strong></label>
+        <input
+          type="text"
+          placeholder="Skriv inn engangskode mottatt på e-post"
+          name="resetOtp"
+          value={resetOtp}
+          onChange={handleInputChange}
+          className="login-form-control"
+          autoComplete="off"
+        />
+      </div>
+    
+      <div className="login-form-group">
+        <label htmlFor="newPassword"><strong>🔐 Nytt passord</strong></label>
+        <input
+          type="password"
+          placeholder="Skriv inn ditt nye passord"
+          name="newPassword"
+          value={newPassword}
+          onChange={handleInputChange}
+          className="login-form-control"
+        />
+      </div>
+    
+      {errors.general && <div className="alert alert-danger">{errors.general}</div>}
+      <button type="submit" className="login-btn login-btn-success">
+        <strong>🔄 Tilbakestill passord</strong>
+      </button>
+    </form>
+    
+    
     ) : (
       <form onSubmit={handleForgotPasswordSubmit}>
-        <div className="login-form-group">
-          <label htmlFor="email"><strong>E-post</strong></label>
-          <input
-            type="email"
-            placeholder="E-post"
-            name="email"
-            value={email}
-            onChange={handleInputChange}
-            className="login-form-control"
-          />
-          {errors.email && <span className="text-danger">{errors.email}</span>}
-        </div>
-        {errors.general && <div className="alert alert-danger">{errors.general}</div>}
-        <button type="submit" className="login-btn login-btn-success"><strong>Send OTP</strong></button>
-      </form>
+      <div className="login-form-group">
+        <label htmlFor="email"><strong>📧 E-post</strong></label>
+        <input
+          type="email"
+          placeholder="Skriv inn e-posten din"
+          name="email"
+          value={email}
+          onChange={handleInputChange}
+          className="login-form-control"
+        />
+        {errors.email && <span className="text-danger">{errors.email}</span>}
+      </div>
+      
+      {errors.general && <div className="alert alert-danger">{errors.general}</div>}
+      
+      <button type="submit" className="login-btn login-btn-success">
+        <strong>📨 Send engangskode</strong>
+      </button>
+    </form>
+    
     )}
   </div>
 </div>
