@@ -258,22 +258,24 @@ function Login() {
         {errors.general && <div className="alert alert-danger">{errors.general}</div>}
         <button type="submit" className="login-btn login-btn-success"><strong>Logg inn</strong></button>
         <p className="terms-text">Du godtar våre vilkår og betingelser</p>
-        <Link to="/signup" className="login-btn login-btn-secondary login-w-100 text-decoration-none">
-        <strong>🌟 Opprett en ny konto</strong>
+        <Link to="/signup" className="login-btn login-btn-secondary text-decoration-none">
+  <strong>🌟 Opprett en ny konto</strong>
 </Link>
 <p className="login-helper-text">
   Ny bruker? Klikk her for å lage en konto og begynne å handle med en gang!
 </p>
+
 <button
   type="button"
-  className="login-btn login-btn-secondary login-w-100"
+  className="login-btn login-btn-secondary"
   onClick={handleForgotPassword}
 >
   <strong>🔑 Glemt passord?</strong>
 </button>
 <p className="login-helper-text">
   Har du glemt passordet ditt? Klikk her for å tilbakestille det enkelt og raskt.
-</p>      </form>
+</p>
+     </form>
     ) : otpRequired ? (
       <form onSubmit={handleOtpSubmit}>
       <div className="login-form-group">
