@@ -5,8 +5,7 @@ import axios from 'axios';
 import './Signup.css';
 import Header from './Header';
 import Footer from './Footer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+
 function Signup() {
   const [values, setValues] = useState({
     firstName: '',
@@ -125,26 +124,25 @@ function Signup() {
               </div>
   
               <div className="signup-form-group">
-  <label htmlFor="password"><strong>Passord</strong></label>
-  <div className="signup-input-group">
-    <input
-      type={showPassword ? "text" : "password"}
-      placeholder="Passord"
-      name="password"
-      onChange={handleInput}
-      className="signup-form-control"
-    />
-    <button
-      type="button"
-      className="signup-btn-outline-secondary signup-btn-eye"
-      onClick={() => setShowPassword(!showPassword)}
-    >
-      <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
-    </button>
-  </div>
-  {errors.password && <span className="signup-text-danger">{errors.password}</span>}
-</div>
-
+                <label htmlFor="password"><strong>Passord</strong></label>
+                <div className="signup-input-group">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Passord"
+                    name="password"
+                    onChange={handleInput}
+                    className="signup-form-control"
+                  />
+                  <button
+                    type="button"
+                    className="signup-btn-outline-secondary"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? "Skjul" : "Vis"}
+                  </button>
+                </div>
+                {errors.password && <span className="signup-text-danger">{errors.password}</span>}
+              </div>
             </div>
   
             <div className="signup-section">
