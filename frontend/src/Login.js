@@ -258,9 +258,11 @@ function Login() {
         {errors.general && <div className="alert alert-danger">{errors.general}</div>}
         <button type="submit" className="login-btn login-btn-success"><strong>Logg inn</strong></button>
         <p className="terms-text">Du godtar våre vilkår og betingelser</p>
-        <Link to="/signup" className="login-btn login-btn-secondary text-decoration-none">
+        <button className="login-btn login-btn-secondary">
+        <Link to="/signup" >
   <strong>🌟 Opprett en ny konto</strong>
 </Link>
+</button>
 <p className="login-helper-text">
   Ny bruker? Klikk her for å lage en konto og begynne å handle med en gang!
 </p>
