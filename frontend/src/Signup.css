@@ -1,3 +1,4 @@
+/* Container for hele registreringsboksen */
 .signup-container {
   display: flex;
   justify-content: center;
@@ -7,6 +8,7 @@
   padding: 20px;
 }
 
+/* Stil for registreringsboksen */
 .signup-box {
   background-color: #fff;
   padding: 20px;
@@ -16,7 +18,8 @@
   width: 100%;
 }
 
-.signup-box h2 {
+/* Overskrift */
+.signup-heading {
   text-align: center;
   margin-bottom: 15px;
   color: #333;
@@ -24,94 +27,119 @@
   font-weight: 600;
 }
 
-.signup-box .form-group {
+/* Informativ tekst */
+.signup-info {
+  text-align: center;
+  font-size: 0.95rem;
+  color: #555;
+  background-color: #f8f9fa;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+/* Skjema-grupper */
+.signup-form-group {
   margin-bottom: 15px;
 }
 
-.signup-box label {
+/* Skjema-label */
+.signup-form-group label {
   display: block;
   margin-bottom: 5px;
   color: #555;
   font-size: 0.9rem;
 }
 
-.signup-box input {
+/* Skjema-input */
+.signup-form-control {
   width: 100%;
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-sizing: border-box;
   font-size: 0.9rem;
 }
 
-.signup-box .input-group {
+/* Gruppe for passordfelt og knapp */
+.signup-input-group {
   display: flex;
 }
 
-.signup-box .input-group input {
-  flex: 1;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.signup-box .input-group button {
+/* Stil for passordknappen */
+.signup-btn-outline-secondary {
   border: 1px solid #ccc;
   border-left: none;
   padding: 8px;
   background-color: #eee;
-  border-top-right-radius: 4px;
-  border-bottom-right-radius: 4px;
+  border-radius: 0 4px 4px 0;
   cursor: pointer;
   font-size: 0.9rem;
 }
 
-.signup-box .input-group button:hover {
+.signup-btn-outline-secondary:hover {
   background-color: #ddd;
 }
 
-.signup-box .btn-success {
-  background-color: #28a745;
-  border: none;
-  color: white;
-  padding: 10px;
-  border-radius: 4px;
-  cursor: pointer;
+/* Knappestiler */
+.signup-btn {
+  padding: 12px;
+  border-radius: 6px;
   font-size: 1rem;
+  font-weight: 600;
   width: 100%;
+  cursor: pointer;
   text-align: center;
 }
 
-.signup-box .btn-success:hover {
+/* Primær knapp */
+.signup-btn-success {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.signup-btn-success:hover {
   background-color: #218838;
+  transform: translateY(-2px);
 }
 
-.signup-box .text-danger {
-  color: #dc3545;
-  font-size: 0.875rem;
-  margin-top: 5px;
+/* Sekundær knapp */
+.signup-btn-default {
+  background-color: #f0f0f0;
+  color: #555;
+  border: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.signup-box .terms-text {
+.signup-btn-default:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
+}
+
+/* Hjelpetekst */
+.signup-terms-text {
   text-align: center;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: #777;
   margin-top: 10px;
 }
 
-.signup-box .btn-default {
-  border: 1px solid #ccc;
-  background-color: #f8f9fa;
-  color: #333;
-  padding: 10px;
-  border-radius: 4px;
-  text-align: center;
+/* Lenke */
+.signup-link {
+  color: #28a745;
+  font-weight: 600;
   text-decoration: none;
-  display: block;
-  margin-top: 10px;
-  cursor: pointer;
-  font-size: 1rem;
 }
 
-.signup-box .btn-default:hover {
-  background-color: #e2e6ea;
+.signup-link:hover {
+  text-decoration: underline;
+}
+
+/* Feilmeldinger */
+.signup-text-danger {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 5px;
 }
