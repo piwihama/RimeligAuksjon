@@ -1,11 +1,12 @@
 
-import React, { useState, useEffect} from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import validation from './LoginValidation';
 import axios from 'axios';
 import './Login.css';
 import Header from './Header';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -20,17 +21,9 @@ function Login() {
   const [userEmail, setUserEmail] = useState('');
   const [forgotPassword, setForgotPassword] = useState(false);
   const [resetOtpSent, setResetOtpSent] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
 
   const navigate = useNavigate();
-  
-  useEffect(() => {
-    const savedEmail = localStorage.getItem('rememberedEmail');
-    if (savedEmail) {
-      setEmail(savedEmail);
-      setRememberMe(true);
-    }
-  }, []);
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     if (name === 'email') {
@@ -94,20 +87,14 @@ function Login() {
     setSuccessMessage('');
 
     if (Object.keys(validationErrors).length === 0) {
-      axios
-        .post('https://rimelig-auksjon-backend.vercel.app/login', { email, password }, { withCredentials: true })
-        .then((res) => {
+      axios.post('https://rimelig-auksjon-backend.vercel.app/login', { email, password }, { withCredentials: true })
+        .then(res => {
           if (res.data.accessToken) {
             console.log('Login successful, token received:', res.data.accessToken);
-            localStorage.setItem('accessToken', res.data.accessToken);
+            localStorage.setItem('accessToken', res.data.accessToken); // Store access token in local storage
             localStorage.setItem('role', res.data.role);
 
-            if (rememberMe) {
-              localStorage.setItem('rememberedEmail', email);
-            } else {
-              localStorage.removeItem('rememberedEmail');
-            }
-
+            // Trigger an event to let Header know the user is logged in
             window.dispatchEvent(new Event('storage'));
 
             setSuccessMessage('Innlogging vellykket! Du blir sendt til hjemmesiden.');
@@ -121,10 +108,10 @@ function Login() {
             setSuccessMessage('Du har ikke fullført en tidligere registrering. Vennligst skriv inn engangskoden vi har sendt deg på e-post for å fullføre.');
           } else {
             console.log('Login failed, unexpected response:', res.data);
-            setErrors({ general: 'Ugyldig innloggingsforsøk' });
+            setErrors({ general: "Ugyldig innloggingsforsøk" });
           }
         })
-        .catch((err) => {
+        .catch(err => {
           console.error('Login error:', err.response ? err.response.data : err.message);
           if (err.response && err.response.status === 400) {
             setErrors({ general: 'Feil e-post eller passord' });
@@ -218,38 +205,27 @@ function Login() {
                 {errors.email && <span className="text-danger">{errors.email}</span>}
               </div>
               <div className="form-group">
-                <label htmlFor="password"><strong>Passord</strong></label>
-                <div className="input-group">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Passord"
-                    name="password"
-                    value={password}
-                    onChange={handleInputChange}
-                    className="form-control"
-                    autoComplete="new-password"
-                  />
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? "Skjul" : "Vis"}
-                  </button>
-                </div>
-
-                <div className="form-group form-check">
-                <input
-                  type="checkbox"
-                  id="rememberMe"
-                  className="form-check-input"
-                  checked={rememberMe}
-                  onChange={() => setRememberMe(!rememberMe)}
-                />
-                <label htmlFor="rememberMe" className="form-check-label">Husk meg</label>
-              </div>
-                {errors.password && <span className="text-danger">{errors.password}</span>}
-              </div>
+  <label htmlFor="password"><strong>Passord</strong></label>
+  <div className="input-group">
+    <input
+      type={showPassword ? "text" : "password"}
+      placeholder="Passord"
+      name="password"
+      value={password}
+      onChange={handleInputChange}
+      className="form-control"
+      autoComplete="new-password"
+    />
+    <button
+      type="button"
+      className="btn btn-outline-secondary"
+      onClick={() => setShowPassword(!showPassword)}
+    >
+      <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+    </button>
+  </div>
+  {errors.password && <span className="text-danger">{errors.password}</span>}
+</div>
               {errors.general && <div className="alert alert-danger">{errors.general}</div>}
               <button type="submit" className="btn btn-success w-100"><strong>Logg inn</strong></button>
               <p className="terms-text">Du godtar våre vilkår og betingelser</p>
@@ -296,3 +272,23 @@ function Login() {
 }
 
 export default Login;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
