@@ -186,8 +186,11 @@ function Signup() {
             </div>
   
             <button type="submit" className="signup-btn signup-btn-success signup-w-100"><strong>Registrer</strong></button>
-            <p className="signup-terms-text">Ved å registrere deg godtar du våre <Link to="/terms" className="signup-link">vilkår og betingelser</Link>.</p>
-            <Link to="/" className="signup-btn signup-btn-default signup-w-100">Har du allerede en konto? Logg inn</Link>
+            
+          <p className="signup-terms-text">Ved å registrere deg godtar du våre <Link to="/terms" className="signup-link">vilkår og betingelser</Link>.</p>
+            <button className='signup-btn signup-btn-secondary'>
+            <Link to="/login" className="signup-link">Har du allerede en konto? Logg inn</Link>
+            </button>
           </form>
         ) : (
           <form onSubmit={handleOtpSubmit}>

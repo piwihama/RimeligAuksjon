@@ -158,3 +158,11 @@
   border-bottom: none;
   margin-bottom: 0;
 }
+.signup-link {
+  color: inherit;           /* Arver fargen fra knappen */
+  text-decoration: none;    /* Fjerner understrekning */
+  display: block;           /* Gjør lenken til et blokk-element for å fylle hele knappen */
+  width: 100%;              /* Fyller hele knappens bredde */
+  height: 100%;             /* Fyller hele knappens høyde */
+  text-align: center;       /* Sentraliserer teksten */
+}
