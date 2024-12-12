@@ -85,7 +85,8 @@ body {
   }
   
   /* Stil for øye-knappen */
-  .input-group .btn-outline-secondary {
+  /* Stil for øye-knappen */
+.input-group .btn-outline-secondary {
     position: absolute;
     right: 10px;
     top: 50%;
@@ -96,11 +97,15 @@ body {
     cursor: pointer;
     padding: 0;
     font-size: 1.2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
-  /* Hover-effekt for øye-knappen */
-  .input-group .btn-outline-secondary:hover {
-    color: #007bff;
+  /* Juster knappens størrelse og utseende */
+  .input-group .btn-outline-secondary svg {
+    width: 20px;
+    height: 20px;
   }
   
   /* Stil for husk meg-feltet */
