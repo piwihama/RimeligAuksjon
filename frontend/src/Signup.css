@@ -41,25 +41,27 @@
 
 /* Skjema-grupper */
 .signup-form-group {
+  display: flex;
+  align-items: center;
   margin-bottom: 15px;
 }
 
-/* Skjema-label */
 .signup-form-group label {
-  display: block;
-  margin-bottom: 5px;
-  color: #555;
-  font-size: 0.9rem;
+  flex: 0 0 150px;
+  margin-right: 10px;
+  font-weight: bold;
+  color: #333;
+  text-align: right;
 }
 
-/* Skjema-input */
 .signup-form-control {
-  width: 100%;
-  padding: 8px;
+  flex: 1;
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
+
 
 /* Gruppe for passordfelt og knapp */
 .signup-input-group {
