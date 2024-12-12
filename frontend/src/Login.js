@@ -21,9 +21,15 @@ function Login() {
   const [userEmail, setUserEmail] = useState('');
   const [forgotPassword, setForgotPassword] = useState(false);
   const [resetOtpSent, setResetOtpSent] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
 
   const navigate = useNavigate();
 
+  const handleRememberMeChange = () => {
+    setRememberMe(!rememberMe);
+  };
+  
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     if (name === 'email') {
@@ -85,18 +91,25 @@ function Login() {
     const validationErrors = validation({ email, password });
     setErrors(validationErrors);
     setSuccessMessage('');
-
+  
     if (Object.keys(validationErrors).length === 0) {
       axios.post('https://rimelig-auksjon-backend.vercel.app/login', { email, password }, { withCredentials: true })
         .then(res => {
           if (res.data.accessToken) {
             console.log('Login successful, token received:', res.data.accessToken);
-            localStorage.setItem('accessToken', res.data.accessToken); // Store access token in local storage
+  
+            // Lagre token basert på om "Husk meg" er valgt
+            if (rememberMe) {
+              localStorage.setItem('accessToken', res.data.accessToken);
+            } else {
+              sessionStorage.setItem('accessToken', res.data.accessToken);
+            }
+  
             localStorage.setItem('role', res.data.role);
-
+  
             // Trigger an event to let Header know the user is logged in
             window.dispatchEvent(new Event('storage'));
-
+  
             setSuccessMessage('Innlogging vellykket! Du blir sendt til hjemmesiden.');
             setTimeout(() => {
               setSuccessMessage('');
@@ -121,6 +134,7 @@ function Login() {
         });
     }
   };
+  
 
   const refreshAccessToken = async () => {
     try {
@@ -206,38 +220,42 @@ function Login() {
             </div>
             
             <div className="form-group">
-              <label htmlFor="password"><strong>Passord</strong></label>
-              <div className="input-group">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Passord"
-                  name="password"
-                  value={password}
-                  onChange={handleInputChange}
-                  className="form-control"
-                  autoComplete="new-password"
-                />
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-                </button>
-              </div>
-              {errors.password && <span className="text-danger">{errors.password}</span>}
-            </div>
+  <label htmlFor="password"><strong>Passord</strong></label>
+  <div className="input-group">
+    <input
+      type={showPassword ? "text" : "password"}
+      placeholder="Passord"
+      name="password"
+      value={password}
+      onChange={handleInputChange}
+      className="form-control"
+      autoComplete="new-password"
+    />
+    <button
+      type="button"
+      className="btn btn-outline-secondary btn-eye"
+      onClick={() => setShowPassword(!showPassword)}
+    >
+      <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+    </button>
+  </div>
+  {errors.password && <span className="text-danger">{errors.password}</span>}
+</div>
+
           
             <div className="form-check">
-              <input
-                type="checkbox"
-                id="rememberMe"
-                className="form-check-input"
-              />
-              <label htmlFor="rememberMe" className="form-check-label">
-                Husk meg
-              </label>
-            </div>
+  <input
+    type="checkbox"
+    id="rememberMe"
+    className="form-check-input"
+    checked={rememberMe}
+    onChange={handleRememberMeChange}
+  />
+  <label htmlFor="rememberMe" className="form-check-label">
+    Husk meg
+  </label>
+</div>
+
           
             {errors.general && <div className="alert alert-danger">{errors.general}</div>}
             <button type="submit" className="btn btn-success w-100"><strong>Logg inn</strong></button>
