@@ -101,6 +101,28 @@ body {
     color: #007bff;
   }
   
+  /* Stil for husk meg-feltet */
+  .form-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  
+  /* Checkbox-stil */
+  .form-check-input {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+  
+  /* Label for husk meg */
+  .form-check-label {
+    font-weight: 500;
+    color: #555;
+    cursor: pointer;
+  }
+  
   /* Knappestil */
   .btn {
     padding: 12px 20px;

@@ -191,43 +191,56 @@ function Login() {
           {successMessage && <div className="alert alert-success">{successMessage}</div>}
           {!otpRequired && !forgotPassword ? (
             <form onSubmit={handleSubmit} autoComplete="on">
-              <div className="form-group">
-                <label htmlFor="email"><strong>E-post</strong></label>
+            <div className="form-group">
+              <label htmlFor="email"><strong>E-post</strong></label>
+              <input
+                type="email"
+                placeholder="E-post"
+                name="email"
+                value={email}
+                onChange={handleInputChange}
+                className="form-control"
+                autoComplete="off"
+              />
+              {errors.email && <span className="text-danger">{errors.email}</span>}
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="password"><strong>Passord</strong></label>
+              <div className="input-group">
                 <input
-                  type="email"
-                  placeholder="E-post"
-                  name="email"
-                  value={email}
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Passord"
+                  name="password"
+                  value={password}
                   onChange={handleInputChange}
                   className="form-control"
-                  autoComplete="off"
+                  autoComplete="new-password"
                 />
-                {errors.email && <span className="text-danger">{errors.email}</span>}
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                </button>
               </div>
-              <div className="form-group">
-  <label htmlFor="password"><strong>Passord</strong></label>
-  <div className="input-group">
-    <input
-      type={showPassword ? "text" : "password"}
-      placeholder="Passord"
-      name="password"
-      value={password}
-      onChange={handleInputChange}
-      className="form-control"
-      autoComplete="new-password"
-    />
-    <button
-      type="button"
-      className="btn btn-outline-secondary"
-      onClick={() => setShowPassword(!showPassword)}
-    >
-      <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-    </button>
-  </div>
-  {errors.password && <span className="text-danger">{errors.password}</span>}
-</div>
-              {errors.general && <div className="alert alert-danger">{errors.general}</div>}
-              <button type="submit" className="btn btn-success w-100"><strong>Logg inn</strong></button>
+              {errors.password && <span className="text-danger">{errors.password}</span>}
+            </div>
+          
+            <div className="form-check">
+              <input
+                type="checkbox"
+                id="rememberMe"
+                className="form-check-input"
+              />
+              <label htmlFor="rememberMe" className="form-check-label">
+                Husk meg
+              </label>
+            </div>
+          
+            {errors.general && <div className="alert alert-danger">{errors.general}</div>}
+            <button type="submit" className="btn btn-success w-100"><strong>Logg inn</strong></button>
               <p className="terms-text">Du godtar våre vilkår og betingelser</p>
               <Link to="/signup" className="btn btn-default border w-100 bg-light text-decoration-none">Opprett konto</Link>
               <button type="button" className="btn btn-default border w-100 bg-light text-decoration-none" onClick={handleForgotPassword}>Glemt passord?</button>
