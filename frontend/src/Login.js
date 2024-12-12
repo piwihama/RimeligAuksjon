@@ -258,7 +258,7 @@ function Login() {
         {errors.general && <div className="alert alert-danger">{errors.general}</div>}
         <button type="submit" className="login-btn login-btn-success"><strong>Logg inn</strong></button>
         <p className="terms-text">Du godtar våre vilkår og betingelser</p>
-        <Link to="/signup" className="login-btn login-btn-secondary text-decoration-none">
+        <Link to="/signup" className="login-btn login-btn-secondary login-w-100 text-decoration-none">
         <strong>🌟 Opprett en ny konto</strong>
 </Link>
 <p className="login-helper-text">
@@ -266,7 +266,7 @@ function Login() {
 </p>
 <button
   type="button"
-  className="login-btn login-btn-secondary"
+  className="login-btn login-btn-secondary login-w-100"
   onClick={handleForgotPassword}
 >
   <strong>🔑 Glemt passord?</strong>

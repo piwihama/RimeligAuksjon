@@ -174,6 +174,7 @@ body {
     color: #777;
   }
   /* Stil for sekundære handlingsknapper (Opprett konto og Glemt passord) */
+/* Sørg for at sekundære knapper tar full bredde */
 .login-btn-secondary {
     background-color: #f0f0f0;
     border: 1px solid #ccc;
@@ -181,13 +182,14 @@ body {
     font-weight: 600;
     padding: 12px 20px;
     border-radius: 6px;
-    width: 100%;
+    width: 100%;           /* Sørger for full bredde */
     cursor: pointer;
     text-align: center;
     transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
-    margin-bottom: 10px;
+    margin-bottom: 15px;   /* Øker avstanden til hjelpeteksten under */
   }
   
+  /* Hover-effekt for sekundære knapper */
   .login-btn-secondary:hover {
     background-color: #e0e0e0;
     color: #333;
@@ -195,12 +197,12 @@ body {
     border-color: #bbb;
   }
   
-  /* Tekststil for hjelpetekster under knappene */
+  /* Juster hjelpetekstens avstand */
   .login-helper-text {
     font-size: 0.9em;
     color: #777;
     margin-top: 5px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;   /* Øker avstanden til neste element */
     text-align: center;
   }
   
