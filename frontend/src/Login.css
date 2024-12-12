@@ -117,14 +117,7 @@ body {
     height: 16px;
     cursor: pointer;
   }
-  .login-helper-text {
-    font-size: 0.9em;
-    color: #777;
-    margin-top: 5px;
-    margin-bottom: 15px;
-    text-align: center;
-  }
-  
+ 
   /* Label for husk meg */
   .login-form-check-label {
     font-weight: 500;
@@ -179,5 +172,35 @@ body {
     font-size: 0.9em;
     text-align: center;
     color: #777;
+  }
+  /* Stil for sekundære handlingsknapper (Opprett konto og Glemt passord) */
+.login-btn-secondary {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    color: #555;
+    font-weight: 600;
+    padding: 12px 20px;
+    border-radius: 6px;
+    width: 100%;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    margin-bottom: 10px;
+  }
+  
+  .login-btn-secondary:hover {
+    background-color: #e0e0e0;
+    color: #333;
+    transform: translateY(-2px);
+    border-color: #bbb;
+  }
+  
+  /* Tekststil for hjelpetekster under knappene */
+  .login-helper-text {
+    font-size: 0.9em;
+    color: #777;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    text-align: center;
   }
   
