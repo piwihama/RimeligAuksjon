@@ -259,10 +259,11 @@ function Login() {
         <button type="submit" className="login-btn login-btn-success"><strong>Logg inn</strong></button>
         <p className="terms-text">Du godtar våre vilkår og betingelser</p>
         <button className="login-btn login-btn-secondary">
-        <Link to="/signup" >
-  <strong>🌟 Opprett en ny konto</strong>
-</Link>
+  <Link to="/signup" className="login-link">
+    <strong>🌟 Opprett en ny konto</strong>
+  </Link>
 </button>
+
 <p className="login-helper-text">
   Ny bruker? Klikk her for å lage en konto og begynne å handle med en gang!
 </p>

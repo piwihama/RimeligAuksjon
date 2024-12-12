@@ -26,6 +26,15 @@ body {
     max-width: 400px;
     transition: box-shadow 0.3s ease, transform 0.3s ease;
   }
+  /* Fjerner standard lenkestil for knapper med lenker */
+.login-link {
+    color: inherit;           /* Arver fargen fra knappen */
+    text-decoration: none;    /* Fjerner understrekning */
+    display: block;           /* Gjør lenken til et blokk-element for å fylle hele knappen */
+    width: 100%;              /* Fyller hele knappens bredde */
+    height: 100%;             /* Fyller hele knappens høyde */
+    text-align: center;       /* Sentraliserer teksten */
+  }
   
   /* Hover-effekt for login-boksen */
   .login-box:hover {
