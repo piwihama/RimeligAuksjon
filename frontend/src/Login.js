@@ -214,7 +214,7 @@ function Login() {
             value={email}
             onChange={handleInputChange}
             className="login-form-control"
-            autoComplete="off"
+            autoComplete="on"
           />
           {errors.email && <span className="text-danger">{errors.email}</span>}
         </div>
