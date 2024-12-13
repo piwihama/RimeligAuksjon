@@ -95,10 +95,11 @@ function Login() {
     if (Object.keys(validationErrors).length === 0) {
       axios.post('https://rimelig-auksjon-backend.vercel.app/login', { email, password }, { withCredentials: true })
         .then(res => {
+          console.log('Server response:', res);
+  
           if (res.data.accessToken) {
             console.log('Login successful, token received:', res.data.accessToken);
   
-            // Lagre token basert på om "Husk meg" er valgt
             if (rememberMe) {
               localStorage.setItem('accessToken', res.data.accessToken);
             } else {
@@ -106,8 +107,6 @@ function Login() {
             }
   
             localStorage.setItem('role', res.data.role);
-  
-            // Trigger an event to let Header know the user is logged in
             window.dispatchEvent(new Event('storage'));
   
             setSuccessMessage('Innlogging vellykket! Du blir sendt til hjemmesiden.');
@@ -126,6 +125,9 @@ function Login() {
         })
         .catch(err => {
           console.error('Login error:', err.response ? err.response.data : err.message);
+          if (err.response) {
+            console.log('Error response data:', err.response.data);
+          }
           if (err.response && err.response.status === 400) {
             setErrors({ general: 'Feil e-post eller passord' });
           } else {
@@ -134,6 +136,7 @@ function Login() {
         });
     }
   };
+  
   
 
   const refreshAccessToken = async () => {
