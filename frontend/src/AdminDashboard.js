@@ -200,7 +200,7 @@ const handlePrevImage = (auctionId, imageCount) => {
                     <p><strong>Status:</strong> {liveAuction.status}</p>
     
                     <p><strong>Start dato:</strong> {liveAuction.startDate || 'Ikke spesifisert'}</p>
-                    <p><strong>Lokasjon:</strong> {auction.fylke}{auction.postkode || 'Ikke spesifisert'}</p>
+                    <p><strong>Lokasjon:</strong> {liveAuction.fylke}{liveAuction.postkode || 'Ikke spesifisert'}</p>
                   </div>
                   <div className="admin-live-auction-actions">
                     <button onClick={() => handleEditLive(liveAuction._id)} className="admin-btn admin-btn-secondary">Rediger</button>
