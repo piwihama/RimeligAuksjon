@@ -163,7 +163,7 @@ const handlePrevImage = (auctionId, imageCount) => {
                     <p><strong>Minstepris:</strong> {auction.reservePrice}</p>
                     <p><strong>Lokasjon:</strong> {auction.fylke}{auction.postkode || 'Ikke spesifisert'}</p>
                     <p><strong>Beskrivelse:</strong> {auction.description || 'Ingen beskrivelse tilgjengelig'}</p>
-                    <p><strong>Selger:</strong>{liveAuction.userName}{liveAuction.userEmail}</p>
+                    <p><strong>Selger:</strong>{auction.userName}{action.userEmail}</p>
 
                   </div>
                   <div className="admin-auction-actions">
