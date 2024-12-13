@@ -132,9 +132,11 @@ function AdminDashboard() {
     <div className="admin-dashboard-container">
       <div className="admin-dashboard-header">
         <h1>Admin Dashboard</h1>
-        <button onClick={() => navigate('/admin/create-auction')} className="admin-btn admin-btn-primary">Create New Auction</button>
       </div>
+  
       <div className="admin-dashboard-sections">
+        
+        {/* Seksjon for auksjonsforespørsler */}
         <section className="admin-dashboard-section">
           <h2>Auksjonsforespørseler fra brukere</h2>
           <ul className="admin-auction-list">
@@ -157,9 +159,10 @@ function AdminDashboard() {
                       </div>
                     )}
                     <p><strong>Reserve Price:</strong> {auction.reservePrice}</p>
+                    <p><strong>Location:</strong> {auction.location || 'Ikke spesifisert'}</p>
+                    <p><strong>Description:</strong> {auction.description || 'Ingen beskrivelse tilgjengelig'}</p>
                   </div>
                   <div className="admin-auction-actions">
-                    <button onClick={() => handleEdit(auction._id)} className="admin-btn admin-btn-secondary">Edit</button>
                     <button onClick={() => handleDelete(auction._id)} className="admin-btn admin-btn-danger">Delete</button>
                     <button onClick={() => handleCreateLiveAuction(auction._id)} className="admin-btn admin-btn-success">Create Live Auction</button>
                   </div>
@@ -168,6 +171,8 @@ function AdminDashboard() {
             })}
           </ul>
         </section>
+  
+        {/* Seksjon for live auksjoner */}
         <section className="admin-dashboard-section">
           <h2>Live Auctions</h2>
           <ul className="admin-live-auction-list">
@@ -191,6 +196,8 @@ function AdminDashboard() {
                     )}
                     <p><strong>Highest Bid:</strong> {liveAuction.highestBid}</p>
                     <p><strong>Status:</strong> {liveAuction.status}</p>
+                    <p><strong>Start Date:</strong> {liveAuction.startDate || 'Ikke spesifisert'}</p>
+                    <p><strong>End Date:</strong> {liveAuction.endDate || 'Ikke spesifisert'}</p>
                   </div>
                   <div className="admin-live-auction-actions">
                     <button onClick={() => handleEditLive(liveAuction._id)} className="admin-btn admin-btn-secondary">Edit</button>
@@ -202,9 +209,10 @@ function AdminDashboard() {
             })}
           </ul>
         </section>
+  
       </div>
     </div>
   );
+  
 }
-
 export default AdminDashboard;

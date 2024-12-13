@@ -18,43 +18,29 @@
 }
 
 .admin-dashboard-header h1 {
-  font-size: 20px;
+  font-size: 24px;
   color: #333;
   margin: 0;
-}
-
-.admin-btn-primary {
-  background-color: #007bff;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.admin-btn-primary:hover {
-  background-color: #0056b3;
 }
 
 /* Seksjoner */
 .admin-dashboard-sections {
   display: grid;
   grid-template-columns: 1fr 1fr; /* To kolonner */
-  gap: 10px; /* Redusert gap */
+  gap: 15px;
 }
 
 .admin-dashboard-section {
   background-color: #f9f9f9;
-  padding: 10px;
+  padding: 15px;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.3s ease;
 }
 
 .admin-dashboard-section h2 {
-  font-size: 16px;
-  border-bottom: 1px solid #ddd;
+  font-size: 18px;
+  border-bottom: 2px solid #ddd;
   padding-bottom: 8px;
   margin-bottom: 12px;
   color: #555;
@@ -89,9 +75,16 @@
 .admin-auction-details,
 .admin-live-auction-details {
   margin-bottom: 10px;
-  font-size: 12px;
+  font-size: 14px;
+  color: #444;
 }
 
+.admin-auction-details p,
+.admin-live-auction-details p {
+  margin: 5px 0;
+}
+
+/* Knappestiler */
 .admin-auction-actions,
 .admin-live-auction-actions {
   display: flex;
@@ -99,7 +92,6 @@
   flex-wrap: wrap;
 }
 
-/* Knappestiler */
 .admin-btn {
   padding: 6px 10px;
   border-radius: 6px;
@@ -110,14 +102,6 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-}
-
-.admin-btn-secondary {
-  background-color: #6c757d;
-}
-
-.admin-btn-secondary:hover {
-  background-color: #565e64;
 }
 
 .admin-btn-danger {
@@ -149,7 +133,7 @@
   position: relative;
   width: 100%;
   max-width: 200px;
-  margin: 0 auto;
+  margin: 0 auto 10px;
 }
 
 .admin-auction-image,
@@ -160,6 +144,7 @@
   object-fit: cover;
 }
 
+/* Pilknapper for bildekarusell */
 .carousel-control {
   position: absolute;
   top: 50%;
@@ -179,6 +164,10 @@
 
 .carousel-control.next {
   right: 5px;
+}
+
+.carousel-control:hover {
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 /* Responsivitet */
