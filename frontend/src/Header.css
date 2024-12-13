@@ -106,14 +106,14 @@ body {
 /* Menu Styling */
 .menu {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Adjust number of columns based on screen size */
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   background-color: #333333;
   padding: 10px 0;
-  width: 100vw; /* Full viewport width */
-  margin: 0; /* Remove margin */
+  width: 100%; /* Endret fra 100vw til 100% */
+  margin: 0;
   border-top: 1px solid #dddddd;
-  justify-content: center; /* Center items */
+  justify-content: center;
 }
 
 
@@ -267,11 +267,12 @@ body {
   .header-button {
     display: flex;
   }
-  .menu {
-    display: inline-flex;
-    gap: 20px;
-    width: 100vw; /* Full width on larger screens */
-    justify-content: center; /* Center items on larger screens */
-
-  }
+    .menu {
+      display: inline-flex;
+      gap: 20px;
+      width: 100%; /* Endret fra 100vw til 100% */
+      justify-content: center;
+    }
+  
+  
 }
