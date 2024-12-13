@@ -21,8 +21,14 @@ function Login() {
   const [userEmail, setUserEmail] = useState('');
   const [forgotPassword, setForgotPassword] = useState(false);
   const [resetOtpSent, setResetOtpSent] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
 
   const navigate = useNavigate();
+
+  const handleRememberMeChange = () => {
+    setRememberMe(!rememberMe);
+  };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -41,6 +47,8 @@ function Login() {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
+
+  
 
   const handleForgotPassword = () => {
     setErrors({});
