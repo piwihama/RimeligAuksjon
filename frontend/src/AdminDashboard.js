@@ -160,13 +160,13 @@ const handlePrevImage = (auctionId, imageCount) => {
                         <button className="carousel-control next" onClick={() => handleNextImage(auction._id, imageCount)}>&gt;</button>
                       </div>
                     )}
-                    <p><strong>Reserve Price:</strong> {auction.reservePrice}</p>
-                    <p><strong>Location:</strong> {auction.location || 'Ikke spesifisert'}</p>
-                    <p><strong>Description:</strong> {auction.description || 'Ingen beskrivelse tilgjengelig'}</p>
+                    <p><strong>Minstepris:</strong> {auction.reservePrice}</p>
+                    <p><strong>Lokasjon:</strong> {auction.fylke}{auction.postkode || 'Ikke spesifisert'}</p>
+                    <p><strong>Beskrivelse:</strong> {auction.description || 'Ingen beskrivelse tilgjengelig'}</p>
                   </div>
                   <div className="admin-auction-actions">
-                    <button onClick={() => handleDelete(auction._id)} className="admin-btn admin-btn-danger">Delete</button>
-                    <button onClick={() => handleCreateLiveAuction(auction._id)} className="admin-btn admin-btn-success">Create Live Auction</button>
+                    <button onClick={() => handleDelete(auction._id)} className="admin-btn admin-btn-danger">Slett forespørsel</button>
+                    <button onClick={() => handleCreateLiveAuction(auction._id)} className="admin-btn admin-btn-success">Opprett en live auksjon</button>
                   </div>
                 </li>
               );
@@ -176,7 +176,7 @@ const handlePrevImage = (auctionId, imageCount) => {
   
         {/* Seksjon for live auksjoner */}
         <section className="admin-dashboard-section">
-          <h2>Live Auctions</h2>
+          <h2>Pågående live auksjoner</h2>
           <ul className="admin-live-auction-list">
             {liveAuctions.map(liveAuction => {
               const imageCount = liveAuction.imageUrls ? liveAuction.imageUrls.length : 0;
@@ -196,15 +196,16 @@ const handlePrevImage = (auctionId, imageCount) => {
                         <button className="carousel-control next" onClick={() => handleNextImage(liveAuction._id, imageCount)}>&gt;</button>
                       </div>
                     )}
-                    <p><strong>Highest Bid:</strong> {liveAuction.highestBid}</p>
+                    <p><strong>Høyeste bud hittil:</strong> {liveAuction.highestBid}</p>
                     <p><strong>Status:</strong> {liveAuction.status}</p>
-                    <p><strong>Start Date:</strong> {liveAuction.startDate || 'Ikke spesifisert'}</p>
-                    <p><strong>End Date:</strong> {liveAuction.endDate || 'Ikke spesifisert'}</p>
+    
+                    <p><strong>Start dato:</strong> {liveAuction.startDate || 'Ikke spesifisert'}</p>
+                    <p><strong>Lokasjon:</strong> {auction.fylke}{auction.postkode || 'Ikke spesifisert'}</p>
                   </div>
                   <div className="admin-live-auction-actions">
-                    <button onClick={() => handleEditLive(liveAuction._id)} className="admin-btn admin-btn-secondary">Edit</button>
-                    <button onClick={() => handleDeleteLive(liveAuction._id)} className="admin-btn admin-btn-danger">Delete</button>
-                    <button onClick={() => handleViewLiveAuction(liveAuction._id)} className="admin-btn admin-btn-info">View</button>
+                    <button onClick={() => handleEditLive(liveAuction._id)} className="admin-btn admin-btn-secondary">Rediger</button>
+                    <button onClick={() => handleDeleteLive(liveAuction._id)} className="admin-btn admin-btn-danger">Slett</button>
+                    <button onClick={() => handleViewLiveAuction(liveAuction._id)} className="admin-btn admin-btn-info">Se auksjon</button>
                   </div>
                 </li>
               );
