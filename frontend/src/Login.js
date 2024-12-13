@@ -208,7 +208,7 @@ function Login() {
             value={email}
             onChange={handleInputChange}
             className="login-form-control"
-            autoComplete="new-email"
+            autoComplete="on"
           />
           {errors.email && <span className="text-danger">{errors.email}</span>}
         </div>
@@ -223,7 +223,7 @@ function Login() {
               value={password}
               onChange={handleInputChange}
               className="login-form-control"
-              autoComplete="new-password"
+              autoComplete="on"
             />
             <button
               type="button"
