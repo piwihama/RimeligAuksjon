@@ -163,6 +163,8 @@ const handlePrevImage = (auctionId, imageCount) => {
                     <p><strong>Minstepris:</strong> {auction.reservePrice}</p>
                     <p><strong>Lokasjon:</strong> {auction.fylke}{auction.postkode || 'Ikke spesifisert'}</p>
                     <p><strong>Beskrivelse:</strong> {auction.description || 'Ingen beskrivelse tilgjengelig'}</p>
+                    <p><strong>Selger:</strong>{liveAuction.userName}{liveAuction.userEmail}</p>
+
                   </div>
                   <div className="admin-auction-actions">
                     <button onClick={() => handleDelete(auction._id)} className="admin-btn admin-btn-danger">Slett forespørsel</button>
@@ -199,8 +201,10 @@ const handlePrevImage = (auctionId, imageCount) => {
                     <p><strong>Høyeste bud hittil:</strong> {liveAuction.highestBid}</p>
                     <p><strong>Status:</strong> {liveAuction.status}</p>
     
-                    <p><strong>Start dato:</strong> {liveAuction.startDate || 'Ikke spesifisert'}</p>
-                    <p><strong>Lokasjon:</strong> {liveAuction.fylke}{liveAuction.postkode || 'Ikke spesifisert'}</p>
+                    <p><strong>Start dato:</strong> {liveAuction.startDate}</p>
+                    <p><strong>Lokasjon:</strong>{liveAuction.sted}{liveAuction.postkode}</p>
+                    <p><strong>Selger:</strong>{liveAuction.userName}{liveAuction.userEmail}</p>
+
                   </div>
                   <div className="admin-live-auction-actions">
                     <button onClick={() => handleEditLive(liveAuction._id)} className="admin-btn admin-btn-secondary">Rediger</button>
