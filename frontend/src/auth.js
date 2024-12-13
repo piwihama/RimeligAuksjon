@@ -2,8 +2,9 @@ import axios from 'axios';
 
 let inactivityTimer;
 
+// Sjekker om brukeren er autentisert ved å validere token
 export const isAuthenticated = () => {
-  const token = localStorage.getItem('accessToken'); // Bruker accessToken for konsistens
+  const token = localStorage.getItem('accessToken');
 
   if (!token) return null;
 
@@ -13,7 +14,7 @@ export const isAuthenticated = () => {
 
     if (payload.exp > currentTime) {
       startInactivityTimer();
-      return payload; // Returnerer hele payload, inkludert rollen
+      return payload;
     } else {
       localStorage.removeItem('accessToken');
       return null;
@@ -25,22 +26,23 @@ export const isAuthenticated = () => {
   }
 };
 
+// Starter inaktivitetstimeren for å fornye token etter 6 dager og 23 timer
 const startInactivityTimer = () => {
   clearTimeout(inactivityTimer);
 
   inactivityTimer = setTimeout(() => {
-    refreshAuthToken(); // Forny token etter inaktivitet
-  }, 60 * 60 * 1000); // Forny token 1 minutt før utløp (hvis tokenet er 15 minutter langt)
+    refreshAuthToken();
+  }, 6 * 24 * 60 * 60 * 1000 + 23 * 60 * 60 * 1000); // 6 dager og 23 timer
 };
 
-// Forny accessToken ved hjelp av refreshToken
+// Fornyer accessToken ved hjelp av refreshToken
 export const refreshAuthToken = async () => {
   try {
-    console.log("Sending refresh token request...");
+    console.log('Sending refresh token request...');
     const response = await axios.post('/api/refresh-token', {}, { withCredentials: true });
 
     if (response.data.accessToken) {
-      console.log("Token refreshed successfully:", response.data.accessToken);
+      console.log('Token refreshed successfully:', response.data.accessToken);
       localStorage.setItem('accessToken', response.data.accessToken);
       window.dispatchEvent(new Event('storage'));
       startInactivityTimer();
@@ -53,18 +55,23 @@ export const refreshAuthToken = async () => {
   }
 };
 
-
+// Parser JWT for å hente payload
 const parseJwt = (token) => {
   const base64Url = token.split('.')[1];
   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
-    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-  }).join(''));
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split('')
+      .map((c) => {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join('')
+  );
 
   return JSON.parse(jsonPayload);
 };
 
-// Lytt til aktivitet på siden for å reset inaktivitetstimeren
+// Lytt til aktivitet på siden for å resette inaktivitetstimeren
 ['mousemove', 'keydown', 'scroll', 'click'].forEach((event) => {
   window.addEventListener(event, startInactivityTimer);
 });
