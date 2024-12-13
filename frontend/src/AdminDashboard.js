@@ -15,11 +15,9 @@ function AdminDashboard() {
       navigate('/');
       return;
     }
-
+  
     axios.get('https://rimelig-auksjon-backend.vercel.app/api/auctions', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      headers: { Authorization: `Bearer ${token}` }
     })
       .then(response => {
         setAuctions(response.data);
@@ -33,24 +31,23 @@ function AdminDashboard() {
         console.error('Error fetching auctions:', error);
         navigate('/');
       });
-
+  
     axios.get('https://rimelig-auksjon-backend.vercel.app/api/liveauctions', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      headers: { Authorization: `Bearer ${token}` }
     })
       .then(response => {
         setLiveAuctions(response.data);
-        const initialIndexes = {};
-        response.data.forEach(auction => {
-          initialIndexes[auction._id] = 0;
+        const liveIndexes = {};
+        response.data.forEach(liveAuction => {
+          liveIndexes[liveAuction._id] = 0;
         });
-        setCurrentImageIndex(prevState => ({ ...prevState, ...initialIndexes }));
+        setCurrentImageIndex(prevState => ({ ...prevState, ...liveIndexes }));
       })
       .catch(error => {
         console.error('Error fetching live auctions:', error);
       });
   }, [navigate]);
+  
 
   const handleEdit = (id) => {
     navigate(`/admin/edit-auction/${id}`);
@@ -114,19 +111,24 @@ function AdminDashboard() {
     navigate(`/liveauctions/${id}`);
   };
 
-  const handleNextImage = (auctionId, imageCount) => {
-    setCurrentImageIndex(prevState => ({
-      ...prevState,
-      [auctionId]: (prevState[auctionId] + 1) % imageCount,
-    }));
-  };
+ // Funksjon for å bla til neste bilde
+const handleNextImage = (auctionId, imageCount) => {
+  setCurrentImageIndex(prevState => ({
+    ...prevState,
+    [auctionId]: (prevState[auctionId] + 1) % imageCount,
+  }));
+};
 
-  const handlePrevImage = (auctionId, imageCount) => {
-    setCurrentImageIndex(prevState => ({
-      ...prevState,
-      [auctionId]: (prevState[auctionId] - 1 + imageCount) % imageCount,
-    }));
-  };
+// Funksjon for å bla til forrige bilde
+const handlePrevImage = (auctionId, imageCount) => {
+  setCurrentImageIndex(prevState => ({
+    ...prevState,
+    [auctionId]: (prevState[auctionId] - 1 + imageCount) % imageCount,
+  }));
+};
+
+// Oppdater initialisering av indeksene for live-auksjoner
+
 
   return (
     <div className="admin-dashboard-container">
