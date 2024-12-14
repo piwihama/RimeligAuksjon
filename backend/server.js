@@ -117,10 +117,10 @@ async function connectDB() {
   try {
     await client.connect();
     console.log('Connected to MongoDB');
-    const db = client.db('signup');
-    const loginCollection = db.collection('login');
-    const liveAuctionCollection = db.collection('liveauctions');
-    const auctionCollection = db.collection('auctions');
+     db = client.db('signup');
+     loginCollection = db.collection('login');
+     liveAuctionCollection = db.collection('liveauctions');
+     auctionCollection = db.collection('auctions');
 
 
     // WebSocket-handling: Lytt til når brukere legger inn bud
