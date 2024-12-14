@@ -127,7 +127,6 @@ body {
   flex: 0 0 auto;
 }
 
-
 .home-auction-item:hover {
   transform: scale(1.05);
 }
@@ -145,25 +144,25 @@ body {
   border-radius: 10px;
   padding: 15px;
   margin-bottom: 10px;
-
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
-.home-auction-details h3{
+
+.home-auction-details h3 {
   font-size: 20px;
   font-weight: bold;
 }
-.home-auction-smalldetails{
+
+.home-auction-smalldetails {
   font-size: 11px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-
 }
-.home-title-value-auction{
+
+.home-title-value-auction {
   display: flex;
   margin-top: 10px;
   flex-direction: column;
-
 }
 
 .home-auction-link {
@@ -181,28 +180,27 @@ body {
   background-color: #005050; /* Darker Teal */
 }
 
+/* Ny stil for 2 kolonner på mobil */
 @media (max-width: 768px) {
   .home-auction-list {
-    flex-direction: column;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* To kolonner */
+    gap: 15px; /* Avstand mellom auksjonene */
   }
 
   .home-auction-item {
     width: 100%;
-    max-width: 100%;
+    padding: 15px;
   }
-  .home-title-value-auction{
-    display: flex;
-    margin-top: 10px;
-    flex-direction: column;
-  
-  }
-  .home-auction-smalldetails{
-    font-size: 14px;
-    display: flex;
-    flex-direction: column;
-  
+
+  .home-auction-smalldetails {
+    font-size: 12px;
   }
 }
 
-
+/* Tilbake til én kolonne på veldig små skjermer */
+@media (max-width: 480px) {
+  .home-auction-list {
+    grid-template-columns: 1fr; /* Én kolonne */
+  }
+}
