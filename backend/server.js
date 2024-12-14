@@ -508,6 +508,7 @@ async function connectDB() {
         console.error('Error retrieving auctions:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
+
     });
     
 
@@ -784,19 +785,25 @@ async function connectDB() {
         if (!liveAuctions) {
           console.log(`Cache miss. Fetching from database.`);
           liveAuctions = await liveAuctionCollection.find({})
-            .project({
-              brand: 1,
-              model: 1,
-              mileage: 1, // Legg til mileage her
+           .project({
+  brand: 1,
+  model: 1,
+  mileage: 1,
+  year: 1,
+  endDate: 1,
+  highestBid: 1,
+  bidCount: 1,
+  status: 1,
+  location: 1,    // Sjekk om "location" er riktig feltnavn
+  imageUrls: 1,
+  fylke: 1,  
+  by: 1,
+       // Legg til dette hvis det finnes i databasen
+  postkode: 1,    // Legg til dette hvis det finnes i databasen
+  userName: 1,    // Legg til dette hvis du trenger selgerens navn
+  userEmail: 1    // Legg til dette hvis du trenger selgerens e-post
+})
 
-              year: 1,
-              endDate: 1,
-              highestBid: 1,
-              bidCount: 1,
-              status: 1,
-              location: 1,
-              imageUrls: 1
-            })
             .skip(skip)
             .limit(limit)
             .toArray();
