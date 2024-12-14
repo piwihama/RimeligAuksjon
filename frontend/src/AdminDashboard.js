@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './AdminDashboard.css';
+import Header from './Header';
+
 
 function AdminDashboard() {
   const [auctions, setAuctions] = useState([]);
@@ -131,6 +133,9 @@ const handlePrevImage = (auctionId, imageCount) => {
 
 
   return (
+  
+    <>
+      <Header />
     <div className="admin-dashboard-container">
       <div className="admin-dashboard-header">
         <h1>Admin Dashboard</h1>
@@ -219,7 +224,9 @@ const handlePrevImage = (auctionId, imageCount) => {
   
       </div>
     </div>
+    </>
+
   );
-  
+
 }
 export default AdminDashboard;
