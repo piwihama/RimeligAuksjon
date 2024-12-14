@@ -16,7 +16,7 @@
   align-items: center;
   margin-bottom: 20px;
   padding: 15px;
-  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  background: linear-gradient(135deg, #007070, #003838); /* Gradient i nyanser av #005050 */
   color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
@@ -41,8 +41,9 @@
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-top: 4px solid #4facfe;
+  border-top: 4px solid #005050;
 }
+
 
 .admin-dashboard-section:hover {
   transform: translateY(-5px);
