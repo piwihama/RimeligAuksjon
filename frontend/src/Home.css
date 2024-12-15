@@ -76,7 +76,7 @@ body {
 .home-auction-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Fire kort per rad på store skjermer */
-  gap: -50px; /* Fjern avstand mellom kortene */
+  gap: -500; /* Fjern avstand mellom kortene */
   justify-items: center;
   margin: 0px; /* Negative marginer for å fjerne ekstra mellomrom */
 }
