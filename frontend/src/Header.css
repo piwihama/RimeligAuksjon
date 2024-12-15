@@ -165,7 +165,7 @@ body {
     .logo-large {
       flex-shrink: 1; /* Allows the logo to shrink to fit */
       font-size: 13px; /* Reduce the font size on mobile */
-      max-width: 45%; /* Restrict the logo size to a percentage of the screen */
+      max-width: 43%; /* Restrict the logo size to a percentage of the screen */
       padding: 10px;
       white-space: nowrap; /* Prevents text from wrapping */
       overflow: hidden; /* Ensures any excess content is hidden */
@@ -177,7 +177,7 @@ body {
       display: flex;
       align-items: center;
       flex-grow: 1; /* Ensures the search container fills available space */
-      margin-left: 3px; /* Add space between the logo and the search */
+      margin-left: 1px; /* Add space between the logo and the search */
     }
   
     .search-input {
