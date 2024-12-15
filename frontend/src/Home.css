@@ -78,6 +78,7 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Fire kort per rad på store skjermer */
   gap: 1px; /* Kun 1px avstand mellom kortene */
   justify-items: center;
+  margin: 0; /* Fjern margin rundt grid */
 }
 
 .home-auction-item {
@@ -94,27 +95,6 @@ body {
 
 .home-auction-item:hover {
   transform: scale(1.05);
-}
-
-.home-banner ul li {
-  margin: 3px 0;
-}
-
-.home-banner-button {
-  background-color: #FFD166; /* Soft Yellow */
-  color: #333333; /* Dark Gray */
-  border: 2px solid #FFD166; /* Soft Yellow */
-  padding: 8px 16px;
-  cursor: pointer;
-  border-radius: 4px;
-  margin-top: 15px;
-  font-size: 14px;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.home-banner-button:hover {
-  background-color: #FF6B6B; /* Coral */
-  color: white;
 }
 
 .home-auction-image {
@@ -167,10 +147,43 @@ body {
   background-color: #005050; /* Darker Teal */
 }
 
+/* Skeleton loader for innlasting */
+.skeleton-loader {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px;
+  justify-items: center;
+}
+
+.skeleton-card {
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  height: 220px;
+  width: 100%;
+  max-width: 220px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: #e0e0e0;
+  }
+  50% {
+    background-color: #f0f0f0;
+  }
+  100% {
+    background-color: #e0e0e0;
+  }
+}
+
 /* Responsivitet for mindre skjermer */
 @media (max-width: 768px) {
   .home-auction-list {
     grid-template-columns: repeat(2, 1fr); /* To kolonner på mobil */
+  }
+
+  .skeleton-loader {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .home-auction-item {
@@ -182,6 +195,10 @@ body {
 @media (max-width: 480px) {
   .home-auction-list {
     grid-template-columns: 1fr; /* Én kolonne på veldig små skjermer */
+  }
+
+  .skeleton-loader {
+    grid-template-columns: 1fr;
   }
 
   .home-auction-item {
