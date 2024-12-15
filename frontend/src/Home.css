@@ -78,7 +78,7 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Fire kort per rad på store skjermer */
   gap: 0; /* Fjern avstand mellom kortene */
   justify-items: center;
-  margin: -5px; /* Negative marginer for å fjerne ekstra mellomrom */
+  margin: -50px; /* Negative marginer for å fjerne ekstra mellomrom */
 }
 
 .home-auction-item {
