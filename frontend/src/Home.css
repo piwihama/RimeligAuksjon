@@ -71,8 +71,7 @@ body {
 
 .home-auctions-section h2 {
   font-size: 28px;
-  align-items: left;
-  justify-content: left;
+  text-align: left; /* Justerer teksten til venstre */
   margin-bottom: 20px;
   color: #333;
   font-weight: bold;
