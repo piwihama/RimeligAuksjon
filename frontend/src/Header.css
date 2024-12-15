@@ -164,9 +164,9 @@ body {
   
     .logo-large {
       flex-shrink: 1; /* Allows the logo to shrink to fit */
-      font-size: 12px; /* Reduce the font size on mobile */
-      max-width: 56%; /* Restrict the logo size to a percentage of the screen */
-      padding: 10px;
+      font-size: 13px; /* Reduce the font size on mobile */
+      max-width: 60%; /* Restrict the logo size to a percentage of the screen */
+      padding: 11px;
       white-space: nowrap; /* Prevents text from wrapping */
       overflow: hidden; /* Ensures any excess content is hidden */
       text-overflow: ellipsis; /* Add ellipsis if the text overflows */
