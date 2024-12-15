@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import './Home.css'; // Importer CSS for å style headeren
+import './Home.css';
 import Header from './Header';
 import axios from 'axios';
-import Footer from './Footer';  // Juster stien hvis Footeren ligger et annet sted
+import Footer from './Footer';
 
 function Home() {
   const [auctions, setAuctions] = useState([]);
   const [visibleAuctions, setVisibleAuctions] = useState([]);
-  const [loading, setLoading] = useState(true); // Legger til loading state
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,7 +27,7 @@ function Home() {
     } catch (error) {
       console.error('Error fetching auctions:', error);
     } finally {
-      setLoading(false); // Sett loading til false når dataene er hentet eller hvis det er en feil
+      setLoading(false);
     }
   };
 
@@ -64,7 +63,7 @@ function Home() {
           return newVisible;
         });
       }
-    }, 5000); // Bytt ut én auksjon hvert 5. sekund
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [auctions]);
