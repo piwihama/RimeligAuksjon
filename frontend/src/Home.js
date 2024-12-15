@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Home.css';
+import { Link } from 'react-router-dom';
+import './Home.css'; // Importer CSS for å style headeren
 import Header from './Header';
 import axios from 'axios';
-import Footer from './Footer';
+import Footer from './Footer';  // Juster stien hvis Footeren ligger et annet sted
 
 function Home() {
   const [auctions, setAuctions] = useState([]);
   const [visibleAuctions, setVisibleAuctions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Legger til loading state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,7 +28,7 @@ function Home() {
     } catch (error) {
       console.error('Error fetching auctions:', error);
     } finally {
-      setLoading(false);
+      setLoading(false); // Sett loading til false når dataene er hentet eller hvis det er en feil
     }
   };
 
@@ -63,19 +64,32 @@ function Home() {
           return newVisible;
         });
       }
-    }, 5000);
+    }, 5000); // Bytt ut én auksjon hvert 5. sekund
 
     return () => clearInterval(interval);
   }, [auctions]);
 
   const calculateTimeLeft = (endDate) => {
     const difference = new Date(endDate) - new Date();
-    return {
-      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-      minutes: Math.floor((difference / 1000 / 60) % 60),
-      seconds: Math.floor((difference / 1000) % 60),
-    };
+    let timeLeft = {};
+
+    if (difference > 0) {
+      timeLeft = {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
+      };
+    } else {
+      timeLeft = {
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+      };
+    }
+
+    return timeLeft;
   };
 
   return (
@@ -97,11 +111,7 @@ function Home() {
           <div className="home-auctions-section">
             <h2>Fremhevede Auksjoner</h2>
             {loading ? (
-              <div className="skeleton-loader">
-                {Array.from({ length: 4 }).map((_, index) => (
-                  <div key={index} className="skeleton-card"></div>
-                ))}
-              </div>
+              <p>Laster inn auksjoner...</p>
             ) : auctions.length === 0 ? (
               <p>Ingen auksjoner tilgjengelig for øyeblikket.</p>
             ) : (
