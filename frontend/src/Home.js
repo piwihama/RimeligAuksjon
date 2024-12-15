@@ -138,7 +138,7 @@ function Home() {
                             <strong>Gjenstår:</strong>
                           </span>
                           <span className="home-auction-value" style={{ color: 'rgb(211, 13, 13)', fontWeight: 'bold' }}>
-                            {auction.timeLeft.days} Dager {auction.timeLeft.hours}t {auction.timeLeft.minutes}min {auction.timeLeft.seconds}sek
+                            {auction.timeLeft.days}D {auction.timeLeft.hours}t {auction.timeLeft.minutes}min {auction.timeLeft.seconds}s
                           </span>
                         </div>
                         <div className="home-title-value-auction">
