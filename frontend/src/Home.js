@@ -144,9 +144,9 @@ function Home() {
                           <span className="home-auction-value" style={{ color: 'rgb(211, 13, 13)', fontWeight: 'bold' }}>{auction.highestBid},-</span>
                         </div>
                       </div>
-                      <Link to={`/liveauctions/${auction._id}`} className="home-auction-link">
-                        Se auksjon
-                      </Link>
+                      
+                    
+                      
                     </div>
                   </div>
                 ))}
