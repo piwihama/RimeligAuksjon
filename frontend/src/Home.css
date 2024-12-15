@@ -89,7 +89,7 @@ body {
   background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 10px;
-  padding: 10px;
+  padding: 50px;
   width: 100%;
   max-width: 100%; /* Fyll hele grid-cellen */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
