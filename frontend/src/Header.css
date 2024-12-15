@@ -106,14 +106,14 @@ body {
 /* Menu Styling */
 .menu {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, 1fr); /* Adjust number of columns based on screen size */
   gap: 10px;
   background-color: #333333;
   padding: 10px 0;
-  width: 100%; /* Endret fra 100vw til 100% */
-  margin: 0;
+  width: 100vw; /* Full viewport width */
+  margin: 0; /* Remove margin */
   border-top: 1px solid #dddddd;
-  justify-content: center;
+  justify-content: center; /* Center items */
 }
 
 
@@ -164,9 +164,9 @@ body {
   
     .logo-large {
       flex-shrink: 1; /* Allows the logo to shrink to fit */
-      font-size: 13px; /* Reduce the font size on mobile */
-      max-width: 45%; /* Restrict the logo size to a percentage of the screen */
-      padding: 10px;
+      font-size: 10px; /* Reduce the font size on mobile */
+      max-width: 42%; /* Restrict the logo size to a percentage of the screen */
+      padding: 8px;
       white-space: nowrap; /* Prevents text from wrapping */
       overflow: hidden; /* Ensures any excess content is hidden */
       text-overflow: ellipsis; /* Add ellipsis if the text overflows */
@@ -177,14 +177,13 @@ body {
       display: flex;
       align-items: center;
       flex-grow: 1; /* Ensures the search container fills available space */
-      margin-left: 1px; /* Add space between the logo and the search */
+      margin-left: 3px; /* Add space between the logo and the search */
     }
   
     .search-input {
       flex-grow: 1; /* Make the input grow to take available space */
       font-size: 10px; /* Reduce the font size for smaller screens */
       padding: 11px;
-      max-width: 40%;
       border: 1px solid #dddddd;
       border-radius: 4px 0 0 4px;
     }
@@ -268,12 +267,11 @@ body {
   .header-button {
     display: flex;
   }
-    .menu {
-      display: inline-flex;
-      gap: 20px;
-      width: 100%; /* Endret fra 100vw til 100% */
-      justify-content: center;
-    }
-  
-  
+  .menu {
+    display: inline-flex;
+    gap: 20px;
+    width: 100vw; /* Full width on larger screens */
+    justify-content: center; /* Center items on larger screens */
+
+  }
 }
