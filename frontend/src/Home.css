@@ -76,7 +76,7 @@ body {
 .home-auction-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Fire kort per rad på store skjermer */
-  gap: 0px; /* Avstand mellom kortene */
+  gap: 1px; /* Kun 1px avstand mellom kortene */
   justify-items: center;
 }
 
@@ -89,10 +89,32 @@ body {
   max-width: 220px; /* Mindre bredde for kompakte kort */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease-in-out;
+  margin: 0; /* Fjern marginer */
 }
 
 .home-auction-item:hover {
   transform: scale(1.05);
+}
+
+.home-banner ul li {
+  margin: 3px 0;
+}
+
+.home-banner-button {
+  background-color: #FFD166; /* Soft Yellow */
+  color: #333333; /* Dark Gray */
+  border: 2px solid #FFD166; /* Soft Yellow */
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-top: 15px;
+  font-size: 14px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.home-banner-button:hover {
+  background-color: #FF6B6B; /* Coral */
+  color: white;
 }
 
 .home-auction-image {
