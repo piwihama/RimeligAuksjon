@@ -76,26 +76,27 @@ body {
 .home-auction-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Fire kort per rad på store skjermer */
-  gap: -10; /* Fjern avstand mellom kortene */
+  gap: 0; /* Fjern avstand mellom kortene */
   justify-items: center;
-  margin: 0; /* Fjern margin rundt grid */
+  margin: -5px; /* Negative marginer for å fjerne ekstra mellomrom */
 }
 
 .home-auction-item {
   background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 10px;
-  padding: 10px;
+  padding: 15px;
   width: 100%;
   max-width: 220px; /* Mindre bredde for kompakte kort */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease-in-out;
-  margin: 0; /* Fjern marginer */
+  margin: 5px; /* Legg til litt margin for å motvirke negative marginer */
 }
 
 .home-auction-item:hover {
-  transform: scale(1.02);
+  transform: scale(1.05);
 }
+
 
 .home-auction-image {
   width: 100%;
