@@ -33,7 +33,7 @@ function Home() {
       if (auctions.length > 0) {
         const nextIndex = (currentIndex + 1) % auctions.length;
         setCurrentIndex(nextIndex);
-        setVisibleAuctions(auctions.slice(nextIndex, nextIndex + 3));
+        setVisibleAuctions(auctions.slice(nextIndex, nextIndex + 4));
       }
     }, 5000); // Change auction every 5 seconds
 
