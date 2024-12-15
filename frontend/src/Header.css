@@ -184,6 +184,7 @@ body {
       flex-grow: 1; /* Make the input grow to take available space */
       font-size: 10px; /* Reduce the font size for smaller screens */
       padding: 11px;
+      max-width: 40%;
       border: 1px solid #dddddd;
       border-radius: 4px 0 0 4px;
     }
