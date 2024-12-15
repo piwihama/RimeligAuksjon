@@ -1,9 +1,13 @@
 /* src/Home.css */
 
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box; /* Sørger for at padding og border ikke påvirker elementstørrelsen */
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #F0F4F8; /* Light Gray */
   color: #333333; /* Dark Gray */
 }
@@ -27,7 +31,7 @@ body {
   padding: 40px 20px;
   text-align: center;
   background-color: #FFFFFF;
-  max-width: 1200px; /* Økt bredde for større skjermer */
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -72,42 +76,40 @@ body {
   font-weight: bold;
 }
 
-/* Nytt grid layout for auksjoner */
+/* Grid layout for auksjoner */
 .home-auction-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Fire kort per rad på store skjermer */
-  gap: -500; /* Fjern avstand mellom kortene */
-  justify-items: center;
-  margin: 0px; /* Negative marginer for å fjerne ekstra mellomrom */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Fire kort per rad */
+  gap: 0; /* Fjern avstand mellom kortene */
+  justify-content: center;
+  margin: 0;
 }
 
 .home-auction-item {
   background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 10px;
-  padding: 15px;
+  padding: 10px;
   width: 100%;
-  max-width: 220px; /* Mindre bredde for kompakte kort */
+  max-width: 100%; /* Fyll hele grid-cellen */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease-in-out;
-  margin: 5px; /* Legg til litt margin for å motvirke negative marginer */
 }
 
 .home-auction-item:hover {
   transform: scale(1.05);
 }
 
-
 .home-auction-image {
   width: 100%;
-  height: 120px; /* Mindre høyde for bildene */
+  height: 120px;
   border-radius: 10px;
   margin-bottom: 10px;
   object-fit: cover;
 }
 
 .home-auction-details {
-  background-color: #F0F4F8; /* Light Gray */
+  background-color: #F0F4F8;
   border-radius: 10px;
   padding: 10px;
   font-size: 14px;
@@ -134,7 +136,7 @@ body {
 .home-auction-link {
   display: inline-block;
   margin-top: 10px;
-  background-color: #008080; /* Teal */
+  background-color: #008080;
   color: white;
   padding: 6px 12px;
   border-radius: 4px;
@@ -151,8 +153,8 @@ body {
 .skeleton-loader {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 0; /* Fjern avstand */
-  justify-items: center;
+  gap: 0;
+  justify-items: stretch;
 }
 
 .skeleton-card {
@@ -160,7 +162,6 @@ body {
   border-radius: 10px;
   height: 220px;
   width: 100%;
-  max-width: 220px;
   animation: pulse 1.5s infinite;
 }
 
@@ -187,7 +188,6 @@ body {
   }
 
   .home-auction-item {
-    max-width: 100%;
     padding: 10px;
   }
 }
