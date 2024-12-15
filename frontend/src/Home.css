@@ -71,6 +71,7 @@ body {
 
 .home-auctions-section h2 {
   font-size: 28px;
+  align-items: left;
   margin-bottom: 20px;
   color: #333;
   font-weight: bold;

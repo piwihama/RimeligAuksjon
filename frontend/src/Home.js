@@ -108,7 +108,7 @@ function Home() {
           </div>
 
           <div className="home-auctions-section">
-            <h2>Fremhevede Auksjoner</h2>
+            <h2>FREMHEVET</h2>
             {loading ? (
               <p>Laster inn auksjoner...</p>
             ) : auctions.length === 0 ? (
