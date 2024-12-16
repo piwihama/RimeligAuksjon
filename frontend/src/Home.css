@@ -214,30 +214,49 @@ body {
 }
 
 /* Responsivitet for mindre skjermer */
+/* Responsivitet for mindre skjermer */
 @media (max-width: 768px) {
   .home-auction-list {
     grid-template-columns: repeat(2, 1fr); /* To kolonner på mobil */
+    gap: 10px; /* Legg til litt mellomrom mellom kortene */
   }
 
   .skeleton-loader {
     grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
 
   .home-auction-item {
-    padding: 10px;
+    padding: 8px; /* Reduser padding for å få plass til flere kort */
+    font-size: 12px; /* Mindre skrift for kompakt visning */
+  }
+
+  .home-auction-image {
+    height: 100px; /* Reduser høyden på bildene */
+  }
+
+  .home-auction-details {
+    padding: 10px; /* Reduser padding i detaljene */
+  }
+
+  .home-auction-link {
+    padding: 5px 10px; /* Mindre knappestørrelse */
+    font-size: 11px; /* Mindre skriftstørrelse for knappen */
   }
 }
 
 @media (max-width: 480px) {
   .home-auction-list {
     grid-template-columns: 1fr; /* Én kolonne på veldig små skjermer */
+    gap: 10px;
   }
 
   .skeleton-loader {
     grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .home-auction-item {
-    padding: 10px;
+    padding: 8px;
   }
 }
