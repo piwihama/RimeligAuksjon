@@ -216,9 +216,41 @@ body {
 /* Responsivitet for mindre skjermer */
 /* Responsivitet for mindre skjermer */
 @media (max-width: 768px) {
+  
   .home-auction-list {
     grid-template-columns: repeat(2, 1fr); /* To kolonner på mobil */
     gap: 10px; /* Legg til litt mellomrom mellom kortene */
+  }
+  .home-banner {
+    flex-direction: column; /* Stabler innholdet vertikalt på mindre skjermer */
+    padding: 10px;         /* Reduser padding */
+    min-height: 150px;     /* Gjør banneren tynnere */
+    border-radius: 5px;    /* Mindre avrunding av hjørnene */
+  }
+
+  .home-banner-content {
+    padding: 10px;         /* Reduser padding i bannerinnholdet */
+    font-size: 14px;       /* Mindre tekststørrelse */
+  }
+
+  .home-banner h1 {
+    font-size: 20px;       /* Reduser størrelsen på hovedtittelen */
+    margin-bottom: 10px;
+  }
+
+  .home-banner p {
+    font-size: 14px;       /* Reduser størrelsen på paragrafen */
+    margin-bottom: 5px;
+  }
+
+  .home-banner-button {
+    padding: 6px 12px;     /* Mindre knappestørrelse */
+    font-size: 12px;
+  }
+
+  .home-banner-image img {
+    max-height: 120px;     /* Reduser bildets høyde */
+    border-radius: 5px;
   }
 
   .skeleton-loader {
@@ -259,4 +291,23 @@ body {
   .home-auction-item {
     padding: 8px;
   }
+  .home-banner {
+    padding: 8px;          /* Ytterligere reduksjon av padding */
+    min-height: 120px;     /* Gjør banneren enda tynnere på veldig små skjermer */
+  }
+
+  .home-banner-content {
+    padding: 8px;
+    font-size: 12px;       /* Reduser tekststørrelsen ytterligere */
+  }
+
+  .home-banner h1 {
+    font-size: 18px;
+  }
+
+  .home-banner-button {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
 }
