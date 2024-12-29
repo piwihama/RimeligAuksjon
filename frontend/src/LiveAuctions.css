@@ -231,10 +231,10 @@ body {
     }
 
     .auction-item img {
-        width: 100% !important;
-        height: 150px !important; /* Sett ønsket høyde */
-        object-fit: cover !important; /* Sørger for at bildet kuttes riktig */
-        margin: 0 !important; /* Fjerner unødvendige marginer */
+        width: 100%; /* Fyll hele bredden */
+        height: 150px; /* Sett fast høyde */
+        object-fit: cover; /* Sikrer at bildet fyller plassen og kutter det som ikke passer */
+        margin: 0; /* Fjern marginer rundt bildet */
     }
     .auction-item {
         flex-direction: column;
