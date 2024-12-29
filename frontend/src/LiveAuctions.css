@@ -230,15 +230,15 @@ body {
         margin-bottom: 20px;
     }
 
+    .auction-item img {
+        width: 100%;
+        height: 150px; /* Sett ønsket høyde for mobil */
+        object-fit: cover; /* Sikrer at bildet blir kuttet riktig */
+    }
+
     .auction-item {
         flex-direction: column;
         align-items: flex-start;
-    }
-
-    .auction-item img {
-        width: 100%;
-        height: 150px;
-        margin: 0 0 10px 0;
     }
 
     .auction-info {
