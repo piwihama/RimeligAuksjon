@@ -110,7 +110,7 @@ body {
   gap: 10px;
   background-color: #333333;
   padding: 10px 0;
-  width: 100vw; /* Full viewport width */
+  width: 100%; /* Endret fra 100vw til 100% */
   margin: 0; /* Remove margin */
   border-top: 1px solid #dddddd;
   justify-content: center; /* Center items */
