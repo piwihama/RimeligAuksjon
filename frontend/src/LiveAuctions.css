@@ -231,11 +231,11 @@ body {
     }
 
     .auction-item img {
-        width: 100%;
-        height: 150px; /* Sett ønsket høyde for mobil */
-        object-fit: cover; /* Sikrer at bildet blir kuttet riktig */
+        width: 100% !important;
+        height: 150px !important; /* Sett ønsket høyde */
+        object-fit: cover !important; /* Sørger for at bildet kuttes riktig */
+        margin: 0 !important; /* Fjerner unødvendige marginer */
     }
-
     .auction-item {
         flex-direction: column;
         align-items: flex-start;
